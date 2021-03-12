@@ -5,6 +5,6 @@ setup(
     version='0.0.1',
     description='collection of pyspark functions written by the ADRUK team for data engineering',
     url='http://np2rvlapxx507/hechlj/',
-  author = 'Sophie-Louise Courtney, Johannes Hechler, Ben Marshall-Sheen'
+  author = 'Sophie-Louise Courtney, Johannes Hechler, Ben Marshall-Sheen',
     packages = find_packages()
 )
