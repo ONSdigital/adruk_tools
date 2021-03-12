@@ -22,8 +22,8 @@ pipeline {
     }
 
     environment {
-        ARTIFACTORY_CREDS       = 's_artif_adruk???'
-        ARTIFACTORY_PYPI_REPO   = '???'
+        ARTIFACTORY_CREDS       = 's_artif_adruk'
+        ARTIFACTORY_PYPI_REPO   = 'LR_adruk_cwa'
         PROJECT_NAME            = 'adruk_tools'
         MASTER_BRANCH           = 'master'
         // If test coverage falls below this number the build will fail
@@ -49,11 +49,11 @@ pipeline {
                 
                 checkout scm
                 script {
-                    buildInfo.name = "${PROJECT_NAME}???"
-                    buildInfo.number = "${BUILD_NUMBER}???"
+                    buildInfo.name = "${PROJECT_NAME}"
+                    buildInfo.number = "${BUILD_NUMBER}"
                     buildInfo.env.collect()
                 }
-                colourText('info', "BuildInfo: ${buildInfo.name}???-${buildInfo.number}???")
+                colourText('info', "BuildInfo: ${buildInfo.name}-${buildInfo.number}")
                 stash name: 'Checkout', useDefaultExcludes: false
             }
         }
@@ -69,9 +69,9 @@ pipeline {
 
 
                 sh 'pip3 install coverage'
-                sh 'pip3 install pypandoc'???
+                sh 'pip3 install pypandoc'
                 sh 'pip3 install pyspark==2.3.0'
-                sh 'pip3 install -e .'???
+                sh 'pip3 install -e .'
                 // Running coverage first runs the tests
                 sh 'coverage run --branch --source=./${PROJECT_NAME} -m unittest discover -s ./tests'
                 sh 'coverage xml -o python_coverage.xml && coverage report -m --fail-under=${MIN_COVERAGE_PC}'
@@ -104,7 +104,7 @@ pipeline {
                 sh 'python3 setup.py build bdist_wheel'
                 
                 script {
-                    pushToPyPiArtifactoryRepo_temp("${buildInfo.name}???", "", "dist/*")
+                    pushToPyPiArtifactoryRepo_temp("${buildInfo.name}", "", "dist/*")
                 }
             }
             post {
