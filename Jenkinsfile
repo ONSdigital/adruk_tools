@@ -71,21 +71,21 @@ pipeline {
                 sh 'pip3 install pyspark==2.3.0'
                 sh 'pip3 install -e .'
                 // Running coverage first runs the tests
-                sh 'coverage run --branch --source=./${PROJECT_NAME} -m unittest discover -s ./tests'
-                sh 'coverage xml -o python_coverage.xml && coverage report -m --fail-under=${MIN_COVERAGE_PC}'
+                // sh 'coverage run --branch --source=./${PROJECT_NAME} -m unittest discover -s ./tests'
+                //sh 'coverage xml -o python_coverage.xml && coverage report -m --fail-under=${MIN_COVERAGE_PC}'
 
 
-                cobertura autoUpdateHealth: false,
-                        autoUpdateStability: false,
-                        coberturaReportFile: 'python_coverage.xml',
-                        conditionalCoverageTargets: '70, 0, 0',
-                        failUnhealthy: false,
-                        failUnstable: false,
-                        lineCoverageTargets: '80, 0, 0',
-                        maxNumberOfBuilds: 0,
-                        methodCoverageTargets: '80, 0, 0',
-                        onlyStable: false,
-                        zoomCoverageChart: false
+//                cobertura autoUpdateHealth: false,
+  //                      autoUpdateStability: false,
+    //                    coberturaReportFile: 'python_coverage.xml',
+      //                  conditionalCoverageTargets: '70, 0, 0',
+        //                failUnhealthy: false,
+          //              failUnstable: false,
+            //            lineCoverageTargets: '80, 0, 0',
+              //          maxNumberOfBuilds: 0,
+                //        methodCoverageTargets: '80, 0, 0',
+                  //      onlyStable: false,
+                    //    zoomCoverageChart: false
 
             }
         }
