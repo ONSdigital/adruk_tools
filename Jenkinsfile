@@ -68,7 +68,7 @@ pipeline {
                 unstash name: 'Checkout'
 
 
-                sh 'pip3 install coverage'
+                // sh 'pip3 install coverage'
                 sh 'pip3 install pypandoc'
                 sh 'pip3 install pyspark==2.3.0'
                 sh 'pip3 install -e .'
