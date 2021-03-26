@@ -67,8 +67,6 @@ pipeline {
                 colourText('info', "Running unit tests and code coverage.")
                 unstash name: 'Checkout'
 
-                sh 'pip3 install sqlite3'
-                sh 'pip3 install coverage'
                 sh 'pip3 install pypandoc'
                 sh 'pip3 install pyspark==2.3.0'
                 sh 'pip3 install -e .'
