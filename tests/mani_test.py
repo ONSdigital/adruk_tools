@@ -1,5 +1,7 @@
 from mani import manifest
 
+
+@pytest.mark.skip
 def test_manifest():
     # read in test data
     read_path = '/ons/det_training/dummy_manifest.mani' # path to a dummy dataset in DevTest HDFS
