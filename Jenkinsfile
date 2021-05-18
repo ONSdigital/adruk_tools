@@ -18,7 +18,7 @@ def pushToPyPiArtifactoryRepo_temp(String projectName, String version, String so
 
 pipeline {
     libraries {
-        lib('jenkins-pipeline-shared@feature/dap-ci-scripts')
+        lib('jenkins-pipeline-shared')
     }
 
     environment {
