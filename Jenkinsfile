@@ -7,13 +7,11 @@ buildInfo = Artifactory.newBuildInfo()
 def agentPython3Version = 'python_3.6.1'
 def artifactVersion
 
-
 def pushToPyPiArtifactoryRepo_temp(String projectName, String version, String sourceDistLocation = 'python/dist/*', String artifactoryHost = 'art-p-01') {
     withCredentials([usernamePassword(credentialsId: env.ARTIFACTORY_CREDS, usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_PASSWORD')]){
         sh "curl -u ${ARTIFACTORY_USER}:\${ARTIFACTORY_PASSWORD} -T ${sourceDistLocation} 'http://${artifactoryHost}/artifactory/${env.ARTIFACTORY_PYPI_REPO}/${projectName}/'"
     }
 }
-
 
 
 pipeline {
@@ -30,8 +28,6 @@ pipeline {
         MIN_COVERAGE_PC         = '0'
 
     }
-
-
 
     
     options {
@@ -58,39 +54,38 @@ pipeline {
             }
         }
 
-
-
         stage('Unit Test and coverage') {
             agent { label "test.${agentPython3Version}" }
             steps {
                 onStage()
                 colourText('info', "Running unit tests and code coverage.")
                 unstash name: 'Checkout'
-
+                
+                sh 'pip3 install coverage'
                 sh 'pip3 install pypandoc'
                 sh 'pip3 install pyspark==2.3.0'
+                sh 'pip3 install pysqlite3'
                 sh 'pip3 install -e .'
+                sh 'pip3 install pysqlite3'
                 // Running coverage first runs the tests
-                // sh 'coverage run --branch --source=./${PROJECT_NAME} -m unittest discover -s ./tests'
-                //sh 'coverage xml -o python_coverage.xml && coverage report -m --fail-under=${MIN_COVERAGE_PC}'
-
-
-//                cobertura autoUpdateHealth: false,
-  //                      autoUpdateStability: false,
-    //                    coberturaReportFile: 'python_coverage.xml',
-      //                  conditionalCoverageTargets: '70, 0, 0',
-        //                failUnhealthy: false,
-          //              failUnstable: false,
-            //            lineCoverageTargets: '80, 0, 0',
-              //          maxNumberOfBuilds: 0,
-                //        methodCoverageTargets: '80, 0, 0',
-                  //      onlyStable: false,
-                    //    zoomCoverageChart: false
+                sh 'coverage run --branch --source=./${PROJECT_NAME} -m unittest discover -s ./tests'
+                sh 'coverage xml -o python_coverage.xml && coverage report -m --fail-under=${MIN_COVERAGE_PC}'
+                
+                cobertura autoUpdateHealth: false,
+                        autoUpdateStability: false,
+                        coberturaReportFile: 'python_coverage.xml',
+                        conditionalCoverageTargets: '70, 0, 0',
+                        failUnhealthy: false,
+                        failUnstable: false,
+                        lineCoverageTargets: '80, 0, 0',
+                        maxNumberOfBuilds: 0,
+                        methodCoverageTargets: '80, 0, 0',
+                        onlyStable: false,
+                        zoomCoverageChart: false
 
             }
         }
-
-
+        
         stage('Build and publish Python Package') {
             agent { label "test.${agentPython3Version}" }
             steps {
