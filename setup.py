@@ -1,6 +1,6 @@
 from setuptools import setup
 
-from de_utils._version import __version__
+from adruk_tools.functions._version import __version__
 
 
 with open('requirements.txt') as f:
