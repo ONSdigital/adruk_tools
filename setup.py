@@ -14,5 +14,4 @@ setup(
     author = 'Sophie-Louise Courtney, Johannes Hechler, Ben Marshall-Sheen',
     packages = ['adruk_tools', 'adruk_tools.functions'],
     install_requires=requirements
-  
 )
