@@ -16,8 +16,9 @@ def pushToPyPiArtifactoryRepo_temp(String projectName, String version, String so
 
 pipeline {
     libraries {
-        lib('jenkins-pipeline-shared')
+        lib('jenkins-pipeline-shared@feature/dap-ci-scripts')
     }
+
 
     environment {
         ARTIFACTORY_CREDS       = 's_artif_adruk'
@@ -28,12 +29,12 @@ pipeline {
         MIN_COVERAGE_PC         = '0'
 
     }
-
     
     options {
         skipDefaultCheckout true
     }
     
+
     agent any
 
     stages {
@@ -61,14 +62,12 @@ pipeline {
                 colourText('info', "Running unit tests and code coverage.")
                 unstash name: 'Checkout'
                 
-                sh 'pip3 install coverage'
                 sh 'pip3 install pypandoc'
-                sh 'pip3 install pyspark==2.3.0'
-                sh 'pip3 install pysqlite3'
+                sh 'pip3 install pyspark==2.4.0'
+                sh 'pip3 install -r requirements.txt'
                 sh 'pip3 install -e .'
-                sh 'pip3 install pysqlite3'
                 // Running coverage first runs the tests
-                sh 'coverage run --branch --source=./${PROJECT_NAME} -m unittest discover -s ./tests'
+                sh 'coverage run --branch --source=./de_utils -m unittest discover -s ./tests'
                 sh 'coverage xml -o python_coverage.xml && coverage report -m --fail-under=${MIN_COVERAGE_PC}'
                 
                 cobertura autoUpdateHealth: false,
@@ -87,12 +86,17 @@ pipeline {
         }
         
         stage('Build and publish Python Package') {
+//            when {
+//                branch MASTER_BRANCH
+//                beforeAgent true
+//            }
             agent { label "test.${agentPython3Version}" }
             steps {
                 onStage()
                 colourText('info', "Building Python package.")
                 unstash name: 'Checkout'
-                
+                sh 'pip3 install pypandoc'
+                sh 'pip3 install pyspark==2.4.0'
                 sh 'pip3 install wheel==0.29.0'
                 sh 'python3 setup.py build bdist_wheel'
                 
