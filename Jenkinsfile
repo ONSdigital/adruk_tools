@@ -55,35 +55,35 @@ pipeline {
             }
         }
 
-        stage('Unit Test and coverage') {
-            agent { label "test.${agentPython3Version}" }
-            steps {
-                onStage()
-                colourText('info', "Running unit tests and code coverage.")
-                unstash name: 'Checkout'
-                
-                sh 'pip3 install pypandoc'
-                sh 'pip3 install pyspark==2.4.0'
-                sh 'pip3 install -r requirements.txt'
-                sh 'pip3 install -e .'
-                // Running coverage first runs the tests
-                sh 'coverage run --branch --source=./de_utils -m unittest discover -s ./tests'
-                sh 'coverage xml -o python_coverage.xml && coverage report -m --fail-under=${MIN_COVERAGE_PC}'
-                
-                cobertura autoUpdateHealth: false,
-                        autoUpdateStability: false,
-                        coberturaReportFile: 'python_coverage.xml',
-                        conditionalCoverageTargets: '70, 0, 0',
-                        failUnhealthy: false,
-                        failUnstable: false,
-                        lineCoverageTargets: '80, 0, 0',
-                        maxNumberOfBuilds: 0,
-                        methodCoverageTargets: '80, 0, 0',
-                        onlyStable: false,
-                        zoomCoverageChart: false
-
-            }
-        }
+//       stage('Unit Test and coverage') {
+//            agent { label "test.${agentPython3Version}" }
+//            steps {
+//                onStage()
+//                colourText('info', "Running unit tests and code coverage.")
+//                unstash name: 'Checkout'
+//                
+//                sh 'pip3 install pypandoc'
+//                sh 'pip3 install pyspark==2.4.0'
+//                sh 'pip3 install -r requirements.txt'
+//                sh 'pip3 install -e .'
+//                // Running coverage first runs the tests
+//                sh 'coverage run --branch --source=./de_utils -m unittest discover -s ./tests'
+//                sh 'coverage xml -o python_coverage.xml && coverage report -m --fail-under=${MIN_COVERAGE_PC}'
+//                
+//                cobertura autoUpdateHealth: false,
+//                        autoUpdateStability: false,
+//                        coberturaReportFile: 'python_coverage.xml',
+//                        conditionalCoverageTargets: '70, 0, 0',
+//                        failUnhealthy: false,
+//                        failUnstable: false,
+//                        lineCoverageTargets: '80, 0, 0',
+//                        maxNumberOfBuilds: 0,
+//                        methodCoverageTargets: '80, 0, 0',
+//                        onlyStable: false,
+//                        zoomCoverageChart: false
+//
+//            }
+//        }
         
         stage('Build and publish Python Package') {
 //            when {
