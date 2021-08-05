@@ -1,3 +1,207 @@
+def session_small():
+  """
+  Small Session
+
+  This session is similar to that used for DAPCATS training
+  It is the smallest session that is realistically used
+
+  Details:
+      Only 1g of memory and 3 executors
+      Only 1 core
+      Number of partitions are limited to 12, which can improve
+      performance with smaller data
+
+  Use case:
+      Simple data exploration of small survey data
+
+  Example of actual usage:
+      Used for DAPCATS PySpark training
+      Mostly simple calculations
+  """
+  from pyspark.sql import SparkSession
+
+  return (
+      SparkSession.builder.appName("small-session")
+      .config("spark.executor.memory", "1g")
+      .config("spark.executor.cores", 1)
+      .config("spark.dynamicAllocation.enabled", "true")
+      .config("spark.dynamicAllocation.maxExecutors", 3)
+      .config("spark.sql.shuffle.partitions", 12)
+      .config("spark.shuffle.service.enabled", "true")
+      .config("spark.ui.showConsoleProgress", "false")
+      .enableHiveSupport()
+      .getOrCreate()
+  )
+
+def session_medium():
+  """
+  Medium Session
+
+  A standard session used for analysing survey or synthetic
+  datasets. Also used for some Production pipelines based on
+  survey and/or smaller administrative data.
+
+  Details:
+      6g of memory and 3 executors
+      3 cores
+      Number of partitions are limited to 18, which can improve
+      performance with smaller data
+
+  Use case:
+      Developing code in Dev Test
+      Data exploration in Production
+      Developing Production pipelines on a sample of data
+      Running smaller Production pipelines on mostly survey data
+
+  Example of actual usage:
+      Complex calculations, but on smaller synthetic data in
+          Dev Test
+  """
+  from pyspark.sql import SparkSession
+
+  return (
+          SparkSession.builder.appName("medium-session")
+          .config("spark.executor.memory", "6g")
+          .config("spark.executor.cores", 3)
+          .config("spark.dynamicAllocation.enabled", "true")
+          .config("spark.dynamicAllocation.maxExecutors", 3)
+          .config("spark.sql.shuffle.partitions", 18)
+          .config("spark.shuffle.service.enabled", "true")
+          .config("spark.ui.showConsoleProgress", "false")
+          .enableHiveSupport()
+          .getOrCreate()
+        )
+
+def session_large():
+  """
+  Large Session
+
+  Session designed for running Production pipelines on large
+  administrative data, rather than just survey data. Will often
+  develop using a smaller session then change to this once the
+  pipeline is complete.
+
+  Details:
+      10g of memory and 5 executors
+      1g of memory overhead
+      5 cores, which is generally optimal on larger sessions
+
+  Use case:
+      Production pipelines on administrative data
+      Cannot be used in Dev Test, as 9 GB limit per executor
+
+  Example of actual usage:
+      One administrative dataset of 100 million rows
+      Many calculations
+  """
+  from pyspark.sql import SparkSession
+
+  return (
+      SparkSession.builder.appName("large-session")
+      .config("spark.executor.memory", "10g")
+      .config("spark.yarn.executor.memoryOverhead", "1g")
+      .config("spark.executor.cores", 5)
+      .config("spark.dynamicAllocation.enabled", "true")
+      .config("spark.dynamicAllocation.maxExecutors", 5)
+      .config("spark.shuffle.service.enabled", "true")
+      .config("spark.ui.showConsoleProgress", "false")
+      .enableHiveSupport()
+      .getOrCreate()
+  )
+
+  
+def session_xl():
+  """
+  Extra Large session
+
+  Used for the most complex pipelines, with huge administrative
+  data sources and complex calculations. Uses a large amount of
+  resource on the cluster, so only use when running Production
+  pipelines
+
+  Details:
+      20g of memory and 12 executors
+      2g of memory overhead
+      5 cores; using too many cores can actually cause worse
+          performance on larger sessions
+
+  Use case:
+      Running large, complex pipelines in Production on mostly
+          administrative data
+      Do not use for development purposes; use a smaller session
+          and work on a sample of data or synthetic data
+
+  Example of actual usage:
+      Three administrative datasets of around 300 million rows
+      Significant calculations, including joins and writing/reading
+          to many intermediate tables
+  """
+
+  return (
+      SparkSession.builder.appName("xl-session")
+      .config("spark.executor.memory", "20g")
+      .config("spark.yarn.executor.memoryOverhead", "2g")
+      .config("spark.executor.cores", 5)
+      .config("spark.dynamicAllocation.enabled", "true")
+      .config("spark.dynamicAllocation.maxExecutors", 12)
+      .config("spark.shuffle.service.enabled", "true")
+      .config("spark.ui.showConsoleProgress", "false")
+      .enableHiveSupport()
+      .getOrCreate()
+  )
+
+class manifest:
+  """
+  WHAT IT IS: Python class
+  WHAT IT DOES: 
+  * creates an object of class 'manifest'
+  * assign several methods to the object
+  * designed extract data from nested dictionaries, in particular .mani files on HDFS
+  AUTHOR: Johannes Hechler
+  DATE: 09/02/2021
+  VERSION: 0.1
+  """
+  # give the object 
+  def __init__(self, path):
+    """
+    WHAT IT IS: Python method for objects of class 'manifest'
+    WHAT IT DOES: 
+    * generates base property for object, i.e. reads in the specified file from HDFS into a pandas dataframe
+    AUTHOR: Johannes Hechler
+    DATE: 09/02/2021
+    VERSION: 0.1
+    """
+    import pydoop.hdfs as hdfs
+    import pandas as pd
+    
+    with hdfs.open(path, "r") as f:
+      self.content = pd.read_json(f)
+      f.close()
+        
+  def whole(self): 
+    """
+    WHAT IT IS: Python method for objects of class 'manifest'
+    WHAT IT DOES: 
+    * generates property 'whole', i.e. information about the overall delivery, as a pandas dataframe with 1 row
+    AUTHOR: Johannes Hechler
+    DATE: 09/02/2021
+    VERSION: 0.1
+    """
+    return self.content.iloc[0]
+      
+  def parts(self, variable):
+    """
+    WHAT IT IS: Python method for objects of class 'manifest'
+    WHAT IT DOES: 
+    * generates property 'parts', i.e. information about the individual files included in a delivery, as a pandas dataframe with as many rows as there are files
+    AUTHOR: Johannes Hechler
+    DATE: 09/02/2021
+    VERSION: 0.1
+    """
+    import pandas as pd
+    return pd.DataFrame(list( self.content[ variable ]))
+  
+  
 def unzip_to_csv(file_path,file_name,destination_path):
   '''
   :WHAT IT IS: PYSPARK FUNCTION
@@ -83,135 +287,6 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
                header = "true",
                mode='overwrite'))
 
-def clean_names(dataset, variables):
-  """
-  :WHAT IT IS: FUNCTION
-  
-  :WHAT IT DOES: removes non-alphabetical characters (not case sensistive) from selected string variables
-  :RETURNS: spark dataframe with cleaned version of selected variables added as new variables ending in '_clean'. All original variables unchanged
-  :OUTPUT VARIABLE TYPE: string
-
-  :TESTED TO RUN ON: spark dataframe
-  :RUN TIME: 20-row test dataframe - 3s; full deaths registrations 2017 - 4s
-
-  :AUTHOR: Johannes Hechler
-  :DATE: 11/09/2019
-  :VERSION: 0.0.1
-
-
-  :PARAMETERS:
-    : dataset = spark dataframe:
-      `(datatype = dataframe name, no string)`, e.g. PDS
-    : variables = list of variables to clean:
-      `(datatype = list of strings)`, e.g. ['forename', 'surname']
-
-  :EXAMPLE:
-  >>> clean_names(PDS, ['family_names', 'first_given_name'])
-
-  """
-  from pyspark.sql.functions import upper, trim, regexp_replace # import functions to make strings upper case, trim preceding/trailing whitespace, and replace regular expressions
-  for variable in variables: # loop over chosen variables one by one and...
-    dataset = dataset.withColumn(variable +  '_clean', upper(trim(regexp_replace(variable, "[^a-zA-Z]", "")))) # remove anything not a character (of either case), then trim whitespace, then make all upper case. save that as a new variable, named after the input variable, with the suffix '_clean'
-  return dataset
-
-
-def clean_names_part(dataset, variables):
-  """
-  :WHAT IT IS: FUNCTION
-  
-  :WHAT IT DOES: removes illegal characters (anything not alphabetical or whitespace, not case-sensistive) from selected string variables
-  :RETURNS: spark dataframe with cleaned version of selected variables overwritten with cleaned versions.
-  :OUTPUT VARIABLE TYPE: string
-
-  :TESTED TO RUN ON: spark dataframe
-  :RUN TIME: 20-row test dataframe - 3s; full deaths registrations 2017 - 4s
-
-  :AUTHOR: Johannes Hechler
-  :DATE: 11/09/2019
-  :VERSION: 0.0.3
-
-
-  :PARAMETERS:
-    : dataset = spark dataframe:
-      `(datatype = dataframe name, no string)`, e.g. PDS
-    : variables = list of variables to clean:
-      `(datatype = list of strings)`, e.g. ['forename', 'surname']
-
-  :EXAMPLE:
-  >>> clean_names(PDS, ['family_names', 'first_given_name'])
-
-  """
-  from pyspark.sql.functions import upper, trim, regexp_replace, udf, col, split, concat_ws # import functions to make strings upper case, trim preceding/trailing whitespace, and replace regular expressions
-
-  for variable in [name for name, dtype in dataset.select(*variables).dtypes if 'array<string>' not in dtype]: # loop over chosen variables one by one and...
-    dataset = dataset.withColumn(variable, upper(trim(regexp_replace(variable, "[^a-zA-Z\s-]", ""))))# remove anything not a character (of either case) or any length of whitespace, then trim whitespace before the first/after the last character, then make all upper case. save that as a new variable, named after the input variable, with the suffix '_clean'
-  
-  for variable in [name for name, dtype in dataset.select(*variables).dtypes if 'array<string>' in dtype]: # loop over chosen variables one by one and...
-    dataset = dataset.withColumn(variable,
-                                 split(
-                                   upper(
-                                     trim(
-                                       regexp_replace(
-                                         concat_ws('@', # concatenate the array elements with an '@' in between
-                                                   col(variable)),
-                                         "[^a-zA-Z\s-@]", # remove anything not like these
-                                         "") # replace it with this
-                                     ) # END TRIM
-                                   ), # END UPPER
-                                   '@') # END SPLIT: take the concatenation apart again, at the '@', and stick the elements back into an array
-                                ) 
-  return dataset
-
-  #clean_names_part(data, ['surname_preferred_clean']).select('surname_preferred_clean').filter(F.col('surname_preferred_clean') == "O'HARA").take(30)
-
-
-# manually list variables for cleaning
-def clean_names_full(dataset, variables):
-  """
-  :WHAT IT IS: FUNCTION
-  
-  :WHAT IT DOES: removes non-alphabetical characters (not case sensistive) from selected string variables
-  :RETURNS: spark dataframe with cleaned version of selected variables overwritten with cleaned versions.
-  :OUTPUT VARIABLE TYPE: string
-  
-  :TESTED TO RUN ON: spark dataframe
-  :RUN TIME: 20-row test dataframe - 3s; full deaths registrations 2017 - 4s
-
-  :AUTHOR: Johannes Hechler
-  :DATE: 11/09/2019
-  :VERSION: 0.0.3
-
-
-  :PARAMETERS:
-    : dataset = spark dataframe:
-      `(datatype = dataframe name, no string)`, e.g. PDS
-    : variables = list of variables to clean:
-      `(datatype = list of strings)`, e.g. ['forename', 'surname']
-
-  :EXAMPLE:
-  >>> clean_names_full(PDS, ['family_names', 'first_given_name'])
-
-  """
-  from pyspark.sql.functions import upper, trim, regexp_replace, udf, col, split, concat_ws # import functions to make strings upper case, trim preceding/trailing whitespace, and replace regular expressions
-  
-  for variable in [name for name, dtype in dataset.select(variables).dtypes if 'array<string>' not in dtype]: # loop over chosen variables one by one and...
-    dataset = dataset.withColumn(variable, upper(trim(regexp_replace(variable, "[^a-zA-Z]", "")))) # remove anything not a character (of either case), then trim whitespace, then make all upper case. save that as a new variable, named after the input variable, with the suffix '_clean'
-  
-  for variable in [name for name, dtype in dataset.select(variables).dtypes if 'array<string>' in dtype]: # loop over chosen variables one by one and...
-    dataset = dataset.withColumn(variable,
-                                 split(
-                                   upper(
-                                     trim(
-                                       regexp_replace(
-                                         concat_ws('@', # concatenate the array elements with an '@' in between
-                                                   col(variable)),
-                                         "[^a-zA-Z@]'`", # remove anything not like these
-                                         "") # replace it with this
-                                     )
-                                   ),
-                                   '@') # take the concatenation apart again, at the '@', and stick the elements back into an array
-                                     )
-  return dataset
   
   
   
@@ -884,10 +959,9 @@ def extended_describe(
 
 
 	
-from pyspark.sql import SparkSession
-from pyspark.context import SparkContext as sc
 
 def spark_glob(host,directory):
+  from pyspark.context import SparkContext as sc
   URI           = sc._gateway.jvm.java.net.URI
   Path          = sc._gateway.jvm.org.apache.hadoop.fs.Path
   FileSystem    = sc._gateway.jvm.org.apache.hadoop.fs.FileSystem
