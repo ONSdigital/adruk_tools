@@ -644,8 +644,7 @@ def postcode_pattern(test_df, test_postcodes):
 
   """
   import pyspark.sql.functions as F
-  patterns =
-  '^([Gg][Ii][Rr] ?0[Aa]{2})$|^([Nn][Pp][Tt] ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]{2})$|\
+  patterns = '^([Gg][Ii][Rr] ?0[Aa]{2})$|^([Nn][Pp][Tt] ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]{2})$|\
   ^([A-Pa-pR-Ur-uWwYyZz][0-9]{1,2} ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]{2})$|\
   ^([A-Pa-pR-Ur-uWwYyZz][A-Ha-hK-Yk-y][0-9]{1,2} ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]{2})$|\
   ^([A-Pa-pR-Ur-uWwYyZz][0-9][A-Za-z] ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]{2})$|\
