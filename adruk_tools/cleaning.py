@@ -367,50 +367,6 @@ def make_missing_none(data, columns):
 
 
 
-def make_test_df(session_name):
-  """
-  WHAT IT IS: PySpark Function
-  WHAT IT DOES: creates a dataframe with several columns of different data types for testing purposes. Intentionally includes various errors, e.g. typos.
-  RETURNS: spark dataframe
-
-  AUTHOR: Johannes Hechler, Ben Marshall-Sheen
-  DATE: 17/12/2020
-  VERSION: 0.2
-  CHANGES FROM PREVIOUS VERSION: added boolean variable
-
-  :PARAMETERS:
-    :session_name = name of the spark session to use:
-      `(datatype = session name, unquoted)`, e.g. spark
-
-  :EXAMPLE:
-  >>> make_test_df(spark)
-
-  """
-
-  columns = ['strVar', 'numVar', 'strNumVar', 'postcode', 'postcodeNHS', 'dob', 'name', 'boolVar'] #set up variable names
-  values = [('A', 1, '20201005', 'KT1 9AR' , 'ZZ99"3CZ', '1999-01-03', 'MR Name', True), #create data for both variables, row by row
-            (' A', 2, '2', 'PO4 9HJ' , 'PO4 9HJ', 'UNK', 'MRS NAME', False),
-            ('A ', 3, '20200510',  'QO4 9HJ' , 'ZZ994QZ', '1999/01/02', 'MISS name', None), #dob: only plausible date in list, show that to_date() has an inbuilt plausibility check
-            (' A ', 4, '19700510',  'SO10 9-K' , 'ZZ994UZ', '2019-10-15', 'ms naMe', True), #test if hyphens get removed
-            ('', 5, '5',  '20210510' , 'ZZ997RZ', '2019-10-16', 'MSTR   NaMe ', True), #test if postcodes of correct format but with illegal characters are rejected
-            (None, 6, '6',  '20210106' , None, '1999/01/42', 'DR  naME  ', True),#test postcode sectors with 1 letters, 1 numbers
-            ('null', 7, '7',  '20210405' , 'KE1    6HD',  '1999/01/42', 'PROF name', False), #test NHS generic postcode
-            ('NULL', 8, '8',  'KE1 6HD' , 'ZZ991WZ', '1999/01/42', 'SIR NAME', False),  #test postcode sectors with 2 letters, 1 numbers
-            ('Null', 9, '9',  'KE10 1XM' , 'aa a aaa 0--1', '1999/01/42', '   MR name ', True),  #test postcodes sectors with 2 letters, 2 numbers
-            ('NA', None, '10',  'GFT 5QO'  , 'ZZ995BZ', '1999/01/42', ' MISS NAme', True), #test postcode sectors with 3 letters and no numbers
-            ('-a "', 10, '11',  'QS1 1XM' , 'ZZ995CZ', '1999/01/42', '  ms nAme  ', False), #to test if letters get made upper-case, hyphens and ' and " get removed
-            ("-a '", 11, '12',  'QS11XM' , 'ZZ9-94!E', '1999/01/42', ' MSTR NAmE   ', False), #to test if letters get made upper-case, hyphens and ' and " get removed
-            ("-a A' ", 12, '13',  ' QS11XM' , '  ZZ994E ', '1999/01/42', '   DR   nAME', True), #to test if whitespace gets retained between characters but not between illegal characters
-          ('NaN', 13, '14',  'OE1    4KQ' , 'ZZ9 94E', '1999/01/42', '   PROF NAME', False), #to test if full duplicates get removed
-            ('NaN', 14, '15',  'oe1 4KQ' , '  ZZ994E', '1999/01/42', '   SIR   NaMe', True), #to test if full duplicates get removed
-            ('EN4 8XH', 15,  '16', 'EN4 8XH' , '  ZZ99  4E  ', '1999/01/42', '  MR name', True),
-            (None, None, None,  None, None, None, None, None) #to test if empty rows get removed
-           ]
-  return session_name.createDataFrame(values, columns) #create pyspark dataframe with variables/value from above
-
-
-
-
 def name_split(data, strings_to_split, separator):
   """
   :WHAT IT IS: FUNCTION
