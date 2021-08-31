@@ -331,52 +331,185 @@ def make_test_df(session_name):
 
 
 
-def generate_ids(dataframe1, file, database, tablename, matching, spark, pcol = 'PERSON_ID', log = None, year = '99'):
+ 
+def generate_ids(session, df, id_cols, start_year, id_len = None):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT ID DOES: recodes a given column to random numerical values
+  :WHY IT DOES IT: to anonymise ID variables in ADRUK projects
+  :RETURNS: dataframe with 1 new column called 'adr_id', holding the new ID
+  :OUTPUT VARIABLE TYPE: spark dataframe
+  :KNOWN ISSUES: input dataset must not have existing column called 'adr_id'
+
+  :AUTHOR: David Cobbledick
+  :DATE: 2020
+  :VERSION: 0.0.1
+
+
+  :PARAMETERS:
+    : session = name of current spark cluster:
+      `(datatype = cluster name, no string)`, e.g. spark
+    : df = spark dataframe:
+      `(datatype = dataframe name, no string)`, e.g. PDS
+    : id_cols = column(s) to use for new ID:
+      `(datatype = list of strings)`, e.g. ['year', 'name']
+    : start_year = name of additional column(s) to use in ID:
+      `(datatype = list of strings)`, e.g. ['year', 'name']
+    : id_len = set uniform length of ID values if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths:
+      `(datatype = numeric)`, e.g. 9
+
+  :EXAMPLE:
+  >>> generate_ids(sessions = spark, 
+                    df = AEDE, 
+                    id_cols = ['name', 'ID'],
+                    start_year = ['year'], 
+                    id_len = 9)
+  """
   
-  '''
-  WHAT IT IS: Pyspark function
-  WHAT IT DOES: - Creates ids suitable for the person spine and data spines in adr.
-  USE: This function can be used to generate ids suitable for the person_id.
-  AUTHOR: Benjamin Marshall-Sheen
-  DATE: 19/01/2021
-	:PARAMETERS:
-  * dataframe1 = spark dataframe chosen as 1
-      `(datatype = dataframe name, no string)`, e.g. dataframe1
-  * file =  The name of the file being written in the new column
-	* database - the name of the databae in Hive i.e. adruk
-	* tablename - the name of the table in hive i.e. adr_aede_person_spine
-	* matching = a list with your chosen column i.e. pupilreferencematchinganoynymous.
-	* year - the year of the file i.e. split from file name school_census11 = 11
-  * log = a pandas dataframe to append a log to. Default value = None
-      `(datatype = pandas dataframe)`, e.g. engineering_log
-  AUTHOR: Benjamin Marshall-Sheen
-  DATE: 19/01/2021
-	
-	:EXAMPLE:
-       ctas_data, sgss_data, log = update_hive(dataframe1 = df, file = name of file, databsae = hive database, tablelname = hive table name, log = log)
+  
+  #==========================================================================
+  """LOAD REQUIRED PACKAGES"""
+  #==========================================================================
+  import pyspark.sql.functions as F   # generically useful functions package
+  import pyspark.sql.types as T    # package to create columns of specific type
+  import pyspark.sql.window as W   # package used for linking old to new IDs
+  import random   # package used to generate random numbers for new IDs
 
-  '''
-  import pyspark.sql.functions as F
-  from pyspark.sql import Window
-  from adruk.functions.compare import check_compare
-	
-	#Lookup database table
-  #The below creates the ID variable
-  df = dataframe1.withColumn(pcol,
-														 F.concat(
-															 F.lit(f"YY{year}_"), #Sets year
-															 F.lit(file), #File name
-															 F.lit('_'), #Writes an underscore
-															 F.monotonically_increasing_id()) #Creates an ID
-										)
-													
-  matchings = [x for x in matching if x in df.columns]
+  
+  
+  #==========================================================================
+  """CHECK INPUTS AND PREPARE INPUT DATA"""
+  #==========================================================================
+  
+  # check that the ID columns were passed as a list, and if not, make it one
+  if type(id_cols)!=list:
+    id_cols = [id_cols]
+  
+  # check that the columns expressing which period an ID first appeared were passed as a list, and if not, make it one
+  if type(start_year)!=list:
+    start_year = [start_year]
+  
+  # reduce dataframe to only the ID and the Year columns. then remove records where the same ID was used more than once in the year it was first used.
+  df = df.select(id_cols + start_year)
+  df = df.drop_duplicates()
+  
+  # count how many IDs ( = people) are left, i.e. how many need a new ID generated
+  n_persons = df.count()
 
-  if log != None:
-	  log.append(f"created {pcol} to show ADR_ID in {df}")
-	  return df, log
+  
+  
+  #==========================================================================
+  """CREATE RANDOM VALUES FOR NEW IDs"""
+  #==========================================================================
+  
+  # if you don't care whether your numbers will have a specific length of digits
+  if id_len is None:
+    id_list = random.sample(range(n_persons), # how many numbers to generate
+                            n_persons)        # how many of those numbers to pick
+    
+  # if you want your numbers to have a specific lenght. NB sometimes the numbers will shorter - these values are padded out later
+  # generates numbers up to 10 to a chosen power.
+  # using range() means there are no duplicates in the numbers that get sampled from, i.e. sampling is without replacement
+  # abs() is a safeguard in case users passed a negative value
   else:
-	  return df
+    id_list = random.sample(range(1*10**abs(id_len)),
+                            n_persons)
+
+  # turn the base Python list into a spark dataframe
+  list_df = session.createDataFrame(id_list, T.IntegerType())
+
+  # change the default column name to 'adr_id'
+  list_df = list_df.withColumnRenamed('value','adr_id')
+
+  
+  #==========================================================================
+  """MAIN DATASET: GIVE EACH OLD ID VALUE A UNIQUE BUT UNRELATED NUMBER TO LATER JOIN ON"""
+  #==========================================================================
+  # make a new, purely auxiliary columm called 'instance'. For now populated with the number 1, to be used in a calculation, then later deleted
+  df = df.withColumn('instance',F.lit(1))
+  
+  # define a window function specification that...
+  w = (W.Window
+       .partitionBy('instance')   # for each unique value in the 'instance' column...
+       .orderBy(id_cols)          # ... and ordered by the column of ID values created earlier ...
+       .rangeBetween(W.Window.unboundedPreceding, 0))   # ... add as many to the previous group's value as there are records in the current groups
+
+  # apply the window specification - essentially makes a (non-unique) ranking, where each group's rank number is the previous group's number, plus as the number of times that the current ID value appears in the data
+  df = df.withColumn('cum_sum', F.sum('instance').over(w))
+
+  # remove the auxiliary 'instance' column from the main dataframe
+  df = df.drop('instance')
+
+  
+  
+  #==========================================================================
+  """NEW ID DATASET: GIVE EACH NEW ID VALUE A UNIQUE BUT UNRELATED NUMBER TO LATER JOIN ON"""
+  #==========================================================================
+  # make a new, auxiliary column called 'instance' in the auxiliary dataframe that holds the numbers created for use as IDs
+  list_df = list_df.withColumn('instance',F.lit(1))
+
+  # define a window function specification that is the same as for the main dataframe but...
+  w = (W.Window
+       .partitionBy('instance')
+       .orderBy('adr_id')   # ... orders by the newly created ID values
+       .rangeBetween(W.Window.unboundedPreceding, 0))
+
+  # apply the window specification - essentially makes a (non-unique) ranking, where each group's rank number is the previous group's number, plus as the number of times that the current ID value appears in the data
+  list_df = list_df.withColumn('cum_sum', F.sum('instance').over(w))
+
+  # remove the auxiliary 'instance' column from the main dataframe
+  list_df = list_df.drop('instance')
+
+  
+  #==========================================================================
+  """ADD NEW ADR_ID VALUES TO MAIN DATAFRAME"""
+  #==========================================================================
+  # join the dataframe with the adr_id column onto the main dataframe
+  # keeps only records whose cum_sum value exists in both dataframes
+  # NB this by definition never creates duplicate records because the linkage variable 'cum_sum' is unique in the adr_id dataframe
+  df = df.join(list_df,
+               on  = 'cum_sum',
+               how = 'inner')
+
+  # remove auxiliary 'cum_sum' column
+  df = df.drop('cum_sum')
+
+  #==========================================================================
+  """WHERE ADR_ID VALUES ARE NOT OF DESIRED LENGTH PAD THEM OUT WITH LEADING ZEROES"""
+  #==========================================================================
+  # if you don't care how many digits your new ID values ought to have...
+  if id_len is None:
+    n_characters = str(len(str(n_persons)))   # how many digits are in the number of records of the main dataframe - turn that from numeric into string
+  
+  # if you want the ID values to have a specific length
+  else:
+    n_characters = str(id_len)   # simply turn from numeric to string the number of digits you want to have in your new ID values
+
+  # overwrite the existing 'adr_id' column in the main dataframe, that turns 
+  # the numeric values to string, and adds leading zeros if they're shorter
+  # than the selected number of digits
+  # "%0" means 'potentially start with leading zeroes'
+  # n_characters means 'if the original value isn't this long already
+  # "d" : unclear what it does but without it spark throws a memory error
+  df = df.withColumn("adr_id", F.format_string("%0"+n_characters+"d","adr_id"))
+
+  
+  
+  #==========================================================================
+  """ADD DELIVERY PERIOD TO ADR_ID"""
+  #==========================================================================
+  # overwrite the new ID column with a version of itself that has the delivery period added in front
+  df = df.withColumn('adr_id',
+                     F.concat( F.col( start_year[0] ),
+                               F.col('adr_id')
+                             )
+                    )
+  
+  # remove from the main dataframe the (first) column used to specify the period an original ID value was added
+  df = df.drop(start_year[0])
+
+  #==========================================================================
+  return df
 
 	  
 	  
