@@ -161,6 +161,7 @@ class manifest:
   :DATE: 09/02/2021
   :VERSION: 0.1
   """
+
   # give the object 
   def __init__(self, path):
     """
@@ -206,9 +207,11 @@ def unzip_to_csv(file_path,file_name,destination_path):
   '''
   :WHAT IT IS: PYSPARK FUNCTION
   
-  :WHAT IT DOES: unzips a .csv.gz file into cdsw from a chosen location,
-  puts the resulting unzipped csv into a user defined destination folder, 
-  and then deletes the original file from cdsw.
+  :WHAT IT DOES:
+  * unzips a .csv.gz file into cdsw from a chosen location
+  * puts the resulting unzipped csv into a user defined destination folder, 
+  * then deletes the original file from CDSW.
+  
   :OUTPUT: csv file
   
   
@@ -530,9 +533,11 @@ def complex_harmonisation(df, log = None):
   
   '''
   :WHAT IT IS: function
-  :WHAT IT DOES: - where harmonisation leads to duplicate named variables within a dataset, This function harmonised to a single variable
-  - a multiple record (_mr) flag is generated as an addittional column to indicate if there is discrepancy in values for harmonised variables
-  :USE: function is employed in 05c_aggregate_hive_tables.py
+  :WHAT IT DOES:
+  * where harmonisation leads to duplicate named variables within a dataset, this function harmonised to a single variable
+  * a multiple record (_mr) flag is generated as an additional column to indicate if there is discrepancy in values for harmonised variables
+  
+  :USE: used in 05c_aggregate_hive_tables.py
   :AUTHOR: David Cobbledick
   :DATE: 08/01/2021
   '''
@@ -592,19 +597,18 @@ def complex_harmonisation(df, log = None):
 
 	  
 	  
-#==================================================================
-#==================================================================
-
 def complex_standardisation(df, gender):
   
   '''
-  :WHAT IT IS: function
-  :WHAT IT DOES: - Enables more detailed secondary engineering of columns secified within the function
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: 
+  * Enables more detailed secondary engineering of columns secified within the function
   
-  :USE: the complex_standardisation function is employed in 05c_aggregate_hive_tables.py
-  :NOTES: - This can be adapted to suit data and processing requirements
-  - The examples below show application for standardising sex, name and postcode variables
-  
+  :USE: used in 05c_aggregate_hive_tables.py
+  :NOTES: 
+  * This can be adapted to suit data and processing requirements
+  * The examples below show application for standardising sex, name and postcode variables
+
   :AUTHOR: David Cobbledick
   :DATE: 08/01/2021
   '''
@@ -762,21 +766,22 @@ def extended_describe(
 	* Fillna = 
      
 	:EXAMPLE:
-			>>>  raw_describe = extended_describe(raw_df,
-                                           all_=False,
-                                           trim_=True,
-                                           active_columns_=True,
-                                           null_=True,
-                                           nan_=True,
-                                           special_=True,
-                                           special_dict_=nulls_dict,
-                                           unique_=True,
-                                           length_max_=False,
-                                           percent_=False,
-                                           pandas_=True,
-                                           axis_=1,
-                                          fillna_=0)
-	"""
+		>>> raw_describe = extended_describe(raw_df,
+                                         all_=False,
+                                         trim_=True,
+                                         active_columns_=True,
+                                         null_=True,
+                                         nan_=True,
+                                         special_=True,
+                                         special_dict_=nulls_dict,
+                                         unique_=True,
+                                         #length_max_=False,
+                                         percent_=False,
+                                         pandas_=True,
+                                         axis_=1,
+                                        fillna_=0)
+
+ 	"""
 
 	
 	import pandas as pd
