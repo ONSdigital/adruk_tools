@@ -168,7 +168,6 @@ class manifest:
     :WHAT IT IS: Python method for objects of class 'manifest'
     :WHAT IT DOES: 
     * generates base property for object, i.e. reads in the specified file from HDFS into a pandas dataframe
-    
     :AUTHOR: Johannes Hechler
     :DATE: 09/02/2021
     :VERSION: 0.1
@@ -184,7 +183,6 @@ class manifest:
     """
     :WHAT IT IS: Python method for objects of class 'manifest'
     :WHAT IT DOES: 
-    
     * generates property 'whole', i.e. information about the overall delivery, as a pandas dataframe with 1 row
     :AUTHOR: Johannes Hechler
     :DATE: 09/02/2021
@@ -310,7 +308,7 @@ def make_test_df(session_name):
   :VERSION: 0.1
 
   :PARAMETERS:
-    :session_name = name of the spark session to use:
+    * session_name = name of the spark session to use
       `(datatype = session name, unquoted)`, e.g. spark
 
   :EXAMPLE:
@@ -352,15 +350,15 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
 
 
   :PARAMETERS:
-    : session = name of current spark cluster:
+    * session = name of current spark cluster
       `(datatype = cluster name, no string)`, e.g. spark
-    : df = spark dataframe:
+    * df = spark dataframe
       `(datatype = dataframe name, no string)`, e.g. PDS
-    : id_cols = column(s) to use for new ID:
+    * id_cols = column(s) to use for new ID
       `(datatype = list of strings)`, e.g. ['year', 'name']
-    : start_year = name of additional column(s) to use as (unchanged) prefix in ID:
+    * start_year = name of additional column(s) to use in ID
       `(datatype = list of strings)`, e.g. ['year', 'name']
-    : id_len = set uniform length of ID values if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths:
+    * id_len = set uniform length of ID values if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths
       `(datatype = numeric)`, e.g. 9
 
   :EXAMPLE:
@@ -725,10 +723,9 @@ def extended_describe(
 	:WHAT IT IS: PYSPARK FUNCTION
 
 	:WHAT IT DOES: This function extends all of the functions listed in parameters to apply on a dataset.
-	:RETURNS: Pandas dataframe with information on the data in the specified dataframe.
-	:OUTPUT VARIABLE TYPE:
-  * Information on the data you have in the dataset as a pandas dataframe.
-
+	:RETURNS: dataframe with information on the data in the specified dataframe.
+	:OUTPUT VARIABLE TYPE: pandas dataframe
+	
 
 	:AUTHOR: David Cobbledick
 	:DATE: 01/12/2020
