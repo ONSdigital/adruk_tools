@@ -152,24 +152,24 @@ def session_xl():
 
 class manifest:
   """
-  WHAT IT IS: Python class
-  WHAT IT DOES: 
+  :WHAT IT IS: Python class
+  :WHAT IT DOES: 
   * creates an object of class 'manifest'
   * assign several methods to the object
   * designed extract data from nested dictionaries, in particular .mani files on HDFS
-  AUTHOR: Johannes Hechler
-  DATE: 09/02/2021
-  VERSION: 0.1
+  :AUTHOR: Johannes Hechler
+  :DATE: 09/02/2021
+  :VERSION: 0.1
   """
   # give the object 
   def __init__(self, path):
     """
-    WHAT IT IS: Python method for objects of class 'manifest'
-    WHAT IT DOES: 
+    :WHAT IT IS: Python method for objects of class 'manifest'
+    :WHAT IT DOES: 
     * generates base property for object, i.e. reads in the specified file from HDFS into a pandas dataframe
-    AUTHOR: Johannes Hechler
-    DATE: 09/02/2021
-    VERSION: 0.1
+    :AUTHOR: Johannes Hechler
+    :DATE: 09/02/2021
+    :VERSION: 0.1
     """
     import pydoop.hdfs as hdfs
     import pandas as pd
@@ -180,23 +180,23 @@ class manifest:
         
   def whole(self): 
     """
-    WHAT IT IS: Python method for objects of class 'manifest'
-    WHAT IT DOES: 
+    :WHAT IT IS: Python method for objects of class 'manifest'
+    :WHAT IT DOES: 
     * generates property 'whole', i.e. information about the overall delivery, as a pandas dataframe with 1 row
-    AUTHOR: Johannes Hechler
-    DATE: 09/02/2021
-    VERSION: 0.1
+    :AUTHOR: Johannes Hechler
+    :DATE: 09/02/2021
+    :VERSION: 0.1
     """
     return self.content.iloc[0]
       
   def parts(self, variable):
     """
-    WHAT IT IS: Python method for objects of class 'manifest'
-    WHAT IT DOES: 
+    :WHAT IT IS: Python method for objects of class 'manifest'
+    :WHAT IT DOES: 
     * generates property 'parts', i.e. information about the individual files included in a delivery, as a pandas dataframe with as many rows as there are files
-    AUTHOR: Johannes Hechler
-    DATE: 09/02/2021
-    VERSION: 0.1
+    :AUTHOR: Johannes Hechler
+    :DATE: 09/02/2021
+    :VERSION: 0.1
     """
     import pandas as pd
     return pd.DataFrame(list( self.content[ variable ]))
@@ -296,16 +296,16 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
   
 def make_test_df(session_name):
   """
-  WHAT IT IS: Function
-  WHAT IT DOES: creates a dataframe with several columns of different data types for testing purposes. Intentionally includes various errors, e.g. typos.
-  RETURNS: spark dataframe
+  :WHAT IT IS: Function
+  :WHAT IT DOES: creates a dataframe with several columns of different data types for testing purposes. Intentionally includes various errors, e.g. typos.
+  :RETURNS: spark dataframe
 
-  AUTHOR: Johannes Hechler
-  DATE: 27/08/2019
-  VERSION: 0.1
+  :AUTHOR: Johannes Hechler
+  :DATE: 27/08/2019
+  :VERSION: 0.1
 
   :PARAMETERS:
-    :session_name = name of the spark session to use:
+    * session_name = name of the spark session to use
       `(datatype = session name, unquoted)`, e.g. spark
 
   :EXAMPLE:
@@ -347,15 +347,15 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
 
 
   :PARAMETERS:
-    : session = name of current spark cluster:
+    * session = name of current spark cluster
       `(datatype = cluster name, no string)`, e.g. spark
-    : df = spark dataframe:
+    * df = spark dataframe
       `(datatype = dataframe name, no string)`, e.g. PDS
-    : id_cols = column(s) to use for new ID:
+    * id_cols = column(s) to use for new ID
       `(datatype = list of strings)`, e.g. ['year', 'name']
-    : start_year = name of additional column(s) to use in ID:
+    * start_year = name of additional column(s) to use in ID
       `(datatype = list of strings)`, e.g. ['year', 'name']
-    : id_len = set uniform length of ID values if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths:
+    * id_len = set uniform length of ID values if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths
       `(datatype = numeric)`, e.g. 9
 
   :EXAMPLE:
@@ -529,14 +529,12 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
 def complex_harmonisation(df, log = None):
   
   '''
-  WHAT IT IS: function
-  WHAT IT DOES: - where harmonisation leads to duplicate named variables within a 
-  dataset, This function harmonised to a single variable
-  - a multiple record (_mr) flag is generated as an addittional column to indicate
-  if there is discrepancy in values for harmonised variables
-  USE: function is employed in 05c_aggregate_hive_tables.py
-  AUTHOR: David Cobbledick
-  DATE: 08/01/2021
+  :WHAT IT IS: function
+  :WHAT IT DOES: - where harmonisation leads to duplicate named variables within a dataset, This function harmonised to a single variable
+  - a multiple record (_mr) flag is generated as an addittional column to indicate if there is discrepancy in values for harmonised variables
+  :USE: function is employed in 05c_aggregate_hive_tables.py
+  :AUTHOR: David Cobbledick
+  :DATE: 08/01/2021
   '''
 	
   import pandas as pd
@@ -600,15 +598,15 @@ def complex_harmonisation(df, log = None):
 def complex_standardisation(df, gender):
   
   '''
-  WHAT IT IS: function
-  WHAT IT DOES: - Enables more detailed secondary engineering of columns secified within
-  the function
-  USE: the complex_standardisation function is employed in 05c_aggregate_hive_tables.py
-  NOTES: - This can be adapted to suit data and processing requirements
-  - The examples below show application for standardising sex, name and postcode 
-  variables
-  AUTHOR: David Cobbledick
-  DATE: 08/01/2021
+  :WHAT IT IS: function
+  :WHAT IT DOES: - Enables more detailed secondary engineering of columns secified within the function
+  
+  :USE: the complex_standardisation function is employed in 05c_aggregate_hive_tables.py
+  :NOTES: - This can be adapted to suit data and processing requirements
+  - The examples below show application for standardising sex, name and postcode variables
+  
+  :AUTHOR: David Cobbledick
+  :DATE: 08/01/2021
   '''
   import pyspark.sql.functions as F
 	
@@ -721,9 +719,9 @@ def extended_describe(
 	:WHAT IT IS: PYSPARK FUNCTION
 
 	:WHAT IT DOES: This function extends all of the functions listed in parameters to apply on a dataset.
-	:RETURNS: Pandas dataframe with information on the data in the specified dataframe.
-	:OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset as a pandas dataframe.
-	:TESTED TO RUN ON: test data in adruk.test.describe
+	:RETURNS: dataframe with information on the data in the specified dataframe.
+	:OUTPUT VARIABLE TYPE: pandas dataframe
+	
 
 	:AUTHOR: David Cobbledick
 	:DATE: 01/12/2020
@@ -764,31 +762,20 @@ def extended_describe(
 	* Fillna = 
      
 	:EXAMPLE:
-			        raw_describe = extended_describe(raw_df,
-                                         all_=False,
-                                         trim_=True,
-                                         active_columns_=True,
-                                         null_=True,
-                                         nan_=True,
-                                         special_=True,
-                                         special_dict_=nulls_dict,
-                                         unique_=True,
-                                         #length_max_=False,
-                                         percent_=False,
-                                         pandas_=True,
-                                         axis_=1,
-                                        fillna_=0)
-
-        raw_describe['total_nulls'] = \
-        raw_describe[[k for k,v in nulls_dict.items()]+['null','NaN']]\
-        .sum(axis=1,skipna=True)
-
-        raw_describe.columns = [x+'_raw' 
-                                  for x in list(raw_describe)]
-
-        raw_describe['variable_harmonised'] = \
-                            [harmonise_dict.get(clean_header(x)) 
-                             for x in raw_describe['variable_raw']] 
+			>>>  raw_describe = extended_describe(raw_df,
+                                           all_=False,
+                                           trim_=True,
+                                           active_columns_=True,
+                                           null_=True,
+                                           nan_=True,
+                                           special_=True,
+                                           special_dict_=nulls_dict,
+                                           unique_=True,
+                                           length_max_=False,
+                                           percent_=False,
+                                           pandas_=True,
+                                           axis_=1,
+                                          fillna_=0)
 	"""
 
 	
