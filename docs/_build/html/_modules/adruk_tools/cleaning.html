@@ -1,0 +1,984 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>adruk_tools.cleaning &#8212; adruk_tools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for adruk_tools.cleaning</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="clean_names"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.clean_names">[docs]</a><span></span><span class="k">def</span> <span class="nf">clean_names</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: removes non-alphabetical characters (not case sensistive) from selected string variables</span>
+<span class="sd">  :RETURNS: spark dataframe with cleaned version of selected variables added as new variables ending in &#39;_clean&#39;. All original variables unchanged</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: string</span>
+
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+<span class="sd">  :RUN TIME: 20-row test dataframe - 3s; full deaths registrations 2017 - 4s</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 11/09/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">    : dataset = spark dataframe:</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">    : variables = list of variables to clean:</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;forename&#39;, &#39;surname&#39;]</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; clean_names(PDS, [&#39;family_names&#39;, &#39;first_given_name&#39;])</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">from</span> <span class="nn">pyspark.sql.functions</span> <span class="k">import</span> <span class="n">upper</span><span class="p">,</span> <span class="n">trim</span><span class="p">,</span> <span class="n">regexp_replace</span> <span class="c1"># import functions to make strings upper case, trim preceding/trailing whitespace, and replace regular expressions</span>
+  <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span> <span class="c1"># loop over chosen variables one by one and...</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable</span> <span class="o">+</span>  <span class="s1">&#39;_clean&#39;</span><span class="p">,</span> <span class="n">upper</span><span class="p">(</span><span class="n">trim</span><span class="p">(</span><span class="n">regexp_replace</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="s2">&quot;[^a-zA-Z]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))))</span> <span class="c1"># remove anything not a character (of either case), then trim whitespace, then make all upper case. save that as a new variable, named after the input variable, with the suffix &#39;_clean&#39;</span>
+  <span class="k">return</span> <span class="n">dataset</span></div>
+
+
+<div class="viewcode-block" id="clean_names_part"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.clean_names_part">[docs]</a><span class="k">def</span> <span class="nf">clean_names_part</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: removes illegal characters (anything not alphabetical or whitespace, not case-sensistive) from selected string variables</span>
+<span class="sd">  :RETURNS: spark dataframe with cleaned version of selected variables overwritten with cleaned versions.</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: string</span>
+
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+<span class="sd">  :RUN TIME: 20-row test dataframe - 3s; full deaths registrations 2017 - 4s</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 11/09/2019</span>
+<span class="sd">  :VERSION: 0.0.3</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">    : dataset = spark dataframe:</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">    : variables = list of variables to clean:</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;forename&#39;, &#39;surname&#39;]</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; clean_names(PDS, [&#39;family_names&#39;, &#39;first_given_name&#39;])</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">from</span> <span class="nn">pyspark.sql.functions</span> <span class="k">import</span> <span class="n">upper</span><span class="p">,</span> <span class="n">trim</span><span class="p">,</span> <span class="n">regexp_replace</span><span class="p">,</span> <span class="n">udf</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">concat_ws</span> <span class="c1"># import functions to make strings upper case, trim preceding/trailing whitespace, and replace regular expressions</span>
+
+  <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="n">variables</span><span class="p">)</span><span class="o">.</span><span class="n">dtypes</span> <span class="k">if</span> <span class="s1">&#39;array&lt;string&gt;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">]:</span> <span class="c1"># loop over chosen variables one by one and...</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">upper</span><span class="p">(</span><span class="n">trim</span><span class="p">(</span><span class="n">regexp_replace</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="s2">&quot;[^a-zA-Z\s-]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))))</span><span class="c1"># remove anything not a character (of either case) or any length of whitespace, then trim whitespace before the first/after the last character, then make all upper case. save that as a new variable, named after the input variable, with the suffix &#39;_clean&#39;</span>
+  
+  <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="n">variables</span><span class="p">)</span><span class="o">.</span><span class="n">dtypes</span> <span class="k">if</span> <span class="s1">&#39;array&lt;string&gt;&#39;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">]:</span> <span class="c1"># loop over chosen variables one by one and...</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span>
+                                 <span class="n">split</span><span class="p">(</span>
+                                   <span class="n">upper</span><span class="p">(</span>
+                                     <span class="n">trim</span><span class="p">(</span>
+                                       <span class="n">regexp_replace</span><span class="p">(</span>
+                                         <span class="n">concat_ws</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">,</span> <span class="c1"># concatenate the array elements with an &#39;@&#39; in between</span>
+                                                   <span class="n">col</span><span class="p">(</span><span class="n">variable</span><span class="p">)),</span>
+                                         <span class="s2">&quot;[^a-zA-Z\s-@]&quot;</span><span class="p">,</span> <span class="c1"># remove anything not like these</span>
+                                         <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="c1"># replace it with this</span>
+                                     <span class="p">)</span> <span class="c1"># END TRIM</span>
+                                   <span class="p">),</span> <span class="c1"># END UPPER</span>
+                                   <span class="s1">&#39;@&#39;</span><span class="p">)</span> <span class="c1"># END SPLIT: take the concatenation apart again, at the &#39;@&#39;, and stick the elements back into an array</span>
+                                <span class="p">)</span> 
+  <span class="k">return</span> <span class="n">dataset</span></div>
+
+  <span class="c1">#clean_names_part(data, [&#39;surname_preferred_clean&#39;]).select(&#39;surname_preferred_clean&#39;).filter(F.col(&#39;surname_preferred_clean&#39;) == &quot;O&#39;HARA&quot;).take(30)</span>
+
+
+<span class="c1"># manually list variables for cleaning</span>
+<div class="viewcode-block" id="clean_names_full"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.clean_names_full">[docs]</a><span class="k">def</span> <span class="nf">clean_names_full</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: removes non-alphabetical characters (not case sensistive) from selected string variables</span>
+<span class="sd">  :RETURNS: spark dataframe with cleaned version of selected variables overwritten with cleaned versions.</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: string</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+<span class="sd">  :RUN TIME: 20-row test dataframe - 3s; full deaths registrations 2017 - 4s</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 11/09/2019</span>
+<span class="sd">  :VERSION: 0.0.3</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">    : dataset = spark dataframe:</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">    : variables = list of variables to clean:</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;forename&#39;, &#39;surname&#39;]</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; clean_names_full(PDS, [&#39;family_names&#39;, &#39;first_given_name&#39;])</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">from</span> <span class="nn">pyspark.sql.functions</span> <span class="k">import</span> <span class="n">upper</span><span class="p">,</span> <span class="n">trim</span><span class="p">,</span> <span class="n">regexp_replace</span><span class="p">,</span> <span class="n">udf</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">concat_ws</span> <span class="c1"># import functions to make strings upper case, trim preceding/trailing whitespace, and replace regular expressions</span>
+  
+  <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="o">.</span><span class="n">dtypes</span> <span class="k">if</span> <span class="s1">&#39;array&lt;string&gt;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">]:</span> <span class="c1"># loop over chosen variables one by one and...</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">upper</span><span class="p">(</span><span class="n">trim</span><span class="p">(</span><span class="n">regexp_replace</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="s2">&quot;[^a-zA-Z]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))))</span> <span class="c1"># remove anything not a character (of either case), then trim whitespace, then make all upper case. save that as a new variable, named after the input variable, with the suffix &#39;_clean&#39;</span>
+  
+  <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="o">.</span><span class="n">dtypes</span> <span class="k">if</span> <span class="s1">&#39;array&lt;string&gt;&#39;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">]:</span> <span class="c1"># loop over chosen variables one by one and...</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span>
+                                 <span class="n">split</span><span class="p">(</span>
+                                   <span class="n">upper</span><span class="p">(</span>
+                                     <span class="n">trim</span><span class="p">(</span>
+                                       <span class="n">regexp_replace</span><span class="p">(</span>
+                                         <span class="n">concat_ws</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">,</span> <span class="c1"># concatenate the array elements with an &#39;@&#39; in between</span>
+                                                   <span class="n">col</span><span class="p">(</span><span class="n">variable</span><span class="p">)),</span>
+                                         <span class="s2">&quot;[^a-zA-Z@]&#39;`&quot;</span><span class="p">,</span> <span class="c1"># remove anything not like these</span>
+                                         <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="c1"># replace it with this</span>
+                                     <span class="p">)</span>
+                                   <span class="p">),</span>
+                                   <span class="s1">&#39;@&#39;</span><span class="p">)</span> <span class="c1"># take the concatenation apart again, at the &#39;@&#39;, and stick the elements back into an array</span>
+                                     <span class="p">)</span>
+  <span class="k">return</span> <span class="n">dataset</span></div>
+
+
+
+<div class="viewcode-block" id="array_to_columns"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.array_to_columns">[docs]</a><span class="k">def</span> <span class="nf">array_to_columns</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="n">new_column_names</span><span class="p">,</span> <span class="n">number_of_columns</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  data_test = array_to_columns(dataset = data_test, </span>
+<span class="sd">                            arrays = [&#39;forename_clean&#39;, &#39;surname_clean&#39;], </span>
+<span class="sd">                            number_of_columns = 0)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span>
+  <span class="k">for</span> <span class="n">array</span><span class="p">,</span> <span class="n">new_column_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">new_column_names</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">number_of_columns</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+      <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">new_column_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">),</span> 
+                                   <span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">.</span><span class="n">getItem</span><span class="p">(</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+      
+  <span class="k">return</span> <span class="n">dataset</span></div>
+
+
+<div class="viewcode-block" id="concatenate_columns"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.concatenate_columns">[docs]</a><span class="k">def</span> <span class="nf">concatenate_columns</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variable_new</span><span class="p">,</span> <span class="n">variables</span> <span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: concatenates selected dataframe columns by selected seperator and adds it to the source dataframe under a selected name</span>
+<span class="sd">  :RETURNS: dataframe with the concatenation as 1 additional variable. all original variable remain unchanged.</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: string</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframes</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 12/12/2019</span>
+<span class="sd">  :VERSION: 0.0.2</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * dataset = spark dataframe whose variable to concatenate:</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * variables = list of names of variables to concatenate:</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;forename&#39;, &#39;surname&#39;]</span>
+<span class="sd">  * variable_new = how to call new, concatenated variable:</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;names_all&#39;</span>
+<span class="sd">  * sep = separator between variable strings. Default = space:</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;,&#39;</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; concatenate_columns(dataset = SomeDataFrame,</span>
+<span class="sd">                          variable_new = &#39;address_concatenated&#39;,</span>
+<span class="sd">                          variables = [&#39;ADDRESS_LINE1&#39;, &#39;ADDRESS_LINE2&#39;],</span>
+<span class="sd">                          sep = &#39; &#39;)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span> <span class="c1"># import generic pyspark functions</span>
+  <span class="k">return</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable_new</span><span class="p">,</span> <span class="c1"># create new variable, named as user specified</span>
+                            <span class="n">F</span><span class="o">.</span><span class="n">concat_ws</span><span class="p">(</span><span class="n">sep</span><span class="p">,</span> <span class="o">*</span><span class="n">variables</span><span class="p">))</span> <span class="c1"># fill variable with concatenation of selected variables, separated with the chosen string</span></div>
+
+
+
+
+<div class="viewcode-block" id="concatenate_distinct"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.concatenate_distinct">[docs]</a><span class="k">def</span> <span class="nf">concatenate_distinct</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variable_new</span><span class="p">,</span> <span class="n">variables_to_combine</span><span class="p">,</span> <span class="n">separator</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: concatenates selected dataframe columns by selected separator and adds it to the source dataframe under a selected name</span>
+<span class="sd">  :RETURNS: dataframe with the concatenation as 1 additional variable. all original variable remain unchanged.</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: string</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframes</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 30/07/2020</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * dataset = spark dataframe whose variable to concatenate:</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * variable_new = what to call new, concatenated variable:</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;names_all&#39;</span>
+<span class="sd">  * variables_to_combine = names of variables to concatenate:</span>
+<span class="sd">      `(datatype = list of string)`, e.g. [&#39;surname&#39;, &#39;surname_former&#39;, &#39;surname_preferred&#39;]</span>
+<span class="sd">  * separator = what to put in between concatenated values:</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39; &#39;</span>
+<span class="sd">  </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; concatenate_distinct( variables_to_combine = [&#39;forename_clean&#39;, </span>
+<span class="sd">                                                    &#39;forename_clean&#39;, </span>
+<span class="sd">                                                    &#39;middle_name_clean&#39;], </span>
+<span class="sd">                            dataset = data, </span>
+<span class="sd">                            variable_new = &#39;all_names&#39;,</span>
+<span class="sd">                            separator = &#39; &#39;)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span>
+  <span class="k">return</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable_new</span><span class="p">,</span> 
+                            <span class="n">F</span><span class="o">.</span><span class="n">concat_ws</span><span class="p">(</span><span class="n">separator</span><span class="p">,</span>
+                                        <span class="n">F</span><span class="o">.</span><span class="n">array_distinct</span><span class="p">(</span>
+                                          <span class="n">F</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">variables_to_combine</span><span class="p">)</span>
+                                        <span class="p">)</span>
+                                       <span class="p">)</span>
+                           <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="date_recode"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.date_recode">[docs]</a><span class="k">def</span> <span class="nf">date_recode</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variable_input</span><span class="p">,</span> <span class="n">variable_output</span><span class="p">,</span> <span class="n">date_format</span> <span class="o">=</span> <span class="s1">&#39;yyyy/MM/dd&#39;</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: breaks date variable into day, month, year and saves them as separate variables. User specifies the format of the input date, and the name of the output variables. If that&#39;s the same as the input variable it gets overwritten.</span>
+<span class="sd">  :RETURNS: spark dataframe with 4 additional variables (full date, day, month, year). Variable names are as specified by user, plus suffixes &#39;_day&#39;, &#39;_month&#39;, &#39;_year&#39;.</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE:</span>
+<span class="sd">  * full date: date</span>
+<span class="sd">  * day, month, year: int</span>
+<span class="sd">  * works on variables in formats: date, datestamp, string</span>
+
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 17/12/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * dataset = spark dataframe with date variable to recode</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * variable_input = variable to convert to date format and break into components</span>
+<span class="sd">      `(datatype = 1 string)`, e.g. &#39;date_of_birth&#39;</span>
+<span class="sd">  * variable_output = what to call the output variable</span>
+<span class="sd">      `(datatype = 1 string)`, e.g. &#39;dob&#39;</span>
+<span class="sd">  * date_format = what format the input variable records dates, as expressed by the to_date() function. Example: 2019/12/17 is expressed as &#39;yyyy/MM/dd&#39;.</span>
+<span class="sd">    * Default value = &#39;yyyy/MM/dd&#39;.</span>
+<span class="sd">    * If variable is not of type string (e.g. date or datestamp) this gets ignored, even if it specifies the wrong format.</span>
+<span class="sd">      `(datatype = 1 string)`, e.g. &#39;yyyy/MM/dd&#39;</span>
+<span class="sd">  </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; date_recode(dataset = PDS,</span>
+<span class="sd">                  variable_input = &#39;date_of_birth&#39;,</span>
+<span class="sd">                  variable_output = &#39;date_of_birth&#39;,</span>
+<span class="sd">                  date_format = &#39;yyyy/MM/dd&#39;)</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span> <span class="c1"># import generic pyspark functions</span>
+  <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable_output</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">to_date</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">variable_input</span><span class="p">),</span> <span class="nb">format</span> <span class="o">=</span> <span class="n">date_format</span><span class="p">))</span> <span class="c1">#convert timestamp to date format</span>
+  <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable_output</span> <span class="o">+</span><span class="s1">&#39;_year&#39;</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">year</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">variable_output</span><span class="p">]))</span> <span class="c1">#extract year into separate column</span>
+  <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable_output</span> <span class="o">+</span><span class="s1">&#39;_month&#39;</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">month</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">variable_output</span><span class="p">]))</span> <span class="c1">#extract year into separate column</span>
+  <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable_output</span> <span class="o">+</span><span class="s1">&#39;_day&#39;</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">dayofmonth</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">variable_output</span><span class="p">]))</span> <span class="c1">#extract year into separate column</span>
+  <span class="k">return</span> <span class="n">dataset</span></div>
+
+
+
+<div class="viewcode-block" id="LAlookup"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.LAlookup">[docs]</a><span class="k">def</span> <span class="nf">LAlookup</span><span class="p">(</span><span class="n">test_df</span><span class="p">,</span> <span class="n">test_variables</span><span class="p">,</span> <span class="n">reference_table</span><span class="p">,</span> <span class="n">reference_variable</span><span class="p">,</span> <span class="n">LA_code_variable</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: takes a selected variable, finds its values in a selected reference file and returns corresponding values of another variable in that reference</span>
+<span class="sd">  :RETURNS: copy of the original dataframe with the returned values in a new variable named after the input variable and the joined-on variable.</span>
+<span class="sd">  :NOTES:</span>
+<span class="sd">  * built for postcodes; can work for other variables but beware of the inbuilt cleaning:</span>
+<span class="sd">  * the code cleans both the lookup and the reference variable (removes spaces, trims whitespace, makes all upper case)</span>
+<span class="sd">  * even if no matching value is found the original variable is overwritten with a cleaned version</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: </span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * test_df = spark dataframe containing the variable to look up in reference</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * test_variable = name of variable to look up in reference</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;postcode&#39;</span>
+<span class="sd">  * reference_table = database and table name of reference table to use</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;postcode_directory.onspd_may_2018_uk_std&#39;</span>
+<span class="sd">  * reference_variable = name of reference variable to find test_variable values in</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;pcd&#39;</span>
+<span class="sd">  * LA_code_variable = name of variable in reference file to join onto test_df</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;postcode&#39;</span>
+<span class="sd">  * connection = name of spark cluster to use</span>
+<span class="sd">      `(datatype = cluster name, no string)`, e.g. spark</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; lookup(test_df = testDF, </span>
+<span class="sd">            test_variable = &#39;postcode&#39;, </span>
+<span class="sd">            reference_table = &#39;postcode_directory.onspd_may_2018_uk_std&#39;, </span>
+<span class="sd">            reference_variable = &#39;pcd&#39;, </span>
+<span class="sd">            LA_code_variable = &#39;oa11&#39;, </span>
+<span class="sd">            connection = spark).show()</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span>
+  <span class="n">reference</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span> <span class="s1">&#39;SELECT </span><span class="si">{0}</span><span class="s1">, </span><span class="si">{1}</span><span class="s1"> FROM </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">reference_variable</span><span class="p">,</span> <span class="n">LA_code_variable</span><span class="p">,</span> <span class="n">reference_table</span> <span class="p">))</span> <span class="c1">#pull the reference variable into a spark dataframe to use</span>
+  <span class="n">reference</span> <span class="o">=</span> <span class="n">reference</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">reference_variable</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">regexp_replace</span><span class="p">(</span><span class="n">reference_variable</span><span class="p">,</span> <span class="s2">&quot;[^a-zA-Z0-9][\s]*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))))</span> <span class="c1">#clean reference value, remove illegal characters and white space</span>
+  <span class="k">for</span> <span class="n">test_variable</span> <span class="ow">in</span> <span class="n">test_variables</span><span class="p">:</span>
+    <span class="n">test_df</span> <span class="o">=</span> <span class="n">test_df</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">test_variable</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">regexp_replace</span><span class="p">(</span><span class="n">test_variable</span><span class="p">,</span> <span class="s2">&quot;[^a-zA-Z0-9][\s]*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))))</span> <span class="c1">#clean postcode variable; ensure it has the same format as reference codes</span>
+    <span class="n">test_df</span> <span class="o">=</span> <span class="n">test_df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">F</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">reference</span><span class="p">),</span> <span class="n">on</span> <span class="o">=</span> <span class="p">(</span><span class="n">test_df</span><span class="p">[</span><span class="n">test_variable</span><span class="p">]</span> <span class="o">==</span> <span class="n">reference</span><span class="p">[</span><span class="n">reference_variable</span><span class="p">]),</span> <span class="n">how</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span> <span class="p">)</span><span class="o">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="n">LA_code_variable</span><span class="p">,</span> <span class="n">LA_code_variable</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">test_variable</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">reference_variable</span><span class="p">)</span> <span class="c1">#join reference to test dataframe, where test variable matches any reference variable value within accepted levenshtein distance. This will leave a new, merged-on variable that is Null for test values that weren&#39;t matched. remove reference variable, it was only used for linking, don&#39;t need the variable itself.</span>
+  <span class="k">return</span> <span class="n">test_df</span> <span class="c1">#remove reference variable(s) that were joined in; repartition to improve processing speed</span></div>
+
+
+<div class="viewcode-block" id="make_missing_none"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.make_missing_none">[docs]</a><span class="k">def</span> <span class="nf">make_missing_none</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: recodes different ways of expressing missingness into explicit NULL/None values, in all variables of a spark dataframe</span>
+<span class="sd">  :RETURNS: spark dataframe with all variables recoded</span>
+<span class="sd">  </span>
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 11/05/2020</span>
+<span class="sd">  :VERSION: 0.0.2</span>
+<span class="sd">  :CHANGES FROM PREVIOUS VERSION: can now select columns to clean</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">    * dataset = spark dataframe</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">    * columns = list of strings</span>
+<span class="sd">      `(datatype = list of strings])`, e.g. [&#39;forename&#39;, &#39;surname&#39;]</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; make_missing_none(PDS, columns = [&#39;forename&#39;, &#39;surname&#39;])</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span> <span class="c1">#import generic pyspark functions</span>
+  <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span> <span class="c1"># for each variable in turn, do this following:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="c1"># overwrite the column with a copy of itself where values are recoded like this...</span>
+                           <span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">(</span>
+                             <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">,</span> <span class="s1">&#39;NAN&#39;</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">,</span> <span class="s1">&#39;UNK&#39;</span><span class="p">]),</span> <span class="c1"># if they are any of these string...</span>
+                             <span class="kc">None</span><span class="p">)</span>\
+                           <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">])</span> <span class="c1"># ... recode that value to NULL/None... else leave them unchanged</span>
+                          <span class="p">)</span>
+  <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="p">[</span><span class="n">column</span> <span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">dtypes</span> <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)]:</span> <span class="c1"># now look only at variables of these types and...</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="c1"># overwrite the column with a copy of itself where values are recoded like this...</span>
+                           <span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">(</span>
+                             <span class="n">F</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]),</span> <span class="c1">#... if a value is NaN (not a number)...</span>
+                             <span class="kc">None</span><span class="p">)</span>\
+                           <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">])</span> <span class="c1"># ...turn it to NULL/None... else leave it unchanged</span>
+                          <span class="p">)</span>
+  <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="name_split"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.name_split">[docs]</a><span class="k">def</span> <span class="nf">name_split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strings_to_split</span><span class="p">,</span> <span class="n">separator</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: splits strings into segments based on a rule the users provides.</span>
+<span class="sd">  :RETURNS: spark dataframe with as many additional variables as there are strings in the longest input variable. all original variables unchanged.</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: string</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 11/10/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">    : data = spark dataframe:</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">    : strings_to_split = variables whose strings to split:</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;forename&#39;, &#39;surname&#39;]</span>
+<span class="sd">    : separator = what characters to split by:</span>
+<span class="sd">      `(datatype = string or regular expression)`, e.g. &#39;-&#39; or [a-z]</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; name_split(data = PDS,</span>
+<span class="sd">                 strings_to_split = [&#39;forename_clean&#39;, &#39;middle_name_clean&#39;, &#39;surname_clean&#39;],</span>
+<span class="sd">                 separator = &#39;[\s|-]+&#39;)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span>
+  
+  <span class="k">for</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">strings_to_split</span><span class="p">:</span>
+    <span class="c1">#count how many sub-names any field will have at most, i.e. how many new variables are needed</span>
+    <span class="n">nCols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s1">&#39;split&#39;</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">string</span><span class="p">],</span> <span class="n">separator</span><span class="p">))</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s1">&#39;howManyNames&#39;</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="s1">&#39;split&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s1">&#39;howManyNames&#39;</span><span class="p">:</span><span class="s1">&#39;max&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">collect</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;max(howManyNames)&quot;</span><span class="p">]</span>
+
+    <span class="c1">#split a variable and create new variables for sub-names</span>
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nCols</span><span class="p">):</span> <span class="c1">#go through each group of sub-name names in turn and...</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">string</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">part</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">string</span><span class="p">],</span> <span class="n">separator</span><span class="p">)</span><span class="o">.</span><span class="n">getItem</span><span class="p">(</span><span class="n">part</span><span class="p">))</span> <span class="c1">#...assign them to a new variable. part+1 so the new variables start with 1, not 0</span>
+
+  <span class="k">return</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="name_split_array"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.name_split_array">[docs]</a><span class="k">def</span> <span class="nf">name_split_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strings_to_split</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: splits strings into segments based on a rule the users provides.</span>
+<span class="sd">  :RETURNS: spark dataframe with 1 additional variable per input variable. all original variables unchanged.</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: array</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Dave Beech, Johannes Hechler</span>
+<span class="sd">  :DATE: 11/11/2019</span>
+<span class="sd">  :VERSION: 0.0.2</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">    : data = spark dataframe:</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">    : strings_to_split = variables whose strings to split:</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;forename&#39;, &#39;surname&#39;]</span>
+<span class="sd">    : separator = what characters to split by:</span>
+<span class="sd">      `(datatype = string or regular expression)`, e.g. &#39;-&#39; or [a-z]</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; name_split_array(data = PDS,</span>
+<span class="sd">                 strings_to_split = [&#39;forename_clean&#39;, &#39;middle_name_clean&#39;, &#39;surname_clean&#39;],</span>
+<span class="sd">                 separator = &#39;[\s|-]+&#39;,</span>
+<span class="sd">                 suffix = &#39;_split&#39;)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span>
+  <span class="c1">#return data.select([&#39;*&#39;] + [F.split(F.col(s), separator).alias(s + suffix) for s in strings_to_split])</span>
+  <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">strings_to_split</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span> <span class="n">column</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">split</span><span class="p">(</span> <span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span> <span class="n">column</span> <span class="p">),</span> <span class="n">separator</span><span class="p">)</span> <span class="p">)</span>
+  <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="NHS_postcode_recode"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.NHS_postcode_recode">[docs]</a><span class="k">def</span> <span class="nf">NHS_postcode_recode</span><span class="p">(</span><span class="n">datasetNHS</span><span class="p">,</span> <span class="n">variables_old</span><span class="p">,</span> <span class="n">variables_new</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: recodes variables saying if a corresponding value in another variable is a valid NHS postcode and if it refers to the UK, an EU country, or elsewhere in the world</span>
+<span class="sd">  :RETURNS: spark dataframe with new, recoded variables added (as many as input variables), named after the input variables. Original variables unchanged.</span>
+<span class="sd">  :NOTES:</span>
+<span class="sd">  * function uses custom NHS-postcode lookup file that was ingested into DAP. It was built by Data Architecture Division for a specific task and is not regularly updated.</span>
+<span class="sd">  * pulls in another user-defined function to clean postcodes before lookup. Other teams may not have access to the function library.</span>
+<span class="sd">  * we hard-coded the definition of what postcodes are UK and EU. If EU membership changes this will be outdated.</span>
+<span class="sd">  * non-EU postcodes are defined as any reference codes that are in neither definition. Anything not found in those 3 definitions is classified as not a NHS postcode</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 17/12/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * datasetNHS = spark dataframe with postcode variables</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * variables_old = variables to check for NHS postcodes</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;postcode1&#39;, &#39;postcode2&#39;]</span>
+<span class="sd">  * variables_new = what to call the new variables that say what kind of NHS postcode was found if any</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;NHS1&#39;, &#39;NHS2&#39;]</span>
+<span class="sd">  * connection = name of spark cluster to use for connecting to NHS postcode lookup</span>
+<span class="sd">      `(datatype = 1 object name, no string)`, e.g. spark</span>
+<span class="sd">      </span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; NHS_postcode_recode(datasetNHS = testDF,</span>
+<span class="sd">                          variables_old = [&#39;postcode1&#39;, &#39;postcode2&#39;],</span>
+<span class="sd">                          variables_new = [&#39;NHS1&#39;, &#39;NHS2&#39;],</span>
+<span class="sd">                          connection = spark)</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">cleaning_postcode_prep</span> <span class="c1"># import function that will clean the postcodes before they get checked</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span> <span class="c1"># import generic pyspark functions</span>
+  
+  <span class="n">NHSlookup</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s1">&#39;SELECT postcode FROM nhs_postcodes_country_lookup.nhs_country_postcodes_std&#39;</span><span class="p">)</span> <span class="c1"># import lookup of NHS postcodes to countries</span>
+  <span class="n">NHSlookup</span> <span class="o">=</span> <span class="n">cleaning_postcode_prep</span><span class="o">.</span><span class="n">clean_postcode</span><span class="p">(</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">NHSlookup</span><span class="p">,</span> <span class="c1"># clean imported reference postcodes to ensure they are in the same format as the postcodes to be checked</span>
+                                                    <span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;postcode&#39;</span><span class="p">],</span>
+                                                    <span class="n">spaces</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">toPandas</span><span class="p">()</span>
+  <span class="n">UK</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ZZ993CZ&#39;</span><span class="p">,</span><span class="s1">&#39;Z993CZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ993GZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ991WZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ992WZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ993WZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ993VZ&#39;</span><span class="p">]</span> <span class="c1"># define which postcodes refer to the UK</span>
+  <span class="n">EU</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ZZ994QZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994GZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994LZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ992CZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994YZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ995VZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994ZZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994HZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994MZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994EZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ992DZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994UZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ996AZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ995XZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994FZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ997LZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994BZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994RZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994XZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ993AZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ997RZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ997SZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ992EZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ995BZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ994JZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ995YZ&#39;</span><span class="p">,</span><span class="s1">&#39;ZZ995UZ&#39;</span><span class="p">]</span> <span class="c1"># define which postcodes refer to non-UK EU countries</span>
+  <span class="n">NONEU</span> <span class="o">=</span> <span class="p">[</span><span class="n">element</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">NHSlookup</span><span class="o">.</span><span class="n">postcode</span><span class="p">))</span> <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">UK</span><span class="o">+</span><span class="n">EU</span><span class="p">]</span> <span class="c1"># define all other postcodes as non-EU countries</span>
+  
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  ACTUAL RECODE</span>
+<span class="sd">  1. loop through original variables in turn (NB uses not their name but index number so we can also refer to their corresponding new variable name later)</span>
+<span class="sd">  2. create new variable...</span>
+<span class="sd">  3. ...that&#39;s simply a cleaned version of the corresponding old variable...</span>
+<span class="sd">  4. ... then overwrite that new variable with a recode of itself like this...</span>
+<span class="sd">  4.1 ... if it&#39;s in the UK list, make the record &#39;UK&#39;</span>
+<span class="sd">  4.2 ... if it&#39;s in the EU list, make the record &#39;EU&#39;</span>
+<span class="sd">  4.3 ... if it&#39;s in the non-EU list, make the record &#39;NONEU&#39;</span>
+<span class="sd">  4.4 ... if the value is in neither, say that it&#39;s no NHS postcode at all</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">variables_old</span><span class="p">)):</span>    
+    <span class="n">datasetNHS</span> <span class="o">=</span> <span class="n">datasetNHS</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variables_new</span><span class="p">[</span><span class="n">a</span><span class="p">],</span>
+                                 <span class="n">F</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">regexp_replace</span><span class="p">(</span><span class="n">variables_old</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="s2">&quot;[^a-zA-Z0-9][\s]*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))))</span>\
+                 <span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variables_new</span><span class="p">[</span><span class="n">a</span><span class="p">],</span>
+                            <span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">variables_new</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">UK</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">lit</span><span class="p">(</span><span class="s1">&#39;UK&#39;</span><span class="p">))</span>\
+                                  <span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">variables_new</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">EU</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">lit</span><span class="p">(</span><span class="s1">&#39;EU&#39;</span><span class="p">))</span>\
+                                  <span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">variables_new</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">NONEU</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">lit</span><span class="p">(</span><span class="s1">&#39;NONEU&#39;</span><span class="p">))</span>\
+                            <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">lit</span><span class="p">(</span><span class="s1">&#39;NONHSPOSTCODE&#39;</span><span class="p">)))</span>
+  <span class="k">return</span> <span class="n">datasetNHS</span></div>
+
+
+
+<div class="viewcode-block" id="clean_postcode"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.clean_postcode">[docs]</a><span class="k">def</span> <span class="nf">clean_postcode</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">spaces</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: cleans and standardises strings, letting users specify how many internal spaces to keep. Intended for postcodes.</span>
+<span class="sd">  :RETURNS: spark dataframe with original variables cleaned and overwritten.</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 17/12/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * dataset = spark dataframe</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * variables = list of variables to clean</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;postcode&#39;, &#39;postcodeNHS&#39;]</span>
+<span class="sd">  * spaces = list of variables to clean</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;postcode&#39;, &#39;postcodeNHS&#39;]</span>
+<span class="sd">  </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; clean_postcode(dataset = testDF,</span>
+<span class="sd">                      variables = [&#39;postcodeNHS&#39;, &#39;postcode&#39;],</span>
+<span class="sd">                      spaces = 2)</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  
+  
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span> <span class="c1"># import generic pyspark functions</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  ACTUAL CLEANING</span>
+<span class="sd">  1. cycle through each selected variable in turn</span>
+<span class="sd">  2. overwrite it with a version that (in this order)...</span>
+<span class="sd">  2.1 ... replaces anything not character (of either case), numeric or a white space removed...</span>
+<span class="sd">  2.2 ... reduces the length of any remaining spaces to what the user specified...</span>
+<span class="sd">  2.3 ... trims preceeding and trailing white space...</span>
+<span class="sd">  2.4 ... makes everything that remains upper case</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span>\
+                                 <span class="n">F</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span>\
+                                   <span class="n">F</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span>\
+                                     <span class="n">F</span><span class="o">.</span><span class="n">regexp_replace</span><span class="p">(</span>\
+                                       <span class="n">F</span><span class="o">.</span><span class="n">regexp_replace</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span>\
+                                                        <span class="s2">&quot;[^a-zA-Z0-9\s]&quot;</span><span class="p">,</span>\
+                                                        <span class="s2">&quot;&quot;</span><span class="p">),</span>\
+                                                      <span class="s2">&quot;\s+&quot;</span><span class="p">,</span>\
+                                                      <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">spaces</span><span class="p">))))</span>
+  <span class="k">return</span> <span class="n">dataset</span></div>
+
+
+
+<div class="viewcode-block" id="postcode_pattern"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.postcode_pattern">[docs]</a><span class="k">def</span> <span class="nf">postcode_pattern</span><span class="p">(</span><span class="n">test_df</span><span class="p">,</span> <span class="n">test_postcodes</span><span class="p">):</span>
+
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: Function</span>
+<span class="sd">  :WHAT IT DOES: tests if the values in a given variable follow the format of UK postcodes. Excludes non-numeric and non-alphabetical characters except horizontal spaces.</span>
+<span class="sd">  :RETURNS: copy of the original dataframe, with a new variable called &#39;fitPattern&#39;, which is TRUE where a value fits the format, FALSE if it&#39;s not, and NULL if the test variable is NULL.</span>
+
+<span class="sd">  :TESTED ON: UK Postcode Directory</span>
+<span class="sd">  :FALSE NEGATIVES: catches all postcodes in UK Postcode Directory</span>
+<span class="sd">  :FALSE POSITIVES: tests if a letter or number should be in a certain place, but not if that PARTICULAR letter/number should be there. If postcodes never use a certain character in a certain place that uses other characters, it doens&#39;t catch it. rejects any format that isn&#39;t in the UK Postcode Directory. Designed to reject anything that isn&#39;t a number or letter, or not in the right place. But cannot test completely.</span>
+<span class="sd">  :FULL LIST OF ACCEPTED FORMATS: see below</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 27/08/2019</span>
+<span class="sd">  :VERSION: 0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">    * test_df = name of dataframe that holds variable to test</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">    * test_variable = name of variable to match against reference</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;postcode&#39;</span>
+
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; postcode_pattern(testDF, &#39;postcode&#39;)</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span>
+  <span class="n">patterns</span> <span class="o">=</span> <span class="s1">&#39;^([Gg][Ii][Rr] ?0[Aa]</span><span class="si">{2}</span><span class="s1">)$|^([Nn][Pp][Tt] ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]</span><span class="si">{2}</span><span class="s1">)$|</span><span class="se">\</span>
+<span class="s1">  ^([A-Pa-pR-Ur-uWwYyZz][0-9]{1,2} ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]</span><span class="si">{2}</span><span class="s1">)$|</span><span class="se">\</span>
+<span class="s1">  ^([A-Pa-pR-Ur-uWwYyZz][A-Ha-hK-Yk-y][0-9]{1,2} ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]</span><span class="si">{2}</span><span class="s1">)$|</span><span class="se">\</span>
+<span class="s1">  ^([A-Pa-pR-Ur-uWwYyZz][0-9][A-Za-z] ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]</span><span class="si">{2}</span><span class="s1">)$|</span><span class="se">\</span>
+<span class="s1">  ^([A-Pa-pR-Ur-uWwYyZz][A-Ha-hK-Yk-y][0-9][A-Za-z] ?[0-9][AaBbD-Hd-hJjLlNnP-Up-uW-Zw-z]</span><span class="si">{2}</span><span class="s1">)$&#39;</span>
+  <span class="k">return</span> <span class="n">test_df</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s1">&#39;fitsPattern&#39;</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">test_postcodes</span><span class="p">)</span><span class="o">.</span><span class="n">rlike</span><span class="p">(</span><span class="n">patterns</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="postcode_split"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.postcode_split">[docs]</a><span class="k">def</span> <span class="nf">postcode_split</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: checks if a string or parts of it follow postcode format and saves them in separate variables</span>
+<span class="sd">  :RETURNS: spark dataframe with 4 new variables (postcode unit, postcode sector, postcode district, postcode area), 1 for each possible postcode part. Where a part doesn&#39;t follow a postcode pattern, the value is NULL/None. New variables are named after the source variable with an optional suffix. Original variable remains unchanged.</span>
+<span class="sd">  </span>
+<span class="sd">  :NOTES:</span>
+<span class="sd">  * fails if input postcodes have no internal space (unless they are 7 characters long), or more than one. So the codes should first be cleaned.</span>
+<span class="sd">  * the format check looks purely if a code has no characters/digits in the wrong places, as specified in the PAF Programmer&#39;s Guide. There is no check against any reference lookups like the National Statistics Postcode Lookup.</span>
+<span class="sd">  * format requirements are summarised in PAF Programmer&#39;s Guide</span>
+<span class="sd">  * Original method and SQL code developed by DWP in Oracle SQL. Adapted to Hive SQL and wrapped into a pyspark function in ONS.</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 17/19/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * dataset = spark dataframe</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * variable = variable to check and break into components</span>
+<span class="sd">      `(datatype = 1 string)`, e.g. &#39;postcode&#39;</span>
+<span class="sd">  * suffix = what suffix to add to the names of the new, component variables. To distinguish them if more than 1 variable is broken into components.</span>
+<span class="sd">      `(datatype = 1 string)`, e.g. &#39;_domicile&#39;</span>
+<span class="sd">  * connection = name of the spark cluster to use for SQL computations</span>
+<span class="sd">      `(datatype = 1 object name, no string)`, e.g. spark</span>
+<span class="sd">      </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; postcode_split(dataset = PDS,</span>
+<span class="sd">                      variable = &#39;postcode&#39;,</span>
+<span class="sd">                      suffix = &#39;&#39;,</span>
+<span class="sd">                      connection = session)</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">otherVars</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">var</span> <span class="o">!=</span> <span class="n">variable</span><span class="p">])</span>
+  <span class="n">dataset</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">)</span> <span class="c1">#register dataframe as spark table so SQL functions can find it</span>
+  <span class="k">return</span> <span class="n">connection</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  SELECT {1}, {0},  postcode_unit_validated, postcode_sector_validated, postcode_district_validated, postcode_area_validated FROM</span>
+<span class="sd">  (SELECT *,</span>
+<span class="sd">        CASE WHEN substr(postcode_format,1,5) = &#39;AANAN&#39;</span>
+<span class="sd">            AND substr(postcode_unit_validated,4,1) IN (&#39;I&#39;,&#39;L&#39;,&#39;O&#39;,&#39;Q&#39;,&#39;Z&#39;)</span>
+<span class="sd">            THEN NULL</span>
+<span class="sd">            WHEN substr(postcode_format,1,4) = &#39;ANAN&#39;</span>
+<span class="sd">            AND substr(postcode_unit_validated,1,3) IN (&#39;I&#39;,&#39;L&#39;,&#39;O&#39;,&#39;Q&#39;,&#39;Z&#39;)</span>
+<span class="sd">            THEN NULL</span>
+<span class="sd">            WHEN postcode_format IN (&#39;AAN&#39;,&#39;AN&#39;,&#39;ANA&#39;,&#39;AANN&#39;)</span>
+<span class="sd">            THEN NULL</span>
+<span class="sd">            ELSE postcode_sector_unvalidated</span>
+<span class="sd">       END AS postcode_sector_validated,</span>
+<span class="sd">       CASE WHEN substr(postcode_format,1,4) = &#39;AANA&#39;</span>
+<span class="sd">            AND substr(postcode_unit_validated,4,1) IN (&#39;I&#39;,&#39;L&#39;,&#39;O&#39;,&#39;Q&#39;,&#39;Z&#39;)</span>
+<span class="sd">            THEN NULL</span>
+<span class="sd">            WHEN substr(postcode_format,1,3) = &#39;ANA&#39;</span>
+<span class="sd">            AND substr(postcode_unit_validated,1,3) IN (&#39;I&#39;,&#39;L&#39;,&#39;O&#39;,&#39;Q&#39;,&#39;Z&#39;)</span>
+<span class="sd">            THEN NULL</span>
+<span class="sd">            ELSE postcode_district_unvalidated</span>
+<span class="sd">       END AS postcode_district_validated,</span>
+<span class="sd">       CASE WHEN substr(postcode_format,1,2) = &#39;AA&#39;</span>
+<span class="sd">            THEN substr(postcode_unit_validated,1,2)</span>
+<span class="sd">            WHEN substr(postcode_format,1,1) = &#39;A&#39;</span>
+<span class="sd">            THEN substr(postcode_unit_validated,1,1)</span>
+<span class="sd">            ELSE NULL</span>
+<span class="sd">      END AS postcode_area_validated</span>
+<span class="sd">      FROM </span>
+<span class="sd">      (</span>
+<span class="sd">      SELECT *,</span>
+<span class="sd">       translate(regexp_replace(upper(postcode_unit_validated), &#39;\\s&#39;, &#39;&#39;),</span>
+<span class="sd">                             &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&#39;,</span>
+<span class="sd">                             &#39;AAAAAAAAAAAAAAAAAAAAAAAAAANNNNNNNNNN&#39;) AS postcode_format,</span>
+<span class="sd">       regexp_replace(</span>
+<span class="sd">       CASE WHEN instr(postcode_unit_validated,&#39; &#39;) &gt; 0</span>
+<span class="sd">            THEN substr(postcode_unit_validated,1,instr(postcode_unit_validated,&#39; &#39;)+1)</span>
+<span class="sd">            ELSE regexp_replace(substr(postcode_unit_validated,1,5),&#39;\\s&#39;,&#39;&#39;)</span>
+<span class="sd">       END,</span>
+<span class="sd">       &#39;\\s&#39;,</span>
+<span class="sd">       &#39;&#39;) AS postcode_sector_unvalidated,</span>
+<span class="sd">       CASE WHEN instr(postcode_unit_validated,&#39; &#39;) &gt; 0</span>
+<span class="sd">            THEN substr(postcode_unit_validated,1,instr(postcode_unit_validated,&#39; &#39;)-1)</span>
+<span class="sd">            ELSE regexp_replace(substr(postcode_unit_validated,1,4),&#39;\\s&#39;,&#39;&#39;) </span>
+<span class="sd">       END AS postcode_district_unvalidated       </span>
+<span class="sd">       FROM</span>
+<span class="sd">            (SELECT *,</span>
+<span class="sd">                CASE WHEN substr({0},1,2) IN (&#39;XX&#39;,&#39;OO&#39;,&#39;ZZ&#39;)</span>
+<span class="sd">               THEN NULL</span>
+<span class="sd">               WHEN substr({0},1,1) IN (&#39;Q&#39;,&#39;V&#39;,&#39;X&#39;)</span>
+<span class="sd">               THEN NULL</span>
+<span class="sd">               WHEN substr({0},2,1) IN (&#39;I&#39;,&#39;J&#39;,&#39;Z&#39;)</span>
+<span class="sd">               THEN NULL</span>
+<span class="sd">               ELSE {0}</span>
+<span class="sd">            END AS postcode_unit_validated</span>
+<span class="sd">            FROM dataset</span>
+<span class="sd">            ) A</span>
+<span class="sd">            ) B</span>
+<span class="sd">            ) C</span>
+<span class="sd">      &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">otherVars</span><span class="p">)</span>
+  <span class="p">)</span>\
+<span class="o">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="s1">&#39;postcode_unit_validated&#39;</span><span class="p">,</span> <span class="s1">&#39;postcode_unit_validated&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span>\
+<span class="o">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="s1">&#39;postcode_sector_validated&#39;</span><span class="p">,</span> <span class="s1">&#39;postcode_sector_validated&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span>\
+<span class="o">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="s1">&#39;postcode_district_validated&#39;</span><span class="p">,</span> <span class="s1">&#39;postcode_district_validated&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span>\
+<span class="o">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="s1">&#39;postcode_area_validated&#39;</span><span class="p">,</span> <span class="s1">&#39;postcode_area_validated&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="rename_columns"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.rename_columns">[docs]</a><span class="k">def</span> <span class="nf">rename_columns</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variable_names_old</span><span class="p">,</span> <span class="n">variable_names_new</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: renames columns in a spark dataframe according to a user-defined lookup</span>
+<span class="sd">  :RETURNS: spark dataframe with columns renamed. Columns not in the lookup are unchanged.</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: function does not affect variable types, only names.</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 17/12/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * dataset = spark dataframe</span>
+<span class="sd">      `(datatype = 1 dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * variable_names_old = what the old variables are called</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;gender&#39;, &#39;fname&#39;]</span>
+<span class="sd">  * variable_names_new = how to call the new variables</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;sex&#39;, &#39;forename&#39;]</span>
+<span class="sd">    * provide in order corresponding to old names</span>
+<span class="sd">    * every listed old name MUST have a new value assigned. If variable should NOT be renamed, assign None</span>
+<span class="sd"> </span>
+<span class="sd">      </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; rename_columns(dataset = PDS,</span>
+<span class="sd">                    variable_names_old = [&#39;gender&#39;, &#39;fname&#39;],</span>
+<span class="sd">                    variable_names_new = [&#39;sex&#39;, &#39;forename&#39;])</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">variable_lookup</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">variable_names_old</span><span class="p">,</span> <span class="n">variable_names_new</span><span class="p">))</span>  <span class="c1"># turns old and new variable names into dictionary</span>
+  <span class="n">variable_lookup</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">variable_lookup</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span><span class="p">}</span> <span class="c1"># filter lookup: remove keys with empty values</span>
+  <span class="k">for</span> <span class="n">old_name</span><span class="p">,</span> <span class="n">new_name</span> <span class="ow">in</span> <span class="n">variable_lookup</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>                      <span class="c1"># Loop over key-value pairs of dict</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="n">old_name</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>                   <span class="c1"># Rename</span>
+  <span class="k">return</span> <span class="n">dataset</span></div>
+
+
+
+<div class="viewcode-block" id="sex_recode"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.sex_recode">[docs]</a><span class="k">def</span> <span class="nf">sex_recode</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variable_input</span><span class="p">,</span> <span class="n">variable_output</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: recodes different sets of values to 1, 2, 3 or None/NULL</span>
+<span class="sd">  :RETURNS: spark dataframe with recode saved into new variable, or original variable overwritten</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: int</span>
+<span class="sd">  :NOTES:</span>
+<span class="sd">  * recode values are hardcoded into the function like this:</span>
+<span class="sd">  * [1, &#39;MALE&#39;, &#39;M&#39;] becomes 1</span>
+<span class="sd">  * [2, &#39;FEMALE&#39;, &#39;F&#39;] becomes 2</span>
+<span class="sd">  * [0, 3, &#39;I&#39;]  becomes 3</span>
+<span class="sd">  * these values were chosen purely because they appeared in the test data used. If your data uses any other codes, the function fails.</span>
+<span class="sd">  * the function expects strings to be in upper case: &#39;MALE&#39; recodes to 1, but &#39;male&#39; gets ignored and becomes NULL/None.</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 17/12/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * dataset = spark dataframe that holds the variable to be recoded</span>
+<span class="sd">      `(datatype = 1 dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * variable_input = name of the variable to recode</span>
+<span class="sd">      `(datatype = 1 string)`, e.g. &#39;gender&#39;</span>
+<span class="sd">  * variable_output = what to call the recoded variable</span>
+<span class="sd">      `(datatype = 1 string)`, e.g. &#39;sex_recoded&#39;</span>
+<span class="sd">  </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; sex_recode(dataset = PDS,</span>
+<span class="sd">                variable_input = &#39;sex&#39;,</span>
+<span class="sd">                variable_output = &#39;sex_recoded&#39;)</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  
+  <span class="n">male</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;MALE&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">]</span> <span class="c1"># define what values to recode to 1</span>
+  <span class="n">female</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;FEMALE&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">]</span> <span class="c1"># define what value to recode to 2</span>
+  <span class="n">other</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">]</span> <span class="c1"># define what values to recode to 3</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span> <span class="c1"># import generic pyspark functions</span>
+  
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  ACTUAL RECODE</span>
+<span class="sd">  1. create new variable of chosen name (if name is the same as the input variable it gets overwritten)</span>
+<span class="sd">  2. assign values as defined above</span>
+<span class="sd">  3. if the original value is in neither definition, make in None/NULL</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable_output</span><span class="p">,</span> \
+           <span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">variable_input</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">male</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">variable_input</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">female</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">variable_input</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">other</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+           <span class="p">)</span>
+  <span class="k">return</span> <span class="n">dataset</span></div>
+
+
+
+<div class="viewcode-block" id="space_to_underscore"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.space_to_underscore">[docs]</a><span class="k">def</span> <span class="nf">space_to_underscore</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+  
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: replaces spaces with underscores</span>
+<span class="sd">  :RETURNS: spark dataframe with no column names containing spaces</span>
+<span class="sd">  :AUTHOR: Sophie-Louise Courtney</span>
+<span class="sd">  :DATE: 02/03/2021</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  </span>
+<span class="sd">  </span>
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * df = spark dataframe</span>
+<span class="sd">      `(datatype = dataframe name, not string)`, e.g. ESC</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span><span class="s2">&quot;_&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="title_remove"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.cleaning.title_remove">[docs]</a><span class="k">def</span> <span class="nf">title_remove</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: removes preceeding/trailing white space from strings, then makes them upper-case, then removes selected titles at the very start</span>
+<span class="sd">  :RETURNS: spark dataframe with selected variable cleaned, trimmed, made upper case. Other variables unchanged</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: string</span>
+<span class="sd">  :NOTES:</span>
+<span class="sd">  * title list is hard-coded into the function.</span>
+<span class="sd">  * It is based on what we found in census data</span>
+<span class="sd">  * list of titles removed: DAME, DR, MR, MSTR, LADY, LORD, MISS, MRS, MS, SIR, REV, plus any amount of whitespace behind it</span>
+<span class="sd">  * according to census data, we needn&#39;t for spelling out the acronyms (e.g. mister, professor)</span>
+<span class="sd">  * no need for longer list (e.g. as in Wikipedia::English honorifics)</span>
+<span class="sd">  * the function cleans the data before removing titles (trims whitespace, make everything upper case), but more cleaning should be done beforehand, e.g. remove dots</span>
+<span class="sd">  </span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+<span class="sd">  :RUN TIME: 20-row test dataframe - 3s; full PDS stock 2019 - 2s</span>
+<span class="sd">  </span>
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 25/09/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  </span>
+<span class="sd">  </span>
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * data = spark dataframe:</span>
+<span class="sd">      `(datatype = dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * variables = variables to remove titles from:</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;firstname&#39;, &#39;secondname&#39;]</span>
+<span class="sd">      </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; title_remove(dataset = PDS,</span>
+<span class="sd">                  variables = [&#39;first_given_name&#39;, &#39;family_name&#39;, &#39;other_given_names&#39;])</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  
+  <span class="n">title_filter</span> <span class="o">=</span> <span class="s1">&#39;^DAME\s+|^DR\s+|^MR\s+|^MSTR\s+|^LADY\s+|^LORD\s+|^MISS\s+|^MRS\s+|^MS\s+|^SIR\s+|^REV\s+&#39;</span> <span class="c1"># define titles to be removed</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span> <span class="c1"># import generic pyspark functions</span>
+  <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span> <span class="c1"># loop over selected variables and...</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> 
+                                 <span class="n">F</span><span class="o">.</span><span class="n">regexp_replace</span><span class="p">(</span>
+                                   <span class="n">F</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span>
+                                     <span class="n">F</span><span class="o">.</span><span class="n">upper</span><span class="p">(</span>
+                                       <span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
+                                     <span class="p">)</span>
+                                   <span class="p">),</span> 
+                                   <span class="n">title_filter</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                                <span class="p">)</span> <span class="c1"># ... make them upper-case, trim predeeding/trailing whitespace, then remove any of the defines titles</span>
+  <span class="k">return</span> <span class="n">dataset</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">adruk_tools</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../adruk_tools.html">adruk_tools package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conf.html">conf module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">setup module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Johannes Hechler.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

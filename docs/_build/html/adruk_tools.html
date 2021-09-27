@@ -1,0 +1,1993 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>adruk_tools package &#8212; adruk_tools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/haiku.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="adruk_tools.functions package" href="adruk_tools.functions.html" />
+    <link rel="prev" title="Welcome to adruk_tools’s documentation!" href="index.html" /> 
+  </head><body>
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
+          <span>adruk_tools  documentation</span></a></h1>
+        <h2 class="heading"><span>adruk_tools package</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">Welcome to adruk_tools’s documentation!</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="adruk_tools.functions.html">adruk_tools.functions package</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <section id="adruk-tools-package">
+<h1>adruk_tools package<a class="headerlink" href="#adruk-tools-package" title="Permalink to this headline">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="adruk_tools.functions.html">adruk_tools.functions package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adruk_tools.functions.html#module-adruk_tools.functions">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-adruk_tools.adr_functions">
+<span id="adruk-tools-adr-functions-module"></span><h2>adruk_tools.adr_functions module<a class="headerlink" href="#module-adruk_tools.adr_functions" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.complex_harmonisation">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">complex_harmonisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#complex_harmonisation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.complex_harmonisation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>where harmonisation leads to duplicate named variables within a dataset, this function harmonised to a single variable</p></li>
+<li><p>a multiple record (_mr) flag is generated as an additional column to indicate if there is discrepancy in values for harmonised variables</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">USE</dt>
+<dd class="field-odd"><p>used in 05c_aggregate_hive_tables.py</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>David Cobbledick</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>08/01/2021</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.complex_standardisation">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">complex_standardisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#complex_standardisation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.complex_standardisation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>Enables more detailed secondary engineering of columns secified within the function</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">USE</dt>
+<dd class="field-odd"><p>used in 05c_aggregate_hive_tables.py</p>
+</dd>
+<dt class="field-even">NOTES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>This can be adapted to suit data and processing requirements</p></li>
+<li><p>The examples below show application for standardising sex, name and postcode variables</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>David Cobbledick</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>08/01/2021</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.extended_describe">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">extended_describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_columns_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nan_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">special_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blank_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stddev_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_mean_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_stddev_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_min_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_max_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_range_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_mode_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">special_dict_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pandas_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillna_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#extended_describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.extended_describe" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>PYSPARK FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>This function extends all of the functions listed in parameters to apply on a dataset.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>dataframe with information on the data in the specified dataframe.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>pandas dataframe</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>David Cobbledick</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>01/12/2020</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.1</p>
+</dd>
+<dt class="field-even">KNOWN ISSUES</dt>
+<dd class="field-even"><p>There are multiple columns that require boolean and some that do not work on boolean data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>df = the dataframe that you are calling this on.</p></li>
+<li><p>all = chooses that all are true and overwrites calling subfunctions.</p></li>
+<li><p>trim = this imports the trim function to be used a sub functon.</p></li>
+<li><p>Active_columns =</p></li>
+<li><p>Sum = The function sum_describe gets called in here.</p></li>
+<li><p>Positive = The function posiitve_describe gets called in here.</p></li>
+<li><p>Negative = The function negative_decribe gets called in here.</p></li>
+<li><p>Zero = The function zero_describe gets called in here.</p></li>
+<li><p>Null = The function null_describe gets called in here.</p></li>
+<li><p>Nan = The function nan_describe gets called in here.</p></li>
+<li><p>count = The function count gets called in here.</p></li>
+<li><p>Unique = The function unique_descrbie gets called in here.</p></li>
+<li><p>Special = The function special_describe gets called in here.</p></li>
+<li><p>Blank = The function blank_describe gets called in here.</p></li>
+<li><p>Mean = The function mean_describe gets called in here.</p></li>
+<li><p>Stddev = The function stddev_describe gets called in here.</p></li>
+<li><p>Min = The function min_descrie gets called in here.</p></li>
+<li><p>Max = The function max_describe gets called in here.</p></li>
+<li><p>Range =</p></li>
+<li><p>Mode = The function mode_descrie gets called in here.</p></li>
+<li><p>Length-mean = The length of the mean in mean_describe is set here.</p></li>
+<li><p>Length-stddev = This sets the default ofr the length of Stddev.</p></li>
+<li><p>Length-min = The function here describes the lenght of the min_describe function.</p></li>
+<li><p>Length-max = The funciton defines the length of the max-describe function.</p></li>
+<li><p>Length-range =</p></li>
+<li><p>Length-mode = The length of the mode_describe function is set here.</p></li>
+<li><p>Special-dict =</p></li>
+<li><p>Percent =</p></li>
+<li><p>Pandas =</p></li>
+<li><p>Axis =</p></li>
+<li><p>Fillna =</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_describe</span> <span class="o">=</span> <span class="n">extended_describe</span><span class="p">(</span><span class="n">raw_df</span><span class="p">,</span>
+<span class="go">                         all_=False,</span>
+<span class="go">                         trim_=True,</span>
+<span class="go">                         active_columns_=True,</span>
+<span class="go">                         null_=True,</span>
+<span class="go">                         nan_=True,</span>
+<span class="go">                         special_=True,</span>
+<span class="go">                         special_dict_=nulls_dict,</span>
+<span class="go">                         unique_=True,</span>
+<span class="go">                         #length_max_=False,</span>
+<span class="go">                         percent_=False,</span>
+<span class="go">                         pandas_=True,</span>
+<span class="go">                         axis_=1,</span>
+<span class="go">                        fillna_=0)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.generate_ids">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">generate_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_cols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#generate_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.generate_ids" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT ID DOES</dt>
+<dd class="field-even"><p>recodes a given column to random numerical values</p>
+</dd>
+<dt class="field-odd">WHY IT DOES IT</dt>
+<dd class="field-odd"><p>to anonymise ID variables in ADRUK projects</p>
+</dd>
+<dt class="field-even">RETURNS</dt>
+<dd class="field-even"><p>dataframe with 1 new column called ‘adr_id’, holding the new ID</p>
+</dd>
+<dt class="field-odd">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">KNOWN ISSUES</dt>
+<dd class="field-even"><p>input dataset must not have existing column called ‘adr_id’</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>David Cobbledick</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>2020</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.1</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><ul class="simple">
+<li><p>session = name of current spark cluster
+<cite>(datatype = cluster name, no string)</cite>, e.g. spark</p></li>
+<li><p>df = spark dataframe
+<cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p></li>
+<li><p>id_cols = column(s) to use for new ID
+<cite>(datatype = list of strings)</cite>, e.g. [‘year’, ‘name’]</p></li>
+<li><p>start_year = name of additional column(s) to use in ID
+<cite>(datatype = list of strings)</cite>, e.g. [‘year’, ‘name’]</p></li>
+<li><p>id_len = set uniform length of ID values if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths
+<cite>(datatype = numeric)</cite>, e.g. 9</p></li>
+</ul>
+</dd>
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generate_ids</span><span class="p">(</span><span class="n">sessions</span> <span class="o">=</span> <span class="n">spark</span><span class="p">,</span> 
+<span class="go">                  df = AEDE, </span>
+<span class="go">                  id_cols = [&#39;name&#39;, &#39;ID&#39;],</span>
+<span class="go">                  start_year = [&#39;year&#39;], </span>
+<span class="go">                  id_len = 9)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.make_test_df">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">make_test_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#make_test_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.make_test_df" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>creates a dataframe with several columns of different data types for testing purposes. Intentionally includes various errors, e.g. typos.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>27/08/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>session_name = name of the spark session to use
+<cite>(datatype = session name, unquoted)</cite>, e.g. spark</p></li>
+</ul>
+</dd>
+<dt class="field-even">EXAMPLE</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_test_df</span><span class="p">(</span><span class="n">spark</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.manifest">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#manifest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.manifest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Python class</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>creates an object of class ‘manifest’</p></li>
+<li><p>assign several methods to the object</p></li>
+<li><p>designed extract data from nested dictionaries, in particular .mani files on HDFS</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>09/02/2021</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.1</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.manifest.parts">
+<span class="sig-name descname"><span class="pre">parts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#manifest.parts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.manifest.parts" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Python method for objects of class ‘manifest’</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>generates property ‘parts’, i.e. information about the individual files included in a delivery, as a pandas dataframe with as many rows as there are files</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>09/02/2021</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.manifest.whole">
+<span class="sig-name descname"><span class="pre">whole</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#manifest.whole"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.manifest.whole" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Python method for objects of class ‘manifest’</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>generates property ‘whole’, i.e. information about the overall delivery, as a pandas dataframe with 1 row</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>09/02/2021</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.1</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.save_sample">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">save_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#save_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.save_sample" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>PYSPARK FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>draws as user-specified number of records from the top of a dataset and saves them to a selected location in csv format</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>nothing in memory; writes out a comma-separated file</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>not applicable</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe from covid test and trace dataset</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Ben Marshall-Sheen, Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>17/12/2020</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">KNOWN ISSUES</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul>
+<li><dl class="simple">
+<dt>dataframe = spark dataframe</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. ctas_data</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sample_size = how many rows to take from dataset. Default values = 20.</dt><dd><p><cite>(datatype = numeric)</cite>, e.g. 20</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>filepath = the directory and filename for the file to be written to.</dt><dd><dl class="simple">
+<dt><cite>(datatype = string)</cite>, e.g. “/dapsen/workspace_zone/adruk/sample.csv”</dt><dd><ul class="simple">
+<li><p>na_variables = if you want to exclude records with missing data from the sample, you can specify the names of columns to check for missingness. Records are removed if ANY of the selected variables is missing. Optional. Default value = []</p></li>
+</ul>
+</dd>
+</dl>
+<p><cite>(datatype = list of strings)</cite>, e.g. [‘age’, ‘sex]</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">save_sample</span><span class="p">(</span> <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pii_data</span><span class="p">,</span> 
+<span class="go">                 sample_size = 20, </span>
+<span class="go">                 filepath = &#39;/dapsen/workspace_zone/my_project/sample.csv)))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.session_large">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">session_large</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#session_large"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.session_large" title="Permalink to this definition">¶</a></dt>
+<dd><p>Large Session</p>
+<p>Session designed for running Production pipelines on large
+administrative data, rather than just survey data. Will often
+develop using a smaller session then change to this once the
+pipeline is complete.</p>
+<dl class="simple">
+<dt>Details:</dt><dd><p>10g of memory and 5 executors
+1g of memory overhead
+5 cores, which is generally optimal on larger sessions</p>
+</dd>
+<dt>Use case:</dt><dd><p>Production pipelines on administrative data
+Cannot be used in Dev Test, as 9 GB limit per executor</p>
+</dd>
+<dt>Example of actual usage:</dt><dd><p>One administrative dataset of 100 million rows
+Many calculations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.session_medium">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">session_medium</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#session_medium"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.session_medium" title="Permalink to this definition">¶</a></dt>
+<dd><p>Medium Session</p>
+<p>A standard session used for analysing survey or synthetic
+datasets. Also used for some Production pipelines based on
+survey and/or smaller administrative data.</p>
+<dl class="simple">
+<dt>Details:</dt><dd><p>6g of memory and 3 executors
+3 cores
+Number of partitions are limited to 18, which can improve
+performance with smaller data</p>
+</dd>
+<dt>Use case:</dt><dd><p>Developing code in Dev Test
+Data exploration in Production
+Developing Production pipelines on a sample of data
+Running smaller Production pipelines on mostly survey data</p>
+</dd>
+<dt>Example of actual usage:</dt><dd><dl class="simple">
+<dt>Complex calculations, but on smaller synthetic data in</dt><dd><p>Dev Test</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.session_small">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">session_small</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#session_small"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.session_small" title="Permalink to this definition">¶</a></dt>
+<dd><p>Small Session</p>
+<p>This session is similar to that used for DAPCATS training
+It is the smallest session that is realistically used</p>
+<dl class="simple">
+<dt>Details:</dt><dd><p>Only 1g of memory and 3 executors
+Only 1 core
+Number of partitions are limited to 12, which can improve
+performance with smaller data</p>
+</dd>
+<dt>Use case:</dt><dd><p>Simple data exploration of small survey data</p>
+</dd>
+<dt>Example of actual usage:</dt><dd><p>Used for DAPCATS PySpark training
+Mostly simple calculations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.session_xl">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">session_xl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#session_xl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.session_xl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extra Large session</p>
+<p>Used for the most complex pipelines, with huge administrative
+data sources and complex calculations. Uses a large amount of
+resource on the cluster, so only use when running Production
+pipelines</p>
+<dl>
+<dt>Details:</dt><dd><p>20g of memory and 12 executors
+2g of memory overhead
+5 cores; using too many cores can actually cause worse</p>
+<blockquote>
+<div><p>performance on larger sessions</p>
+</div></blockquote>
+</dd>
+<dt>Use case:</dt><dd><dl class="simple">
+<dt>Running large, complex pipelines in Production on mostly</dt><dd><p>administrative data</p>
+</dd>
+<dt>Do not use for development purposes; use a smaller session</dt><dd><p>and work on a sample of data or synthetic data</p>
+</dd>
+</dl>
+</dd>
+<dt>Example of actual usage:</dt><dd><p>Three administrative datasets of around 300 million rows
+Significant calculations, including joins and writing/reading</p>
+<blockquote>
+<div><p>to many intermediate tables</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.spark_glob">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">spark_glob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#spark_glob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.spark_glob" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>lists names of files or subdirectories in a given directory</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>list of file / directory names</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLES TYPE</dt>
+<dd class="field-even"><p>list of strings</p>
+</dd>
+<dt class="field-odd">NOTES</dt>
+<dd class="field-odd"><p>expects an existing connection to a spark cluster</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>David Cobbledick</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>2020</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="field-list simple">
+<dt class="field-odd">host = a valid CDSW user name. not necessarily that of the current users</dt>
+<dd class="field-odd"><p><cite>(datatype = string)</cite>, e.g. ‘hechlj’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">directory = for name of the directory to check</dt>
+<dd class="field-odd"><p><cite>(datatype = string)</cite>, e.g. ‘/dapsen/landing_zone/hmrc/self_assessment/2017/v1’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spark_glob</span><span class="p">(</span><span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;hechlj&#39;</span><span class="p">,</span>
+<span class="go">                directory = &#39;/dapsen/landing_zone/hmrc/self_assessment/2017/v1&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.spark_glob_all">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">spark_glob_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#spark_glob_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.spark_glob_all" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>lists names of files or subdirectories in a given directory, and all subdirectories</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>list of file / directory names</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLES TYPE</dt>
+<dd class="field-even"><p>list of strings</p>
+</dd>
+<dt class="field-odd">NOTES</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>expects an existing connection to a spark cluster</p></li>
+<li><p>expect the package <cite>adruk_tools</cite> including the function <cite>spark_glob</cite> to be installed</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>David Cobbledick</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>2020</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.1</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="field-list simple">
+<dt class="field-odd">host = a valid CDSW user name. not necessarily that of the current users</dt>
+<dd class="field-odd"><p><cite>(datatype = string)</cite>, e.g. ‘hechlj’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">directory = for name of the directory to check</dt>
+<dd class="field-odd"><p><cite>(datatype = string)</cite>, e.g. ‘/dapsen/landing_zone/hmrc/self_assessment/2017/v1’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spark_glob_all</span><span class="p">(</span><span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;hechlj&#39;</span><span class="p">,</span>
+<span class="go">                directory = &#39;/dapsen/landing_zone/hmrc/self_assessment/2017/v1&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.unzip_to_csv">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">unzip_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#unzip_to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.unzip_to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>PYSPARK FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>unzips a .csv.gz file into cdsw from a chosen location</p></li>
+<li><p>puts the resulting unzipped csv into a user defined destination folder,</p></li>
+<li><p>then deletes the original file from CDSW.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">OUTPUT</dt>
+<dd class="field-odd"><p>csv file</p>
+</dd>
+<dt class="field-even">NOTES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>will only work on zipped files which are less than 10GB</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>zipped csv dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Sophie-Louise Courtney</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>18/01/2021</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>file_path = path to file</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘/dapsen/landing_zone’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>file_name = full name of the file </dt><dd><p><cite>(datatype = 1 zipped dataframe)</cite>, e.g. ‘test_results.csv.gz’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>destination_path = path to folder where the unzipped file will be stored</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘/dapsen/workspace_zone’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">unzip_to_csv</span><span class="p">(</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">adr_directory</span><span class="p">,</span>
+<span class="go">                    file_name = file,</span>
+<span class="go">                    destination_path = out)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-adruk_tools.cleaning">
+<span id="adruk-tools-cleaning-module"></span><h2>adruk_tools.cleaning module<a class="headerlink" href="#module-adruk_tools.cleaning" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.LAlookup">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">LAlookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LA_code_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#LAlookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.LAlookup" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>takes a selected variable, finds its values in a selected reference file and returns corresponding values of another variable in that reference</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>copy of the original dataframe with the returned values in a new variable named after the input variable and the joined-on variable.</p>
+</dd>
+<dt class="field-even">NOTES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>built for postcodes; can work for other variables but beware of the inbuilt cleaning:</p></li>
+<li><p>the code cleans both the lookup and the reference variable (removes spaces, trims whitespace, makes all upper case)</p></li>
+<li><p>even if no matching value is found the original variable is overwritten with a cleaned version</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>test_df = spark dataframe containing the variable to look up in reference</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>test_variable = name of variable to look up in reference</dt><dd><p><cite>(datatype = string)</cite>, e.g. ‘postcode’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>reference_table = database and table name of reference table to use</dt><dd><p><cite>(datatype = string)</cite>, e.g. ‘postcode_directory.onspd_may_2018_uk_std’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>reference_variable = name of reference variable to find test_variable values in</dt><dd><p><cite>(datatype = string)</cite>, e.g. ‘pcd’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>LA_code_variable = name of variable in reference file to join onto test_df</dt><dd><p><cite>(datatype = string)</cite>, e.g. ‘postcode’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>connection = name of spark cluster to use</dt><dd><p><cite>(datatype = cluster name, no string)</cite>, e.g. spark</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lookup</span><span class="p">(</span><span class="n">test_df</span> <span class="o">=</span> <span class="n">testDF</span><span class="p">,</span> 
+<span class="go">          test_variable = &#39;postcode&#39;, </span>
+<span class="go">          reference_table = &#39;postcode_directory.onspd_may_2018_uk_std&#39;, </span>
+<span class="go">          reference_variable = &#39;pcd&#39;, </span>
+<span class="go">          LA_code_variable = &#39;oa11&#39;, </span>
+<span class="go">          connection = spark).show()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.NHS_postcode_recode">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">NHS_postcode_recode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasetNHS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#NHS_postcode_recode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.NHS_postcode_recode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>recodes variables saying if a corresponding value in another variable is a valid NHS postcode and if it refers to the UK, an EU country, or elsewhere in the world</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with new, recoded variables added (as many as input variables), named after the input variables. Original variables unchanged.</p>
+</dd>
+<dt class="field-even">NOTES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>function uses custom NHS-postcode lookup file that was ingested into DAP. It was built by Data Architecture Division for a specific task and is not regularly updated.</p></li>
+<li><p>pulls in another user-defined function to clean postcodes before lookup. Other teams may not have access to the function library.</p></li>
+<li><p>we hard-coded the definition of what postcodes are UK and EU. If EU membership changes this will be outdated.</p></li>
+<li><p>non-EU postcodes are defined as any reference codes that are in neither definition. Anything not found in those 3 definitions is classified as not a NHS postcode</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>17/12/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>datasetNHS = spark dataframe with postcode variables</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variables_old = variables to check for NHS postcodes</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘postcode1’, ‘postcode2’]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variables_new = what to call the new variables that say what kind of NHS postcode was found if any</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘NHS1’, ‘NHS2’]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>connection = name of spark cluster to use for connecting to NHS postcode lookup</dt><dd><p><cite>(datatype = 1 object name, no string)</cite>, e.g. spark</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">NHS_postcode_recode</span><span class="p">(</span><span class="n">datasetNHS</span> <span class="o">=</span> <span class="n">testDF</span><span class="p">,</span>
+<span class="go">                        variables_old = [&#39;postcode1&#39;, &#39;postcode2&#39;],</span>
+<span class="go">                        variables_new = [&#39;NHS1&#39;, &#39;NHS2&#39;],</span>
+<span class="go">                        connection = spark)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.array_to_columns">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">array_to_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_column_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#array_to_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.array_to_columns" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>data_test = array_to_columns(dataset = data_test, </dt><dd><p>arrays = [‘forename_clean’, ‘surname_clean’], 
+number_of_columns = 0)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.clean_names">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">clean_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#clean_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.clean_names" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>removes non-alphabetical characters (not case sensistive) from selected string variables</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with cleaned version of selected variables added as new variables ending in ‘_clean’. All original variables unchanged</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">RUN TIME</dt>
+<dd class="field-even"><p>20-row test dataframe - 3s; full deaths registrations 2017 - 4s</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>11/09/2019</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.1</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><dl class="simple">
+<dt>: dataset = spark dataframe:</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+<dt>: variables = list of variables to clean:</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘forename’, ‘surname’]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clean_names</span><span class="p">(</span><span class="n">PDS</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;family_names&#39;</span><span class="p">,</span> <span class="s1">&#39;first_given_name&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.clean_names_full">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">clean_names_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#clean_names_full"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.clean_names_full" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>removes non-alphabetical characters (not case sensistive) from selected string variables</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with cleaned version of selected variables overwritten with cleaned versions.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">RUN TIME</dt>
+<dd class="field-even"><p>20-row test dataframe - 3s; full deaths registrations 2017 - 4s</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>11/09/2019</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.3</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><dl class="simple">
+<dt>: dataset = spark dataframe:</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+<dt>: variables = list of variables to clean:</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘forename’, ‘surname’]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clean_names_full</span><span class="p">(</span><span class="n">PDS</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;family_names&#39;</span><span class="p">,</span> <span class="s1">&#39;first_given_name&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.clean_names_part">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">clean_names_part</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#clean_names_part"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.clean_names_part" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>removes illegal characters (anything not alphabetical or whitespace, not case-sensistive) from selected string variables</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with cleaned version of selected variables overwritten with cleaned versions.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">RUN TIME</dt>
+<dd class="field-even"><p>20-row test dataframe - 3s; full deaths registrations 2017 - 4s</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>11/09/2019</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.3</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><dl class="simple">
+<dt>: dataset = spark dataframe:</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+<dt>: variables = list of variables to clean:</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘forename’, ‘surname’]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clean_names</span><span class="p">(</span><span class="n">PDS</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;family_names&#39;</span><span class="p">,</span> <span class="s1">&#39;first_given_name&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.clean_postcode">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">clean_postcode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spaces</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#clean_postcode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.clean_postcode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>cleans and standardises strings, letting users specify how many internal spaces to keep. Intended for postcodes.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with original variables cleaned and overwritten.</p>
+</dd>
+<dt class="field-even">TESTED TO RUN ON</dt>
+<dd class="field-even"><p>spark dataframe</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>17/12/2019</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.1</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>dataset = spark dataframe</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variables = list of variables to clean</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘postcode’, ‘postcodeNHS’]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>spaces = list of variables to clean</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘postcode’, ‘postcodeNHS’]</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clean_postcode</span><span class="p">(</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">testDF</span><span class="p">,</span>
+<span class="go">                    variables = [&#39;postcodeNHS&#39;, &#39;postcode&#39;],</span>
+<span class="go">                    spaces = 2)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.concatenate_columns">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">concatenate_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#concatenate_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.concatenate_columns" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>concatenates selected dataframe columns by selected seperator and adds it to the source dataframe under a selected name</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>dataframe with the concatenation as 1 additional variable. all original variable remain unchanged.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframes</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>12/12/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.2</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>dataset = spark dataframe whose variable to concatenate:</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variables = list of names of variables to concatenate:</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘forename’, ‘surname’]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variable_new = how to call new, concatenated variable:</dt><dd><p><cite>(datatype = string)</cite>, e.g. ‘names_all’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sep = separator between variable strings. Default = space:</dt><dd><p><cite>(datatype = string)</cite>, e.g. ‘,’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">concatenate_columns</span><span class="p">(</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">SomeDataFrame</span><span class="p">,</span>
+<span class="go">                        variable_new = &#39;address_concatenated&#39;,</span>
+<span class="go">                        variables = [&#39;ADDRESS_LINE1&#39;, &#39;ADDRESS_LINE2&#39;],</span>
+<span class="go">                        sep = &#39; &#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.concatenate_distinct">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">concatenate_distinct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables_to_combine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#concatenate_distinct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.concatenate_distinct" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>concatenates selected dataframe columns by selected separator and adds it to the source dataframe under a selected name</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>dataframe with the concatenation as 1 additional variable. all original variable remain unchanged.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframes</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>30/07/2020</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>dataset = spark dataframe whose variable to concatenate:</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variable_new = what to call new, concatenated variable:</dt><dd><p><cite>(datatype = string)</cite>, e.g. ‘names_all’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variables_to_combine = names of variables to concatenate:</dt><dd><p><cite>(datatype = list of string)</cite>, e.g. [‘surname’, ‘surname_former’, ‘surname_preferred’]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>separator = what to put in between concatenated values:</dt><dd><p><cite>(datatype = string)</cite>, e.g. ‘ ‘</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">concatenate_distinct</span><span class="p">(</span> <span class="n">variables_to_combine</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;forename_clean&#39;</span><span class="p">,</span> 
+<span class="go">                                                  &#39;forename_clean&#39;, </span>
+<span class="go">                                                  &#39;middle_name_clean&#39;], </span>
+<span class="go">                          dataset = data, </span>
+<span class="go">                          variable_new = &#39;all_names&#39;,</span>
+<span class="go">                          separator = &#39; &#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.date_recode">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">date_recode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'yyyy/MM/dd'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#date_recode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.date_recode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>breaks date variable into day, month, year and saves them as separate variables. User specifies the format of the input date, and the name of the output variables. If that’s the same as the input variable it gets overwritten.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with 4 additional variables (full date, day, month, year). Variable names are as specified by user, plus suffixes ‘_day’, ‘_month’, ‘_year’.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>full date: date</p></li>
+<li><p>day, month, year: int</p></li>
+<li><p>works on variables in formats: date, datestamp, string</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>17/12/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul>
+<li><dl class="simple">
+<dt>dataset = spark dataframe with date variable to recode</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variable_input = variable to convert to date format and break into components</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘date_of_birth’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variable_output = what to call the output variable</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘dob’</p>
+</dd>
+</dl>
+</li>
+<li><p>date_format = what format the input variable records dates, as expressed by the to_date() function. Example: 2019/12/17 is expressed as ‘yyyy/MM/dd’.
+* Default value = ‘yyyy/MM/dd’.
+* If variable is not of type string (e.g. date or datestamp) this gets ignored, even if it specifies the wrong format.</p>
+<blockquote>
+<div><p><cite>(datatype = 1 string)</cite>, e.g. ‘yyyy/MM/dd’</p>
+</div></blockquote>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">date_recode</span><span class="p">(</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">PDS</span><span class="p">,</span>
+<span class="go">                variable_input = &#39;date_of_birth&#39;,</span>
+<span class="go">                variable_output = &#39;date_of_birth&#39;,</span>
+<span class="go">                date_format = &#39;yyyy/MM/dd&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.make_missing_none">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">make_missing_none</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#make_missing_none"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.make_missing_none" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>recodes different ways of expressing missingness into explicit NULL/None values, in all variables of a spark dataframe</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with all variables recoded</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>11/05/2020</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.2</p>
+</dd>
+<dt class="field-odd">CHANGES FROM PREVIOUS VERSION</dt>
+<dd class="field-odd"><p>can now select columns to clean</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><ul class="simple">
+<li><p>dataset = spark dataframe
+<cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p></li>
+<li><p>columns = list of strings
+<cite>(datatype = list of strings])</cite>, e.g. [‘forename’, ‘surname’]</p></li>
+</ul>
+</dd>
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_missing_none</span><span class="p">(</span><span class="n">PDS</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;forename&#39;</span><span class="p">,</span> <span class="s1">&#39;surname&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.name_split">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">name_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strings_to_split</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#name_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.name_split" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>splits strings into segments based on a rule the users provides.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with as many additional variables as there are strings in the longest input variable. all original variables unchanged.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>11/10/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>: data = spark dataframe:</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+<dt>: strings_to_split = variables whose strings to split:</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘forename’, ‘surname’]</p>
+</dd>
+<dt>: separator = what characters to split by:</dt><dd><p><cite>(datatype = string or regular expression)</cite>, e.g. ‘-’ or [a-z]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">EXAMPLE</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">name_split</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">PDS</span><span class="p">,</span>
+<span class="go">               strings_to_split = [&#39;forename_clean&#39;, &#39;middle_name_clean&#39;, &#39;surname_clean&#39;],</span>
+<span class="go">               separator = &#39;[\s|-]+&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.name_split_array">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">name_split_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strings_to_split</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#name_split_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.name_split_array" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>splits strings into segments based on a rule the users provides.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with 1 additional variable per input variable. all original variables unchanged.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Dave Beech, Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>11/11/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.2</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>: data = spark dataframe:</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+<dt>: strings_to_split = variables whose strings to split:</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘forename’, ‘surname’]</p>
+</dd>
+<dt>: separator = what characters to split by:</dt><dd><p><cite>(datatype = string or regular expression)</cite>, e.g. ‘-’ or [a-z]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">EXAMPLE</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">name_split_array</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">PDS</span><span class="p">,</span>
+<span class="go">               strings_to_split = [&#39;forename_clean&#39;, &#39;middle_name_clean&#39;, &#39;surname_clean&#39;],</span>
+<span class="go">               separator = &#39;[\s|-]+&#39;,</span>
+<span class="go">               suffix = &#39;_split&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.postcode_pattern">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">postcode_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_postcodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#postcode_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.postcode_pattern" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>tests if the values in a given variable follow the format of UK postcodes. Excludes non-numeric and non-alphabetical characters except horizontal spaces.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>copy of the original dataframe, with a new variable called ‘fitPattern’, which is TRUE where a value fits the format, FALSE if it’s not, and NULL if the test variable is NULL.</p>
+</dd>
+<dt class="field-even">TESTED ON</dt>
+<dd class="field-even"><p>UK Postcode Directory</p>
+</dd>
+<dt class="field-odd">FALSE NEGATIVES</dt>
+<dd class="field-odd"><p>catches all postcodes in UK Postcode Directory</p>
+</dd>
+<dt class="field-even">FALSE POSITIVES</dt>
+<dd class="field-even"><p>tests if a letter or number should be in a certain place, but not if that PARTICULAR letter/number should be there. If postcodes never use a certain character in a certain place that uses other characters, it doens’t catch it. rejects any format that isn’t in the UK Postcode Directory. Designed to reject anything that isn’t a number or letter, or not in the right place. But cannot test completely.</p>
+</dd>
+<dt class="field-odd">FULL LIST OF ACCEPTED FORMATS</dt>
+<dd class="field-odd"><p>see below</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>27/08/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>test_df = name of dataframe that holds variable to test
+<cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p></li>
+<li><p>test_variable = name of variable to match against reference
+<cite>(datatype = string)</cite>, e.g. ‘postcode’</p></li>
+</ul>
+</dd>
+<dt class="field-even">EXAMPLE</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">postcode_pattern</span><span class="p">(</span><span class="n">testDF</span><span class="p">,</span> <span class="s1">&#39;postcode&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.postcode_split">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">postcode_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#postcode_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.postcode_split" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>checks if a string or parts of it follow postcode format and saves them in separate variables</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with 4 new variables (postcode unit, postcode sector, postcode district, postcode area), 1 for each possible postcode part. Where a part doesn’t follow a postcode pattern, the value is NULL/None. New variables are named after the source variable with an optional suffix. Original variable remains unchanged.</p>
+</dd>
+<dt class="field-even">NOTES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>fails if input postcodes have no internal space (unless they are 7 characters long), or more than one. So the codes should first be cleaned.</p></li>
+<li><p>the format check looks purely if a code has no characters/digits in the wrong places, as specified in the PAF Programmer’s Guide. There is no check against any reference lookups like the National Statistics Postcode Lookup.</p></li>
+<li><p>format requirements are summarised in PAF Programmer’s Guide</p></li>
+<li><p>Original method and SQL code developed by DWP in Oracle SQL. Adapted to Hive SQL and wrapped into a pyspark function in ONS.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>17/19/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>dataset = spark dataframe</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variable = variable to check and break into components</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘postcode’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>suffix = what suffix to add to the names of the new, component variables. To distinguish them if more than 1 variable is broken into components.</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘_domicile’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>connection = name of the spark cluster to use for SQL computations</dt><dd><p><cite>(datatype = 1 object name, no string)</cite>, e.g. spark</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">postcode_split</span><span class="p">(</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">PDS</span><span class="p">,</span>
+<span class="go">                    variable = &#39;postcode&#39;,</span>
+<span class="go">                    suffix = &#39;&#39;,</span>
+<span class="go">                    connection = session)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.rename_columns">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">rename_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_names_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_names_new</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#rename_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.rename_columns" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>renames columns in a spark dataframe according to a user-defined lookup</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with columns renamed. Columns not in the lookup are unchanged.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>function does not affect variable types, only names.</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>17/12/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul>
+<li><dl class="simple">
+<dt>dataset = spark dataframe</dt><dd><p><cite>(datatype = 1 dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variable_names_old = what the old variables are called</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘gender’, ‘fname’]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variable_names_new = how to call the new variables</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘sex’, ‘forename’]</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>provide in order corresponding to old names</p></li>
+<li><p>every listed old name MUST have a new value assigned. If variable should NOT be renamed, assign None</p></li>
+</ul>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rename_columns</span><span class="p">(</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">PDS</span><span class="p">,</span>
+<span class="go">                  variable_names_old = [&#39;gender&#39;, &#39;fname&#39;],</span>
+<span class="go">                  variable_names_new = [&#39;sex&#39;, &#39;forename&#39;])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.sex_recode">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">sex_recode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#sex_recode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.sex_recode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>recodes different sets of values to 1, 2, 3 or None/NULL</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with recode saved into new variable, or original variable overwritten</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">NOTES</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>recode values are hardcoded into the function like this:</p></li>
+<li><p>[1, ‘MALE’, ‘M’] becomes 1</p></li>
+<li><p>[2, ‘FEMALE’, ‘F’] becomes 2</p></li>
+<li><p>[0, 3, ‘I’]  becomes 3</p></li>
+<li><p>these values were chosen purely because they appeared in the test data used. If your data uses any other codes, the function fails.</p></li>
+<li><p>the function expects strings to be in upper case: ‘MALE’ recodes to 1, but ‘male’ gets ignored and becomes NULL/None.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>17/12/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>dataset = spark dataframe that holds the variable to be recoded</dt><dd><p><cite>(datatype = 1 dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variable_input = name of the variable to recode</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘gender’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variable_output = what to call the recoded variable</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘sex_recoded’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sex_recode</span><span class="p">(</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">PDS</span><span class="p">,</span>
+<span class="go">              variable_input = &#39;sex&#39;,</span>
+<span class="go">              variable_output = &#39;sex_recoded&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.space_to_underscore">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">space_to_underscore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#space_to_underscore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.space_to_underscore" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>replaces spaces with underscores</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with no column names containing spaces</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Sophie-Louise Courtney</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>02/03/2021</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>df = spark dataframe</dt><dd><p><cite>(datatype = dataframe name, not string)</cite>, e.g. ESC</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.cleaning.title_remove">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.cleaning.</span></span><span class="sig-name descname"><span class="pre">title_remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/cleaning.html#title_remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.cleaning.title_remove" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>removes preceeding/trailing white space from strings, then makes them upper-case, then removes selected titles at the very start</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe with selected variable cleaned, trimmed, made upper case. Other variables unchanged</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">NOTES</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>title list is hard-coded into the function.</p></li>
+<li><p>It is based on what we found in census data</p></li>
+<li><p>list of titles removed: DAME, DR, MR, MSTR, LADY, LORD, MISS, MRS, MS, SIR, REV, plus any amount of whitespace behind it</p></li>
+<li><p>according to census data, we needn’t for spelling out the acronyms (e.g. mister, professor)</p></li>
+<li><p>no need for longer list (e.g. as in Wikipedia::English honorifics)</p></li>
+<li><p>the function cleans the data before removing titles (trims whitespace, make everything upper case), but more cleaning should be done beforehand, e.g. remove dots</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">RUN TIME</dt>
+<dd class="field-even"><p>20-row test dataframe - 3s; full PDS stock 2019 - 2s</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>25/09/2019</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.1</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>data = spark dataframe:</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>variables = variables to remove titles from:</dt><dd><p><cite>(datatype = list of strings)</cite>, e.g. [‘firstname’, ‘secondname’]</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">title_remove</span><span class="p">(</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">PDS</span><span class="p">,</span>
+<span class="go">                variables = [&#39;first_given_name&#39;, &#39;family_name&#39;, &#39;other_given_names&#39;])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-adruk_tools.diagnostics">
+<span id="adruk-tools-diagnostics-module"></span><h2>adruk_tools.diagnostics module<a class="headerlink" href="#module-adruk_tools.diagnostics" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.diagnostics.missing_by_row">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.diagnostics.</span></span><span class="sig-name descname"><span class="pre">missing_by_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/diagnostics.html#missing_by_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.diagnostics.missing_by_row" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>counts how many rows have got different numbers of selected variables missing</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>frequency table</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>string, numeric</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>19/12/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>dataset = spark dataframe</dt><dd><p><cite>(datatype = 1 dataframe name, no string)</cite>, e.g. PDS</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>args = variables to include in count</dt><dd><p><cite>(datatype = strings, no list)</cite>, e.g. ‘forename’, ‘surname’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">missing_by_row</span><span class="p">(</span><span class="n">PDS</span><span class="p">,</span>
+<span class="go">                   &#39;forename_clean&#39;,</span>
+<span class="go">                   &#39;middle_name_clean&#39;,</span>
+<span class="go">                   &#39;surname_clean&#39;,</span>
+<span class="go">                   &#39;date_of_birth&#39;,</span>
+<span class="go">                   &#39;sex&#39;,</span>
+<span class="go">                   &#39;postcode&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.diagnostics.missing_count">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.diagnostics.</span></span><span class="sig-name descname"><span class="pre">missing_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/diagnostics.html#missing_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.diagnostics.missing_count" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>counts missing values per column for any number of input matrices.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>pandas dataframe</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLES TYPE</dt>
+<dd class="field-even"><p>string, numeric</p>
+</dd>
+<dt class="field-odd">NOTES</dt>
+<dd class="field-odd"><p>won’t work if any columns are of array type</p>
+</dd>
+<dt class="field-even">TESTED TO RUN ON</dt>
+<dd class="field-even"><p>spark dataframe</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Amy Mayer, amended by Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>19/12/2019</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.1</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>args (Pyspark dataframe): Dataframes for analysis</dt><dd><p><cite>(datatype = dataframe names, no string, no list)</cite>, e.g. PDS, HESA, WSC</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">missing_count</span><span class="p">(</span><span class="n">PDS</span><span class="p">,</span> <span class="n">HESA</span><span class="p">,</span> <span class="n">WSC</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.diagnostics.unique_function">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.diagnostics.</span></span><span class="sig-name descname"><span class="pre">unique_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/diagnostics.html#unique_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.diagnostics.unique_function" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>Return unique values per column for any number of input matrices. Indicates suitability of each column for use as an identifier key in linkage.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>pandas dataframe of analysis results</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>string, numeric, boolean</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Amy Mayer, amended by Johannes Hechler and Dave Beech</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>19/12/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.2</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>args = spark dataframes for analysis</dt><dd><p><cite>(datatype = dataframe names, no strings, no list)</cite>, e.g. PDS, HESA</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">unique_function</span><span class="p">(</span><span class="n">PDSraw</span><span class="p">,</span> <span class="n">PDSclean</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-adruk_tools.dummy">
+<span id="adruk-tools-dummy-module"></span><h2>adruk_tools.dummy module<a class="headerlink" href="#module-adruk_tools.dummy" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.dummy.dummy_function">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.dummy.</span></span><span class="sig-name descname"><span class="pre">dummy_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/dummy.html#dummy_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.dummy.dummy_function" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Metadata</dt>
+<dd class="field-odd"><p>content</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-adruk_tools">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-adruk_tools" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">Welcome to adruk_tools’s documentation!</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="adruk_tools.functions.html">adruk_tools.functions package</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Johannes Hechler.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.1.2.
+    </div>
+  </body>
+</html>

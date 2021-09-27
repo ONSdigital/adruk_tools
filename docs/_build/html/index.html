@@ -1,0 +1,764 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Welcome to adruk_tools’s documentation! &#8212; adruk_tools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/haiku.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="adruk_tools package" href="adruk_tools.html" /> 
+  </head><body>
+      <div class="header" role="banner"><h1 class="heading"><a href="#">
+          <span>adruk_tools  documentation</span></a></h1>
+        <h2 class="heading"><span>Welcome to adruk_tools’s documentation!</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        <a class="uplink" href="#">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="adruk_tools.html">adruk_tools package</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <section id="module-adruk_tools.adr_functions">
+<span id="welcome-to-adruk-tools-s-documentation"></span><h1>Welcome to adruk_tools’s documentation!<a class="headerlink" href="#module-adruk_tools.adr_functions" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.complex_harmonisation">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">complex_harmonisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#complex_harmonisation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.complex_harmonisation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>where harmonisation leads to duplicate named variables within a dataset, this function harmonised to a single variable</p></li>
+<li><p>a multiple record (_mr) flag is generated as an additional column to indicate if there is discrepancy in values for harmonised variables</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">USE</dt>
+<dd class="field-odd"><p>used in 05c_aggregate_hive_tables.py</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>David Cobbledick</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>08/01/2021</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.complex_standardisation">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">complex_standardisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#complex_standardisation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.complex_standardisation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>Enables more detailed secondary engineering of columns secified within the function</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">USE</dt>
+<dd class="field-odd"><p>used in 05c_aggregate_hive_tables.py</p>
+</dd>
+<dt class="field-even">NOTES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>This can be adapted to suit data and processing requirements</p></li>
+<li><p>The examples below show application for standardising sex, name and postcode variables</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>David Cobbledick</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>08/01/2021</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.extended_describe">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">extended_describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_columns_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nan_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">special_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blank_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stddev_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_mean_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_stddev_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_min_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_max_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_range_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_mode_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">special_dict_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pandas_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillna_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#extended_describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.extended_describe" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>PYSPARK FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>This function extends all of the functions listed in parameters to apply on a dataset.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>dataframe with information on the data in the specified dataframe.</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>pandas dataframe</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>David Cobbledick</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>01/12/2020</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.1</p>
+</dd>
+<dt class="field-even">KNOWN ISSUES</dt>
+<dd class="field-even"><p>There are multiple columns that require boolean and some that do not work on boolean data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>df = the dataframe that you are calling this on.</p></li>
+<li><p>all = chooses that all are true and overwrites calling subfunctions.</p></li>
+<li><p>trim = this imports the trim function to be used a sub functon.</p></li>
+<li><p>Active_columns =</p></li>
+<li><p>Sum = The function sum_describe gets called in here.</p></li>
+<li><p>Positive = The function posiitve_describe gets called in here.</p></li>
+<li><p>Negative = The function negative_decribe gets called in here.</p></li>
+<li><p>Zero = The function zero_describe gets called in here.</p></li>
+<li><p>Null = The function null_describe gets called in here.</p></li>
+<li><p>Nan = The function nan_describe gets called in here.</p></li>
+<li><p>count = The function count gets called in here.</p></li>
+<li><p>Unique = The function unique_descrbie gets called in here.</p></li>
+<li><p>Special = The function special_describe gets called in here.</p></li>
+<li><p>Blank = The function blank_describe gets called in here.</p></li>
+<li><p>Mean = The function mean_describe gets called in here.</p></li>
+<li><p>Stddev = The function stddev_describe gets called in here.</p></li>
+<li><p>Min = The function min_descrie gets called in here.</p></li>
+<li><p>Max = The function max_describe gets called in here.</p></li>
+<li><p>Range =</p></li>
+<li><p>Mode = The function mode_descrie gets called in here.</p></li>
+<li><p>Length-mean = The length of the mean in mean_describe is set here.</p></li>
+<li><p>Length-stddev = This sets the default ofr the length of Stddev.</p></li>
+<li><p>Length-min = The function here describes the lenght of the min_describe function.</p></li>
+<li><p>Length-max = The funciton defines the length of the max-describe function.</p></li>
+<li><p>Length-range =</p></li>
+<li><p>Length-mode = The length of the mode_describe function is set here.</p></li>
+<li><p>Special-dict =</p></li>
+<li><p>Percent =</p></li>
+<li><p>Pandas =</p></li>
+<li><p>Axis =</p></li>
+<li><p>Fillna =</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_describe</span> <span class="o">=</span> <span class="n">extended_describe</span><span class="p">(</span><span class="n">raw_df</span><span class="p">,</span>
+<span class="go">                         all_=False,</span>
+<span class="go">                         trim_=True,</span>
+<span class="go">                         active_columns_=True,</span>
+<span class="go">                         null_=True,</span>
+<span class="go">                         nan_=True,</span>
+<span class="go">                         special_=True,</span>
+<span class="go">                         special_dict_=nulls_dict,</span>
+<span class="go">                         unique_=True,</span>
+<span class="go">                         #length_max_=False,</span>
+<span class="go">                         percent_=False,</span>
+<span class="go">                         pandas_=True,</span>
+<span class="go">                         axis_=1,</span>
+<span class="go">                        fillna_=0)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.generate_ids">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">generate_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_cols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#generate_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.generate_ids" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT ID DOES</dt>
+<dd class="field-even"><p>recodes a given column to random numerical values</p>
+</dd>
+<dt class="field-odd">WHY IT DOES IT</dt>
+<dd class="field-odd"><p>to anonymise ID variables in ADRUK projects</p>
+</dd>
+<dt class="field-even">RETURNS</dt>
+<dd class="field-even"><p>dataframe with 1 new column called ‘adr_id’, holding the new ID</p>
+</dd>
+<dt class="field-odd">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">KNOWN ISSUES</dt>
+<dd class="field-even"><p>input dataset must not have existing column called ‘adr_id’</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>David Cobbledick</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>2020</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.1</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><ul class="simple">
+<li><p>session = name of current spark cluster
+<cite>(datatype = cluster name, no string)</cite>, e.g. spark</p></li>
+<li><p>df = spark dataframe
+<cite>(datatype = dataframe name, no string)</cite>, e.g. PDS</p></li>
+<li><p>id_cols = column(s) to use for new ID
+<cite>(datatype = list of strings)</cite>, e.g. [‘year’, ‘name’]</p></li>
+<li><p>start_year = name of additional column(s) to use in ID
+<cite>(datatype = list of strings)</cite>, e.g. [‘year’, ‘name’]</p></li>
+<li><p>id_len = set uniform length of ID values if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths
+<cite>(datatype = numeric)</cite>, e.g. 9</p></li>
+</ul>
+</dd>
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generate_ids</span><span class="p">(</span><span class="n">sessions</span> <span class="o">=</span> <span class="n">spark</span><span class="p">,</span> 
+<span class="go">                  df = AEDE, </span>
+<span class="go">                  id_cols = [&#39;name&#39;, &#39;ID&#39;],</span>
+<span class="go">                  start_year = [&#39;year&#39;], </span>
+<span class="go">                  id_len = 9)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.make_test_df">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">make_test_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#make_test_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.make_test_df" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>creates a dataframe with several columns of different data types for testing purposes. Intentionally includes various errors, e.g. typos.</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>spark dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>27/08/2019</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>session_name = name of the spark session to use
+<cite>(datatype = session name, unquoted)</cite>, e.g. spark</p></li>
+</ul>
+</dd>
+<dt class="field-even">EXAMPLE</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_test_df</span><span class="p">(</span><span class="n">spark</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.manifest">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#manifest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.manifest" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Python class</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>creates an object of class ‘manifest’</p></li>
+<li><p>assign several methods to the object</p></li>
+<li><p>designed extract data from nested dictionaries, in particular .mani files on HDFS</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>09/02/2021</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.1</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.manifest.parts">
+<span class="sig-name descname"><span class="pre">parts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#manifest.parts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.manifest.parts" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Python method for objects of class ‘manifest’</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>generates property ‘parts’, i.e. information about the individual files included in a delivery, as a pandas dataframe with as many rows as there are files</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>09/02/2021</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.manifest.whole">
+<span class="sig-name descname"><span class="pre">whole</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#manifest.whole"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.manifest.whole" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Python method for objects of class ‘manifest’</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>generates property ‘whole’, i.e. information about the overall delivery, as a pandas dataframe with 1 row</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>09/02/2021</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.1</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.save_sample">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">save_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#save_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.save_sample" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>PYSPARK FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>draws as user-specified number of records from the top of a dataset and saves them to a selected location in csv format</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>nothing in memory; writes out a comma-separated file</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>not applicable</p>
+</dd>
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>spark dataframe from covid test and trace dataset</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Ben Marshall-Sheen, Johannes Hechler</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>17/12/2020</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">KNOWN ISSUES</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul>
+<li><dl class="simple">
+<dt>dataframe = spark dataframe</dt><dd><p><cite>(datatype = dataframe name, no string)</cite>, e.g. ctas_data</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sample_size = how many rows to take from dataset. Default values = 20.</dt><dd><p><cite>(datatype = numeric)</cite>, e.g. 20</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>filepath = the directory and filename for the file to be written to.</dt><dd><dl class="simple">
+<dt><cite>(datatype = string)</cite>, e.g. “/dapsen/workspace_zone/adruk/sample.csv”</dt><dd><ul class="simple">
+<li><p>na_variables = if you want to exclude records with missing data from the sample, you can specify the names of columns to check for missingness. Records are removed if ANY of the selected variables is missing. Optional. Default value = []</p></li>
+</ul>
+</dd>
+</dl>
+<p><cite>(datatype = list of strings)</cite>, e.g. [‘age’, ‘sex]</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">save_sample</span><span class="p">(</span> <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pii_data</span><span class="p">,</span> 
+<span class="go">                 sample_size = 20, </span>
+<span class="go">                 filepath = &#39;/dapsen/workspace_zone/my_project/sample.csv)))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.session_large">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">session_large</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#session_large"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.session_large" title="Permalink to this definition">¶</a></dt>
+<dd><p>Large Session</p>
+<p>Session designed for running Production pipelines on large
+administrative data, rather than just survey data. Will often
+develop using a smaller session then change to this once the
+pipeline is complete.</p>
+<dl class="simple">
+<dt>Details:</dt><dd><p>10g of memory and 5 executors
+1g of memory overhead
+5 cores, which is generally optimal on larger sessions</p>
+</dd>
+<dt>Use case:</dt><dd><p>Production pipelines on administrative data
+Cannot be used in Dev Test, as 9 GB limit per executor</p>
+</dd>
+<dt>Example of actual usage:</dt><dd><p>One administrative dataset of 100 million rows
+Many calculations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.session_medium">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">session_medium</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#session_medium"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.session_medium" title="Permalink to this definition">¶</a></dt>
+<dd><p>Medium Session</p>
+<p>A standard session used for analysing survey or synthetic
+datasets. Also used for some Production pipelines based on
+survey and/or smaller administrative data.</p>
+<dl class="simple">
+<dt>Details:</dt><dd><p>6g of memory and 3 executors
+3 cores
+Number of partitions are limited to 18, which can improve
+performance with smaller data</p>
+</dd>
+<dt>Use case:</dt><dd><p>Developing code in Dev Test
+Data exploration in Production
+Developing Production pipelines on a sample of data
+Running smaller Production pipelines on mostly survey data</p>
+</dd>
+<dt>Example of actual usage:</dt><dd><dl class="simple">
+<dt>Complex calculations, but on smaller synthetic data in</dt><dd><p>Dev Test</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.session_small">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">session_small</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#session_small"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.session_small" title="Permalink to this definition">¶</a></dt>
+<dd><p>Small Session</p>
+<p>This session is similar to that used for DAPCATS training
+It is the smallest session that is realistically used</p>
+<dl class="simple">
+<dt>Details:</dt><dd><p>Only 1g of memory and 3 executors
+Only 1 core
+Number of partitions are limited to 12, which can improve
+performance with smaller data</p>
+</dd>
+<dt>Use case:</dt><dd><p>Simple data exploration of small survey data</p>
+</dd>
+<dt>Example of actual usage:</dt><dd><p>Used for DAPCATS PySpark training
+Mostly simple calculations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.session_xl">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">session_xl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#session_xl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.session_xl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extra Large session</p>
+<p>Used for the most complex pipelines, with huge administrative
+data sources and complex calculations. Uses a large amount of
+resource on the cluster, so only use when running Production
+pipelines</p>
+<dl>
+<dt>Details:</dt><dd><p>20g of memory and 12 executors
+2g of memory overhead
+5 cores; using too many cores can actually cause worse</p>
+<blockquote>
+<div><p>performance on larger sessions</p>
+</div></blockquote>
+</dd>
+<dt>Use case:</dt><dd><dl class="simple">
+<dt>Running large, complex pipelines in Production on mostly</dt><dd><p>administrative data</p>
+</dd>
+<dt>Do not use for development purposes; use a smaller session</dt><dd><p>and work on a sample of data or synthetic data</p>
+</dd>
+</dl>
+</dd>
+<dt>Example of actual usage:</dt><dd><p>Three administrative datasets of around 300 million rows
+Significant calculations, including joins and writing/reading</p>
+<blockquote>
+<div><p>to many intermediate tables</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.spark_glob">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">spark_glob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#spark_glob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.spark_glob" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>lists names of files or subdirectories in a given directory</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>list of file / directory names</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLES TYPE</dt>
+<dd class="field-even"><p>list of strings</p>
+</dd>
+<dt class="field-odd">NOTES</dt>
+<dd class="field-odd"><p>expects an existing connection to a spark cluster</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>David Cobbledick</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>2020</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="field-list simple">
+<dt class="field-odd">host = a valid CDSW user name. not necessarily that of the current users</dt>
+<dd class="field-odd"><p><cite>(datatype = string)</cite>, e.g. ‘hechlj’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">directory = for name of the directory to check</dt>
+<dd class="field-odd"><p><cite>(datatype = string)</cite>, e.g. ‘/dapsen/landing_zone/hmrc/self_assessment/2017/v1’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spark_glob</span><span class="p">(</span><span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;hechlj&#39;</span><span class="p">,</span>
+<span class="go">                directory = &#39;/dapsen/landing_zone/hmrc/self_assessment/2017/v1&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.spark_glob_all">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">spark_glob_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#spark_glob_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.spark_glob_all" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>pyspark function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>lists names of files or subdirectories in a given directory, and all subdirectories</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>list of file / directory names</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLES TYPE</dt>
+<dd class="field-even"><p>list of strings</p>
+</dd>
+<dt class="field-odd">NOTES</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>expects an existing connection to a spark cluster</p></li>
+<li><p>expect the package <cite>adruk_tools</cite> including the function <cite>spark_glob</cite> to be installed</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>David Cobbledick</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>2020</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.1</p>
+</dd>
+<dt class="field-even">PARAMETERS</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="field-list simple">
+<dt class="field-odd">host = a valid CDSW user name. not necessarily that of the current users</dt>
+<dd class="field-odd"><p><cite>(datatype = string)</cite>, e.g. ‘hechlj’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">directory = for name of the directory to check</dt>
+<dd class="field-odd"><p><cite>(datatype = string)</cite>, e.g. ‘/dapsen/landing_zone/hmrc/self_assessment/2017/v1’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spark_glob_all</span><span class="p">(</span><span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;hechlj&#39;</span><span class="p">,</span>
+<span class="go">                directory = &#39;/dapsen/landing_zone/hmrc/self_assessment/2017/v1&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.unzip_to_csv">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">unzip_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#unzip_to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.unzip_to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>PYSPARK FUNCTION</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>unzips a .csv.gz file into cdsw from a chosen location</p></li>
+<li><p>puts the resulting unzipped csv into a user defined destination folder,</p></li>
+<li><p>then deletes the original file from CDSW.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">OUTPUT</dt>
+<dd class="field-odd"><p>csv file</p>
+</dd>
+<dt class="field-even">NOTES</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><p>will only work on zipped files which are less than 10GB</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">TESTED TO RUN ON</dt>
+<dd class="field-odd"><p>zipped csv dataframe</p>
+</dd>
+<dt class="field-even">AUTHOR</dt>
+<dd class="field-even"><p>Sophie-Louise Courtney</p>
+</dd>
+<dt class="field-odd">DATE</dt>
+<dd class="field-odd"><p>18/01/2021</p>
+</dd>
+<dt class="field-even">VERSION</dt>
+<dd class="field-even"><p>0.0.1</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>file_path = path to file</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘/dapsen/landing_zone’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>file_name = full name of the file </dt><dd><p><cite>(datatype = 1 zipped dataframe)</cite>, e.g. ‘test_results.csv.gz’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>destination_path = path to folder where the unzipped file will be stored</dt><dd><p><cite>(datatype = 1 string)</cite>, e.g. ‘/dapsen/workspace_zone’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">unzip_to_csv</span><span class="p">(</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">adr_directory</span><span class="p">,</span>
+<span class="go">                    file_name = file,</span>
+<span class="go">                    destination_path = out)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="adruk-tools">
+<h1>adruk_tools<a class="headerlink" href="#adruk-tools" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="adruk_tools.html">adruk_tools package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adruk_tools.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="adruk_tools.functions.html">adruk_tools.functions package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="adruk_tools.functions.html#module-adruk_tools.functions">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="adruk_tools.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adruk_tools.html#module-adruk_tools.adr_functions">adruk_tools.adr_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adruk_tools.html#module-adruk_tools.cleaning">adruk_tools.cleaning module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adruk_tools.html#module-adruk_tools.diagnostics">adruk_tools.diagnostics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adruk_tools.html#module-adruk_tools.dummy">adruk_tools.dummy module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adruk_tools.html#module-adruk_tools">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conf.html">conf module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">setup module</a></li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        <a class="uplink" href="#">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="adruk_tools.html">adruk_tools package</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Johannes Hechler.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.1.2.
+    </div>
+  </body>
+</html>
