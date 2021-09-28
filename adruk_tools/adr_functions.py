@@ -1,3 +1,35 @@
+def pydoop_read(file_path):
+	"""
+  :WHAT IT IS: Python function
+  
+  :WHAT IT DOES: reads in small dataset from HDFS without the need for a spark cluster
+  :RETURNS: un-parsed, unformatted dataset
+  :OUTPUT VARIABLE TYPE: bytes
+  
+
+  :AUTHOR: Johannes Hechler
+  :DATE: 28/09/2021
+  :VERSION: 0.0.1
+  :KNOWN ISSUES: None
+  
+  :PARAMETERS:
+  * file_path = full path to file to import
+      `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
+      
+  :EXAMPLE:
+  >>> pydoop_read(file_path = '/dapsen/workspace_zone/my_project/sample.csv')
+	"""
+  import pydoop.hdfs as pdh  # import package to read from HDFS without spark
+
+  # read in file from HDFS
+  with pdh.open(file_path, "r") as f:
+    data = f.open()
+    f.close()
+    
+  return data
+
+
+
 def session_small():
   """
   Small Session
@@ -1086,6 +1118,30 @@ def extended_describe(
 	
 
 def spark_glob(host,directory):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: lists names of files or subdirectories in a given directory
+  :RETURNS: list of file / directory names
+  :OUTPUT VARIABLES TYPE: list of strings
+  :NOTES: expects an existing connection to a spark cluster
+  
+  :AUTHOR: David Cobbledick
+  :DATE: 2020
+  :VERSION: 0.1
+
+
+  :PARAMETERS:
+  * :host = a valid CDSW user name. not necessarily that of the current users:
+      `(datatype = string)`, e.g. 'hechlj'
+  * :directory = for name of the directory to check:
+      `(datatype = string)`, e.g. '/dapsen/landing_zone/hmrc/self_assessment/2017/v1'
+        
+
+  :EXAMPLE:
+  >>> spark_glob(host = 'hechlj',
+                  directory = '/dapsen/landing_zone/hmrc/self_assessment/2017/v1')
+
+  """  
   from pyspark.context import SparkContext as sc
   URI           = sc._gateway.jvm.java.net.URI
   Path          = sc._gateway.jvm.org.apache.hadoop.fs.Path
@@ -1100,17 +1156,43 @@ def spark_glob(host,directory):
   
   return files
 
-# returns files in directory
-def spark_glob_all(host,directory):
 
-  files = spark_glob(host,directory)
+def spark_glob_all(host,directory):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: lists names of files or subdirectories in a given directory, and all subdirectories
+  :RETURNS: list of file / directory names
+  :OUTPUT VARIABLES TYPE: list of strings
+  :NOTES: 
+  * expects an existing connection to a spark cluster
+  * expect the package `adruk_tools` including the function `spark_glob` to be installed
+  
+  :AUTHOR: David Cobbledick
+  :DATE: 2020
+  :VERSION: 0.1
+
+
+  :PARAMETERS:
+  * :host = a valid CDSW user name. not necessarily that of the current users:
+      `(datatype = string)`, e.g. 'hechlj'
+  * :directory = for name of the directory to check:
+      `(datatype = string)`, e.g. '/dapsen/landing_zone/hmrc/self_assessment/2017/v1'
+        
+
+  :EXAMPLE:
+  >>> spark_glob_all(host = 'hechlj',
+                  directory = '/dapsen/landing_zone/hmrc/self_assessment/2017/v1')
+
+  """  
+  import adruk_tools.adr_functions as adr   # import package with 1 function needed to run this one
+  files = adr.spark_glob(host,directory)    # list all functions in selected directory
 
   for file in files:
-    if len(files)==len(set(files)):
-      files.extend(spark_glob(host,file))
+    if len(files)==len(set(files)):   # ... if no file has been listed twice...
+      files.extend(spark_glob(host,file))   # ... then add the contents of the current file or directory file to the list. NB this only makes a difference for directories.
     else:
       break
 
-  files = list(set(files))
+  files = list(set(files))    # deduplicate list of files
   
   return files
