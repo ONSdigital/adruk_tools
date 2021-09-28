@@ -1,7 +1,6 @@
 def pydoop_read(file_path):
-	"""
+  """
   :WHAT IT IS: Python function
-  
   :WHAT IT DOES: reads in small dataset from HDFS without the need for a spark cluster
   :RETURNS: un-parsed, unformatted dataset
   :OUTPUT VARIABLE TYPE: bytes
@@ -19,6 +18,7 @@ def pydoop_read(file_path):
   :EXAMPLE:
   >>> pydoop_read(file_path = '/dapsen/workspace_zone/my_project/sample.csv')
 	"""
+  
   import pydoop.hdfs as pdh  # import package to read from HDFS without spark
 
   # read in file from HDFS
