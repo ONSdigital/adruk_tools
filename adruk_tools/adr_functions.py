@@ -23,7 +23,7 @@ def pydoop_read(file_path):
 
   # read in file from HDFS
   with pdh.open(file_path, "r") as f:
-    data = f.open()
+    data = f.read()
     f.close()
     
   return data
