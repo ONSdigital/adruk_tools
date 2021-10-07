@@ -325,23 +325,21 @@ def LAlookup(test_df, test_variables, reference_table, reference_variable, LA_co
 
 def make_missing_none(data, columns):
   """
-  WHAT IT IS: FUNCTION
+  :WHAT IT IS: pyspark function
   
-  WHAT IT DOES: recodes different ways of expressing missingness into explicit NULL/None values, in all variables of a spark dataframe
-  RETURNS: spark dataframe with all variables recoded
+  :WHAT IT DOES: recodes different ways of expressing missingness into explicit NULL/None values, in all variables of a spark dataframe
+  :RETURNS: spark dataframe with all variables recoded
   
-  TESTED TO RUN ON: spark dataframe
-
-  AUTHOR: Johannes Hechler
-  DATE: 11/05/2020
-  VERSION: 0.0.2
-  CHANGES FROM PREVIOUS VERSION: can now select columns to clean
+  :AUTHOR: Johannes Hechler
+  :DATE: 11/05/2020
+  :VERSION: 0.0.2
+  :CHANGES FROM PREVIOUS VERSION: can now select columns to clean
 
 
   :PARAMETERS:
-    : dataset = spark dataframe:
+    * dataset = spark dataframe
       `(datatype = dataframe name, no string)`, e.g. PDS
-    : columns = list of strings:
+    * columns = list of strings
       `(datatype = list of strings])`, e.g. ['forename', 'surname']
 
   :EXAMPLE:
@@ -574,24 +572,24 @@ def clean_postcode(dataset, variables, spaces):
 def postcode_pattern(test_df, test_postcodes):
 
   """
-  WHAT IT IS: Function
-  WHAT IT DOES: tests if the values in a given variable follow the format of UK postcodes. Excludes non-numeric and non-alphabetical characters except horizontal spaces.
-  RETURNS: copy of the original dataframe, with a new variable called 'fitPattern', which is TRUE where a value fits the format, FALSE if it's not, and NULL if the test variable is NULL.
-  TESTED TO RUN ON: Spark dataframes
-  TESTED FOR PERFORMANCE ON: UK Postcode Directory
-  FALSE NEGATIVES: catches all postcodes in UK Postcode Directory
-  FALSE POSITIVES: tests if a letter or number should be in a certain place, but not if that PARTICULAR letter/number should be there. If postcodes never use a certain character in a certain place that uses other characters, it doens't catch it. rejects any format that isn't in the UK Postcode Directory. Designed to reject anything that isn't a number or letter, or not in the right place. But cannot test completely.
-  FULL LIST OF ACCEPTED FORMATS: see below
+  :WHAT IT IS: Function
+  :WHAT IT DOES: tests if the values in a given variable follow the format of UK postcodes. Excludes non-numeric and non-alphabetical characters except horizontal spaces.
+  :RETURNS: copy of the original dataframe, with a new variable called 'fitPattern', which is TRUE where a value fits the format, FALSE if it's not, and NULL if the test variable is NULL.
 
-  AUTHOR: Johannes Hechler
-  DATE: 27/08/2019
-  VERSION: 0.1
+  :TESTED ON: UK Postcode Directory
+  :FALSE NEGATIVES: catches all postcodes in UK Postcode Directory
+  :FALSE POSITIVES: tests if a letter or number should be in a certain place, but not if that PARTICULAR letter/number should be there. If postcodes never use a certain character in a certain place that uses other characters, it doens't catch it. rejects any format that isn't in the UK Postcode Directory. Designed to reject anything that isn't a number or letter, or not in the right place. But cannot test completely.
+  :FULL LIST OF ACCEPTED FORMATS: see below
+
+  :AUTHOR: Johannes Hechler
+  :DATE: 27/08/2019
+  :VERSION: 0.1
 
 
   :PARAMETERS:
-    :test_df = name of dataframe that holds variable to test:
+    * test_df = name of dataframe that holds variable to test
       `(datatype = dataframe name, no string)`, e.g. PDS
-    :test_variable = name of variable to match against reference:
+    * test_variable = name of variable to match against reference
       `(datatype = string)`, e.g. 'postcode'
 
 
@@ -739,7 +737,7 @@ def rename_columns(dataset, variable_names_old, variable_names_new):
   * variable_names_new = how to call the new variables
       `(datatype = list of strings)`, e.g. ['sex', 'forename']
     * provide in order corresponding to old names
-    * ever listed old name MUST have a new value assigned. If variable should NOT be renamed, assign None
+    * every listed old name MUST have a new value assigned. If variable should NOT be renamed, assign None
  
       
   :EXAMPLE:
@@ -758,7 +756,7 @@ def rename_columns(dataset, variable_names_old, variable_names_new):
 
 def sex_recode(dataset, variable_input, variable_output):
   """
-  :WHAT IT IS: FUNCTION
+  :WHAT IT IS: pyspark function
   
   :WHAT IT DOES: recodes different sets of values to 1, 2, 3 or None/NULL
   :RETURNS: spark dataframe with recode saved into new variable, or original variable overwritten
@@ -817,18 +815,18 @@ def sex_recode(dataset, variable_input, variable_output):
 def space_to_underscore(df):
   
   """
-  :WHAT IT IS: FUNCTION
+  :WHAT IT IS: pyspark function
   
   :WHAT IT DOES: replaces spaces with underscores
   :RETURNS: spark dataframe with no column names containing spaces
-  TESTED TO RUN ON: spark dataframe  
-  AUTHOR: Sophie-Louise Courtney
-  DATE: 02/03/2021
-  VERSION: 0.0.1
+  :AUTHOR: Sophie-Louise Courtney
+  :DATE: 02/03/2021
+  :VERSION: 0.0.1
   
   
   :PARAMETERS:
   * df = spark dataframe
+      `(datatype = dataframe name, not string)`, e.g. ESC
   """
   return df.replace(" ","_")
 
@@ -836,7 +834,7 @@ def space_to_underscore(df):
 
 def title_remove(dataset, variables):
   """
-  :WHAT IT IS: FUNCTION
+  :WHAT IT IS: pyspark function
   
   :WHAT IT DOES: removes preceeding/trailing white space from strings, then makes them upper-case, then removes selected titles at the very start
   :RETURNS: spark dataframe with selected variable cleaned, trimmed, made upper case. Other variables unchanged
@@ -850,12 +848,12 @@ def title_remove(dataset, variables):
   * the function cleans the data before removing titles (trims whitespace, make everything upper case), but more cleaning should be done beforehand, e.g. remove dots
   
   
-  TESTED TO RUN ON: spark dataframe
-  RUN TIME: 20-row test dataframe - 3s; full PDS stock 2019 - 2s
+  :TESTED TO RUN ON: spark dataframe
+  :RUN TIME: 20-row test dataframe - 3s; full PDS stock 2019 - 2s
   
-  AUTHOR: Johannes Hechler
-  DATE: 25/09/2019
-  VERSION: 0.0.1
+  :AUTHOR: Johannes Hechler
+  :DATE: 25/09/2019
+  :VERSION: 0.0.1
   
   
   :PARAMETERS:
