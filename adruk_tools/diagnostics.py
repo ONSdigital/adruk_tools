@@ -1,3 +1,44 @@
+def list_columns_by_file( cluster, paths ):  
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: records variable names by dataset, for a list of files
+
+  :RETURNS: dictionary where key = file name, values = variable names
+  :OUTPUT VARIABLES TYPE: Python dictionary
+
+  :AUTHOR: Johannes Hechler
+
+  :VERSION: 0.0.1
+  :DATE: 07/10/2021
+  :CAVEATS: only runs on .csv files on HDFS
+
+  :PARAMETERS:
+  * cluster : an active spark cluster
+      `(datatype = cluster name, no string)`, e.g. spark
+  * paths : list of file paths to examine
+      `(datatype = list of strings)`, e.g. ['/folder1/file1.csv', 'folder2/file2.csv']
+        
+
+  :EXAMPLE:
+  >>> list_columns_by_file( cluster = spark, paths =  ['/folder1/file1.csv', 'folder2/file2.csv'])
+  """
+
+  # make an empty dictionary to later add results to
+  cols_by_file = {}
+  
+  # read in and evaluate columns from each dataset in turn
+  for path in paths:
+    # read in file
+    current_file = cluster.read.format('csv').option('header', 'True').load( path )
+    
+    # record file name (without folder path) and variable names in dictionary
+    cols_by_file.update( { path.split('/')[-1] :   current_file.columns })
+
+  return cols_by_file
+
+
+
+
 def missing_count(*args):
   """
   :WHAT IT IS: FUNCTION
