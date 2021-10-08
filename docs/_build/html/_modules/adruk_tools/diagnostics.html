@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>adruk_tools.diagnostics &#8212; adruk_tools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for adruk_tools.diagnostics</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="missing_count"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.diagnostics.missing_count">[docs]</a><span></span><span class="k">def</span> <span class="nf">missing_count</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: counts missing values per column for any number of input matrices.</span>
+<span class="sd">  :RETURNS: pandas dataframe</span>
+<span class="sd">  :OUTPUT VARIABLES TYPE: string, numeric</span>
+<span class="sd">  :NOTES: won&#39;t work if any columns are of array type</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Amy Mayer, amended by Johannes Hechler</span>
+<span class="sd">  :DATE: 19/12/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * args (Pyspark dataframe): Dataframes for analysis</span>
+<span class="sd">      `(datatype = dataframe names, no string, no list)`, e.g. PDS, HESA, WSC</span>
+<span class="sd">        </span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; missing_count(PDS, HESA, WSC)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="c1">#Import relevant modules</span>
+  <span class="kn">from</span> <span class="nn">pyspark</span> <span class="k">import</span> <span class="n">SparkContext</span>
+  <span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="k">import</span> <span class="n">Row</span><span class="p">,</span> <span class="n">SparkSession</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.types</span> <span class="k">as</span> <span class="nn">T</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span>
+  <span class="kn">import</span> <span class="nn">inspect</span>
+  <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+  <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+  <span class="kn">import</span> <span class="nn">re</span>
+  <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
+  <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.html.table_schema&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+  <span class="c1">#Create empty Pandas dataframe to store results</span>
+  <span class="n">missing_file</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>
+
+  <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span> <span class="c1"># for each dataframe, do this:</span>
+    <span class="n">count_nulls</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span> <span class="c1"># for each column, sum together all values that....</span>
+                                 <span class="n">isin</span><span class="p">([</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">,</span> <span class="s1">&#39;NAN&#39;</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">,</span> <span class="s1">&#39;UNK&#39;</span><span class="p">])</span><span class="o">.</span> <span class="c1">#... are either of these values...</span>
+                                 <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="c1">#... turn the True/False values into 1/0 so they can be summed up. Then add to that sum...</span>
+                             <span class="n">F</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">isNull</span><span class="p">()</span><span class="o">.</span> <span class="c1">#... the sum of values that are explicitly NULL/None...</span>
+                                 <span class="n">cast</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">))</span><span class="o">.</span> <span class="c1">#... also turn those results to 1/0 for summing</span>
+                             <span class="n">alias</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span> <span class="c1">#... rename the resulting number after the variable it refers to</span>
+  
+    <span class="n">count_nulls</span> <span class="o">=</span> <span class="n">count_nulls</span><span class="o">.</span><span class="n">toPandas</span><span class="p">()</span>
+  
+    <span class="c1">#Extract counts from count_nulls dataframe to a list</span>
+    <span class="n">count_nulls_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">count_nulls</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1">#Create new list expressing counts as percentages</span>
+    <span class="n">count_all</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">count_nulls_percent</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span><span class="o">/</span><span class="n">count_all</span><span class="o">*</span><span class="mi">100</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">count_nulls_list</span><span class="p">]</span>
+
+    <span class="c1">#Create list of file numbers</span>
+    <span class="n">file_nums</span> <span class="o">=</span> <span class="p">[</span><span class="n">count</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+    <span class="c1">#Append counts, percentages and file number lists to missing_file dataframe</span>
+    <span class="n">missing_file</span> <span class="o">=</span> <span class="n">missing_file</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">count_nulls_list</span><span class="p">,</span> <span class="n">count_nulls_percent</span><span class="p">,</span> <span class="n">file_nums</span><span class="p">)),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Count_Missing&#39;</span><span class="p">,</span> <span class="s1">&#39;Percentage_Missing&#39;</span><span class="p">,</span> <span class="s1">&#39;File&#39;</span><span class="p">]))</span>
+  <span class="k">return</span> <span class="n">missing_file</span></div>
+
+
+
+<div class="viewcode-block" id="missing_by_row"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.diagnostics.missing_by_row">[docs]</a><span class="k">def</span> <span class="nf">missing_by_row</span><span class="p">(</span><span class="n">dataset</span> <span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: counts how many rows have got different numbers of selected variables missing</span>
+<span class="sd">  :RETURNS: frequency table</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: string, numeric</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 19/12/2019</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * dataset = spark dataframe</span>
+<span class="sd">      `(datatype = 1 dataframe name, no string)`, e.g. PDS</span>
+<span class="sd">  * args = variables to include in count</span>
+<span class="sd">      `(datatype = strings, no list)`, e.g. &#39;forename&#39;, &#39;surname&#39;</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; missing_by_row(PDS,</span>
+<span class="sd">                     &#39;forename_clean&#39;,</span>
+<span class="sd">                     &#39;middle_name_clean&#39;,</span>
+<span class="sd">                     &#39;surname_clean&#39;,</span>
+<span class="sd">                     &#39;date_of_birth&#39;,</span>
+<span class="sd">                     &#39;sex&#39;,</span>
+<span class="sd">                     &#39;postcode&#39;)</span>
+
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span> <span class="c1"># import generic pyspark functions</span>
+  <span class="k">return</span> <span class="n">dataset</span><span class="o">.</span><span class="n">select</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s2">&quot;fields_missing&quot;</span><span class="p">,</span> <span class="c1"># create new column called &#39;fields_missing&#39;</span>
+                                           <span class="nb">sum</span><span class="p">(</span> <span class="c1"># make column equal the sum of missing fields of the chosen variables... NB this MUST use base Python sum(), NOT pyspark.sql.functions.sum!</span>
+                                             <span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">isNull</span><span class="p">(),</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">args</span><span class="p">]]))</span>\
+                <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;fields_missing&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="c1"># count frequencies of missing number of fields</span></div>
+
+
+
+<div class="viewcode-block" id="unique_function"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.diagnostics.unique_function">[docs]</a><span class="k">def</span> <span class="nf">unique_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: FUNCTION</span>
+<span class="sd">  </span>
+<span class="sd">  :WHAT IT DOES: Return unique values per column for any number of input matrices. Indicates suitability of each column for use as an identifier key in linkage.</span>
+<span class="sd">  :RETURNS: pandas dataframe of analysis results</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: string, numeric, boolean</span>
+<span class="sd">  </span>
+<span class="sd">  :TESTED TO RUN ON: spark dataframe</span>
+
+<span class="sd">  :AUTHOR: Amy Mayer, amended by Johannes Hechler and Dave Beech</span>
+<span class="sd">  :DATE: 19/12/2019</span>
+<span class="sd">  :VERSION: 0.0.2</span>
+
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * args = spark dataframes for analysis</span>
+<span class="sd">      `(datatype = dataframe names, no strings, no list)`, e.g. PDS, HESA</span>
+
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; unique_function(PDSraw, PDSclean)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="kn">import</span> <span class="nn">pyspark.sql.types</span>
+  <span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span>
+  <span class="kn">import</span> <span class="nn">inspect</span>
+  <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+  <span class="kn">import</span> <span class="nn">re</span>
+  
+  <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.html.table_schema&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+  
+  <span class="c1">#Create an empty dataframe to store results</span>
+  <span class="n">unique_file</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([])</span>
+  <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span> <span class="c1"># go through each dataframe and do this:</span>
+    
+    <span class="c1">#Count distinct values and send to Pandas dataframe</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span> <span class="c1"># make the current dataframe stay in the executors for the next few calculations to prevent repeated reading in, to speed up processing</span>
+    <span class="n">distinct_count</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">countDistinct</span><span class="p">(</span><span class="n">c</span><span class="p">))</span><span class="o">.</span><span class="n">collect</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span> <span class="c1"># for each column count the number of distinct value and save in a list</span>
+
+    <span class="c1">#Count non-empty cells and send to Pandas dataframe</span>
+    <span class="n">count_not_nulls</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">isNotNull</span><span class="p">()</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+    <span class="n">count_not_nulls</span> <span class="o">=</span> <span class="n">count_not_nulls</span><span class="o">.</span><span class="n">toPandas</span><span class="p">()</span>
+    
+    <span class="c1">#Extract counts from dataframe to a list</span>
+    <span class="n">count_not_nulls_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">count_not_nulls</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    
+    <span class="n">i</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span> <span class="c1"># allow current dataframe to be removed from executors&#39; memory. The calculations where a stable memory allocation helped is over now.</span>
+   
+    <span class="c1">#Create boolean list to show if column could be used as unique identifier</span>
+    <span class="c1">#(ie does the number of unique values = number of non-nulls)</span>
+    <span class="n">identifier</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span><span class="o">==</span><span class="n">k</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">distinct_count</span><span class="p">,</span> <span class="n">count_not_nulls_list</span><span class="p">)]</span>
+    
+    <span class="c1">#Create list of percentages of unique values</span>
+    <span class="n">distinct_percent</span> <span class="o">=</span> <span class="p">[(</span><span class="n">j</span><span class="o">/</span><span class="n">k</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">distinct_count</span><span class="p">,</span> <span class="n">count_not_nulls_list</span><span class="p">)]</span>
+    
+    <span class="c1">#Calculate percentage of unique values where total includes nulls</span>
+    <span class="n">input_dataset_count</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">distinct_standardised</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="o">/</span><span class="n">input_dataset_count</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">distinct_count</span><span class="p">]</span>
+    
+    <span class="c1">#Calculate the average number of non-null entries per distinct value </span>
+    <span class="n">count_per_distinct</span> <span class="o">=</span> <span class="p">[(</span><span class="n">y</span><span class="o">/</span><span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">count_not_nulls_list</span><span class="p">,</span> <span class="n">distinct_count</span><span class="p">)]</span>
+    
+    <span class="c1">#Create list of file numbers</span>
+    <span class="n">file_nums</span> <span class="o">=</span> <span class="p">[(</span><span class="n">count</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    
+    <span class="c1">#Append file_nums, distinct_count, distinct_percent, distinct_normalised, count_per_distinct, and identifier to unique_file dataframe</span>
+    <span class="n">unique_file</span> <span class="o">=</span> <span class="n">unique_file</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">file_nums</span><span class="p">,</span> <span class="n">distinct_count</span><span class="p">,</span> <span class="n">distinct_percent</span><span class="p">,</span> <span class="n">distinct_standardised</span><span class="p">,</span> <span class="n">count_per_distinct</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;File&#39;</span><span class="p">,</span> <span class="s1">&#39;Distinct_Values_Count&#39;</span><span class="p">,</span> <span class="s1">&#39;Distinct_Values_%&#39;</span><span class="p">,</span><span class="s1">&#39;Distinct_%_Standardised&#39;</span><span class="p">,</span> <span class="s1">&#39;Count_Per_Distinct&#39;</span><span class="p">,</span> <span class="s1">&#39;Use_As_Identifier&#39;</span><span class="p">]))</span>
+  
+  <span class="k">return</span> <span class="n">unique_file</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">adruk_tools</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../adruk_tools.html">adruk_tools package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conf.html">conf module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">setup module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Johannes Hechler.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
