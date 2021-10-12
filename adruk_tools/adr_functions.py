@@ -32,23 +32,27 @@ def pydoop_read(file_path):
 
 def session_small():
   """
-  Small Session
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: creates spark cluster with these parameters. Designed for simple data exploration of small survey data.
+      * 1g of memory
+      * 3 executors
+      * 1 core
+      * Number of partitions are limited to 12, which can improve performance with smaller data
 
-  This session is similar to that used for DAPCATS training
-  It is the smallest session that is realistically used
+  :RETURNS: spark cluster
+  :OUTPUT VARIABLE TYPE: spark cluster
+  
+  :NOTES:
+  * This session is similar to that used for DAPCATS training
+  * It is the smallest session that is realistically used
 
-  Details:
-      Only 1g of memory and 3 executors
-      Only 1 core
-      Number of partitions are limited to 12, which can improve
-      performance with smaller data
-
-  Use case:
-      Simple data exploration of small survey data
-
-  Example of actual usage:
-      Used for DAPCATS PySpark training
-      Mostly simple calculations
+  :AUTHOR: DAPCATS
+  :DATE: 2021
+  :VERSION: 0.0.1
+  :KNOWN ISSUES: None
+       
+  :EXAMPLE:
+  >>> session_small()
   """
   from pyspark.sql import SparkSession
 
@@ -67,27 +71,29 @@ def session_small():
 
 def session_medium():
   """
-  Medium Session
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: creates spark cluster with these parameters. Designed for analysing survey or synthetic datasets. Also used for some Production pipelines based on survey and/or smaller administrative data.
+      * 6g of memory
+      * 3 executors
+      * 3 cores
+      * Number of partitions are limited to 18, which can improve performance with smaller data
 
-  A standard session used for analysing survey or synthetic
-  datasets. Also used for some Production pipelines based on
-  survey and/or smaller administrative data.
+  :RETURNS: spark cluster
+  :OUTPUT VARIABLE TYPE: spark cluster
+  
+  :USE CASE:
+    * Developing code in Dev Test
+    * Data exploration in Production
+    * Developing Production pipelines on a sample of data
+    * Running smaller Production pipelines on mostly survey data
 
-  Details:
-      6g of memory and 3 executors
-      3 cores
-      Number of partitions are limited to 18, which can improve
-      performance with smaller data
-
-  Use case:
-      Developing code in Dev Test
-      Data exploration in Production
-      Developing Production pipelines on a sample of data
-      Running smaller Production pipelines on mostly survey data
-
-  Example of actual usage:
-      Complex calculations, but on smaller synthetic data in
-          Dev Test
+  :AUTHOR: DAPCATS
+  :DATE: 2021
+  :VERSION: 0.0.1
+  :KNOWN ISSUES: None
+       
+  :EXAMPLE:
+  >>> session_medium()
   """
   from pyspark.sql import SparkSession
 
@@ -106,25 +112,28 @@ def session_medium():
 
 def session_large():
   """
-  Large Session
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: creates spark cluster with these parameters. Designed for running Production pipelines on large administrative data, rather than just survey data. Will often develop using a smaller session then change to this once the pipeline is complete.
+      * 10g of memory
+      * 5 executors
+      * 1g of memory overhead
+      * 5 cores, which is generally optimal on larger sessions
+      * Number of partitions are limited to 18, which can improve performance with smaller data
 
-  Session designed for running Production pipelines on large
-  administrative data, rather than just survey data. Will often
-  develop using a smaller session then change to this once the
-  pipeline is complete.
+  :RETURNS: spark cluster
+  :OUTPUT VARIABLE TYPE: spark cluster
+  
+  :NOTES:
+  * for production pipelines on administrative data
+  * Cannot be used in Dev Test, as 9 GB limit per executor
 
-  Details:
-      10g of memory and 5 executors
-      1g of memory overhead
-      5 cores, which is generally optimal on larger sessions
-
-  Use case:
-      Production pipelines on administrative data
-      Cannot be used in Dev Test, as 9 GB limit per executor
-
-  Example of actual usage:
-      One administrative dataset of 100 million rows
-      Many calculations
+  :AUTHOR: DAPCATS
+  :DATE: 2021
+  :VERSION: 0.0.1
+  :KNOWN ISSUES: None
+       
+  :EXAMPLE:
+  >>> session_large()
   """
   from pyspark.sql import SparkSession
 
@@ -144,29 +153,31 @@ def session_large():
   
 def session_xl():
   """
-  Extra Large session
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: creates spark cluster with these parameters. Designed for the most complex pipelines, with huge administrative data sources and complex calculations. Uses a large amount of resource on the cluster, so only use when running Production pipelines
+      * 20g of memory
+      * 12 executors
+      * 2g of memory overhead
+      * 5 cores, using too many cores can actually cause worse performance on larger sessions
 
-  Used for the most complex pipelines, with huge administrative
-  data sources and complex calculations. Uses a large amount of
-  resource on the cluster, so only use when running Production
-  pipelines
+  :RETURNS: spark cluster
+  :OUTPUT VARIABLE TYPE: spark cluster
+  
+  :NOTES:
+  * use for large, complex pipelines in Production on mostly administrative data
+  * Do not use for development purposes; use a smaller session and work on a sample of data or synthetic data
 
-  Details:
-      20g of memory and 12 executors
-      2g of memory overhead
-      5 cores; using too many cores can actually cause worse
-          performance on larger sessions
+  :EXAMPLE USE:
+  * Three administrative datasets of around 300 million rows
+  * Significant calculations, including joins and writing/reading to many intermediate tables
 
-  Use case:
-      Running large, complex pipelines in Production on mostly
-          administrative data
-      Do not use for development purposes; use a smaller session
-          and work on a sample of data or synthetic data
-
-  Example of actual usage:
-      Three administrative datasets of around 300 million rows
-      Significant calculations, including joins and writing/reading
-          to many intermediate tables
+  :AUTHOR: DAPCATS
+  :DATE: 2021
+  :VERSION: 0.0.1
+  :KNOWN ISSUES: None
+       
+  :EXAMPLE:
+  >>> session_xl()
   """
 
   return (
