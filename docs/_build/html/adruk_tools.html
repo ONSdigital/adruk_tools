@@ -378,6 +378,53 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="adruk_tools.adr_functions.pydoop_read">
+<span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">pydoop_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#pydoop_read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.pydoop_read" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">WHAT IT IS</dt>
+<dd class="field-odd"><p>Python function</p>
+</dd>
+<dt class="field-even">WHAT IT DOES</dt>
+<dd class="field-even"><p>reads in small dataset from HDFS without the need for a spark cluster</p>
+</dd>
+<dt class="field-odd">RETURNS</dt>
+<dd class="field-odd"><p>un-parsed, unformatted dataset</p>
+</dd>
+<dt class="field-even">OUTPUT VARIABLE TYPE</dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+<dt class="field-odd">AUTHOR</dt>
+<dd class="field-odd"><p>Johannes Hechler</p>
+</dd>
+<dt class="field-even">DATE</dt>
+<dd class="field-even"><p>28/09/2021</p>
+</dd>
+<dt class="field-odd">VERSION</dt>
+<dd class="field-odd"><p>0.0.1</p>
+</dd>
+<dt class="field-even">KNOWN ISSUES</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">PARAMETERS</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt>file_path = full path to file to import</dt><dd><p><cite>(datatype = string)</cite>, e.g. ‘/dapsen/workspace_zone/my_project/sample.csv’</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">EXAMPLE</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pydoop_read</span><span class="p">(</span><span class="n">file_path</span> <span class="o">=</span> <span class="s1">&#39;/dapsen/workspace_zone/my_project/sample.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="adruk_tools.adr_functions.save_sample">
 <span class="sig-prename descclassname"><span class="pre">adruk_tools.adr_functions.</span></span><span class="sig-name descname"><span class="pre">save_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/adruk_tools/adr_functions.html#save_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#adruk_tools.adr_functions.save_sample" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
