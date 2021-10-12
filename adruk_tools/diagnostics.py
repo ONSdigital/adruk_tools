@@ -1,7 +1,7 @@
 def list_columns_by_file( cluster, paths ):  
   """
   :WHAT IT IS: pyspark function
-  :WHAT IT DOES: records variable names by dataset, for a list of files
+  :WHAT IT DOES: records variable names by dataset, for a list of .csv files on HDFS
 
   :RETURNS: dictionary where key = file name, values = variable names
   :OUTPUT VARIABLES TYPE: Python dictionary
@@ -28,6 +28,10 @@ def list_columns_by_file( cluster, paths ):
   
   # read in and evaluate columns from each dataset in turn
   for path in paths:
+    
+    # tell users which file is being processed
+    print('current file: ' + path)
+    
     # read in file
     current_file = cluster.read.format('csv').option('header', 'True').load( path )
     
