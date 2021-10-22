@@ -3,8 +3,11 @@ def list_columns_by_file( cluster, paths ):
   :WHAT IT IS: pyspark function
   :WHAT IT DOES: records variable names by dataset, for a list of .csv files on HDFS
 
-  :RETURNS: dictionary where key = file name, values = variable names
-  :OUTPUT VARIABLES TYPE: Python dictionary
+  :RETURNS:
+  * 1 dictionary where key = file name, values = variable names
+  * 1 dictionary where key = file name, values = row count
+  
+  :OUTPUT VARIABLES TYPE: Python dictionaries
 
   :AUTHOR: Johannes Hechler
 
@@ -23,8 +26,9 @@ def list_columns_by_file( cluster, paths ):
   >>> list_columns_by_file( cluster = spark, paths =  ['/folder1/file1.csv', 'folder2/file2.csv'])
   """
 
-  # make an empty dictionary to later add results to
-  cols_by_file = {}
+  # make an empty dictionaries to later add results to
+  cols_by_file = {}   # ... for column names
+  counts = {}         # ... for counts
   
   # read in and evaluate columns from each dataset in turn
   for path in paths:
@@ -37,8 +41,9 @@ def list_columns_by_file( cluster, paths ):
     
     # record file name (without folder path) and variable names in dictionary
     cols_by_file.update( { path.split('/')[-1] :   current_file.columns })
+    counts.update({ path.split('/')[-1] :   current_file.count() })
 
-  return cols_by_file
+  return cols_by_file, counts
 
 
 
