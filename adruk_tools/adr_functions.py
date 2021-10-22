@@ -1,3 +1,142 @@
+def cull_columns(cluster, old_files, reference_columns, directory_out):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: 
+  * reads in one or more HDFS csv files in turn
+  * removes any columns not listed in a reference
+  * write table back out
+  
+  :AUTHOR: Johannes Hechler
+  :DATE: 04/10/2021
+  """
+  for wrong_dataset in old_files:
+    print(directory_out + wrong_dataset.split('/')[-1])
+    # read in dataset
+    dataset = (cluster.read
+            .option('header', 'true') #Yes headers are required
+            .option('inferSchema', 'True') #Yes do infer the schema
+            .csv(wrong_dataset)
+              )
+
+    # cleaning: make sure all column names are upper case, just like the reference list
+    for column in dataset.columns:
+      dataset = dataset.withColumnRenamed(column, column.upper())
+
+    # identify which columns in current datasets are also on list of approved columns
+    columns_allowed = [column for column in dataset.columns if column in reference_columns]
+
+    # keep only agreed variables, write back out to HDFS
+    dataset.select( *columns_allowed ).coalesce(1).write.csv(directory_out + wrong_dataset.split('/')[-1],           
+                                                             sep = ',',       # set the seperator
+                                                             header = "true", #Set a header
+                                                             mode='overwrite') #overwrite is on
+
+
+
+
+def equalise_file_and_folder_name(path):
+  """
+  :WHAT IT IS: Python function
+  :WHAT IT DOES: renames a .csv file to what their folder is called
+  
+  :NOTES: only works if the file is in only 1 partition
+  
+  :AUTHOR: Johannes Hechler
+  :DATE: 04/10/2021
+  """
+  import pydoop.hdfs as pdh  # import package that can manipulate HDFs
+
+  path_parts = path.split('/')  # identify folder levels in path
+  path_new = '/'.join(path_parts[:-1] + [path_parts[-2]]) + '.csv'   # construct the file name from the folder name, and add the file extension
+  pdh.rename( path, path_new)   # do the actual renaming
+
+
+
+
+def update_file(cluster, file_path, template, join_variable):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: 
+  * tries to update a file, if it exists, with information from a template. Else it writes out the template in its place.
+  :RETURNS: updated input file, or template
+  :OUTPUT TYPE: .csv file on HDFS, on 1 partition
+
+  :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler
+  :DATE: 15/10/2021
+  :VERSION: 0.1
+
+  :CAVEATS:
+  * file_path: there must be no directory named like file_path + '_temp'
+  * file_path: only accepts csv
+  * assumes files have headers
+  * assumes both datasets have the join variable under the same name
+  * assumes template is already in memory
+
+  :PARAMETERS:
+    :cluster = name of the spark cluster to use:
+      `(datatype = session name, unquoted)`, e.g. spark
+    :file_path = full path to the file that you want to update:
+      `(datatype = string, without extension)`, e.g. '/dapsen/workspace_zone/my_project/file'
+    :template = name of the spark dataframe that you want to update from:
+      `(datatype = dataframe name, unquoted)`, e.g. template_df
+    :join_variable = name of the variable to join input file and template on:
+      `(datatype = string)`, e.g. 'nino'
+
+  :EXAMPLE:
+  >>> update_file( cluster = spark,
+                    file_path = '/dap/project/02_specified_metadata/old_data',
+                    template = good_order,
+                    join_variable = 'nhs_number'
+                    )
+  """
+  
+  import pydoop.hdfs as pdh  # package that lets you operate with HDFS
+
+  # check if the file actually exists, and if it does then...
+  if pdh.path.exists(file_path):
+
+    # subset the template to only the join variable. NB the template controls the number of rows left, it doesn't add columns
+    template = template.select(join_variable)
+
+    # read in the file to update from HDFS
+    file_to_update = cluster.read.format('csv')\
+                    .option('header', 'true')\
+                    .option('inferSchema', 'True')\
+                    .load(file_path)
+
+    # join the file onto the template.
+    updated_file = template.join(file_to_update,
+                               on = join_variable,
+                               how= 'left')   # keeps only records with values that exist in the template's join variable. NB can lead to duplication if the join column isn't unique in either dataset.
+
+    # write the updated file back to HDFS, but for now into a temporary directory
+    (updated_file.repartition(1)
+     .write.csv(file_path + '_temp',
+                sep = ',',
+                header = "true",
+                mode ='overwrite'))
+
+    
+    # tidy up directories
+    pdh.rm(file_path)                   # delete the original file
+    pdh.rename(file_path + '_temp',     # rename the newly saved file to the old filepath
+               file_path)
+    
+    print('file updated')
+
+    
+  # ... and if there is no such file yet then save the template in its place
+  else: 
+    (template.repartition(1)
+     .write.csv(file_path,
+                sep = ',',
+                header = "true",
+                mode ='overwrite'))
+    
+    print('template written to HDFS')
+    
+    
+
 def pydoop_read(file_path):
   """
   :WHAT IT IS: Python function
@@ -723,408 +862,6 @@ def complex_standardisation(df, gender):
   return df
 
   
-  
-  
-  
-  
-  
-  
-def extended_describe(
-	df,
-	all_=True,
-	trim_=False,
-	active_columns_=False,
-	sum_=False,
-	positive_=False,
-	negative_=False, 
-	zero_=False, 
-	null_=False, 
-	nan_=False, 
-	count_=False, 
-	unique_=False, 
-	special_=False, 
-	blank_=False, 
-	mean_=False, 
-	stddev_=False, 
-	min_=False, 
-	max_=False,
-	range_=False,
-	mode_=False,
-	length_mean_=False, 
-	length_stddev_=False, 
-	length_min_=False, 
-	length_max_=False,
-	length_range_=False,
-	length_mode_=False,
-	special_dict_=False,
-	percent_=True,
-	pandas_=False,
-	axis_=0,
-	fillna_=0
-):
-	"""  
-	:WHAT IT IS: PYSPARK FUNCTION
-
-	:WHAT IT DOES: This function extends all of the functions listed in parameters to apply on a dataset.
-	:RETURNS: dataframe with information on the data in the specified dataframe.
-	:OUTPUT VARIABLE TYPE: pandas dataframe
-	
-
-	:AUTHOR: David Cobbledick
-	:DATE: 01/12/2020
-	:VERSION: 0.0.1
-	:KNOWN ISSUES: There are multiple columns that require boolean and some that do not work on boolean data.
-	
-		:PARAMETERS:
-	* df = the dataframe that you are calling this on.
-	* all = chooses that all are true and overwrites calling subfunctions.
-	* trim = this imports the trim function to be used a sub functon.
-	* Active_columns = 
-	* Sum = The function sum_describe gets called in here.
-	* Positive = The function posiitve_describe gets called in here.
-	* Negative = The function negative_decribe gets called in here.
-	* Zero = The function zero_describe gets called in here.
-	* Null = The function null_describe gets called in here.
-	* Nan = The function nan_describe gets called in here.
-	* count = The function count gets called in here.
-	* Unique = The function unique_descrbie gets called in here.
-	* Special = The function special_describe gets called in here.
-	* Blank = The function blank_describe gets called in here.
-	* Mean = The function mean_describe gets called in here.
-	* Stddev = The function stddev_describe gets called in here.
-	* Min = The function min_descrie gets called in here.
-	* Max = The function max_describe gets called in here.
-	* Range =
-	* Mode = The function mode_descrie gets called in here.
-	* Length-mean = The length of the mean in mean_describe is set here.
-	* Length-stddev = This sets the default ofr the length of Stddev.
-	* Length-min = The function here describes the lenght of the min_describe function.
-	* Length-max = The funciton defines the length of the max-describe function.
-	* Length-range = 
-	* Length-mode = The length of the mode_describe function is set here.
-	* Special-dict = 
-	* Percent = 
-	* Pandas = 
-	* Axis = 
-	* Fillna = 
-     
-	:EXAMPLE:
-		>>> raw_describe = extended_describe(raw_df,
-                                         all_=False,
-                                         trim_=True,
-                                         active_columns_=True,
-                                         null_=True,
-                                         nan_=True,
-                                         special_=True,
-                                         special_dict_=nulls_dict,
-                                         unique_=True,
-                                         #length_max_=False,
-                                         percent_=False,
-                                         pandas_=True,
-                                         axis_=1,
-                                        fillna_=0)
-
- 	"""
-
-	
-	import pandas as pd
-	import numpy as np
-	import string
-	from ashe.setup.functions import clean_header
-	import pyspark.sql.functions as F
-	from pyspark.sql.types import (StructType, StructField, ArrayType, FloatType,
-                               DoubleType, IntegerType, StringType, DateType)
-
-	#================================================================================
-	'''
-	default output and determines numeric columns - so that numeric methodologies are
-	only applied to the numeric columns where they are relevant
-
-	the base output file is 'out' to which all other measurment output is merged
-	'''
-	#================================================================================
-
-	count = df.count()
-	column_count = len(df.columns)
-
-	out = pd.DataFrame({'variable':[x[0] for x in df.dtypes],
-											'type':[x[1] for x in df.dtypes],
-											'total_columns':column_count,
-											'total_rows':count})
-
-	numeric_types = ['int',
-									 'bigint',
-									 'smallint',
-									 'double',
-									 'float',
-									 'decimal']
-
-	numeric_columns = list(out[out['type']
-														 .isin(numeric_types)]['variable'])
-
-	out_columns=['variable',
-							 'type',
-							 'total_rows',
-							 'total_columns']
-
-	#================================================================================
-	'''
-	option to trim whitespace
-	'''
-	#================================================================================
-
-	if trim_==True:
-		df = df.select([F.trim(F.col(c)).alias(c) for c in df.columns])
-
-	#================================================================================
-	'''
-	application of measure sub functions depending on user arguments
-	'''  
-	#================================================================================
-
-	if sum_==True or all_==True:
-		if len(numeric_columns)==0:
-			out['sum']=None
-		else:
-			sum_df = sum_describe(df.select(numeric_columns))
-			out = out.merge(sum_df, on ='variable', how='left')
-		out_columns.append('sum')
-
-	if positive_==True or all_==True:
-		if len(numeric_columns)==0:
-			out['positive']=None
-		else:
-			positive_df = positive_describe(df.select(numeric_columns))
-			out = out.merge(positive_df, on ='variable', how='left')
-
-	if negative_==True or all_==True:
-		if len(numeric_columns)==0:
-			out['negative']=None
-		else:
-			negative_df = negative_describe(df.select(numeric_columns))
-			out = out.merge(negative_df, on ='variable', how='left')
-
-	if zero_==True or all_==True:
-		if len(numeric_columns)==0:
-			out['zero']=None
-		else:
-			zero_df = zero_describe(df.select(numeric_columns))
-			out = out.merge(zero_df, on ='variable', how='left')
-
-	if null_==True or active_columns_==True or count_==True or all_==True:
-		null_df = null_describe(df)
-		out = out.merge(null_df, on ='variable', how='left')
-
-	if active_columns_==True or all_==True:
-		null_column_count = out[out['total_rows']==out['null']].shape[0]
-		active_column_count = column_count-null_column_count
-		out['active_columns']=active_column_count
-		out['null_columns']=null_column_count
-		out_columns.append('active_columns')
-		out_columns.append('null_columns')
-
-	if count_==True or all_==True:
-		out['count'] = out['total_rows']-out['null']
-		out_columns.append('count')
-
-	if (active_columns_==True or count_==True) and null_==False and all_==False:
-		out = out.drop(['null'],axis=1)
-
-	if nan_==True or all_==True:
-		if len(numeric_columns)==0:
-			out['NaN']=None
-		else:
-			nan_df = nan_describe(df.select(numeric_columns))
-			out = out.merge(nan_df, on ='variable', how='left')
-
-	if unique_==True or all_==True:
-		unique_df = unique_describe(df)
-		out = out.merge(unique_df, on ='variable', how='left')
-		out_columns.append('unique')
-
-	if (special_==True or all_==True) and special_dict_!=False:
-		special_df = special_describe(df,special_dict_)
-		out = out.merge(special_df, on ='variable', how='left')
-
-	if blank_==True or all_==True:
-		blank_df = blank_describe(df)
-		out = out.merge(blank_df, on ='variable', how='left')
-
-	if mean_==True or all_==True:
-		if len(numeric_columns)==0:
-			out['mean']=None
-		else:
-			mean_df = mean_describe(df.select(numeric_columns))
-			out = out.merge(mean_df, on ='variable', how='left')
-		out_columns.append('mean')
-
-	if stddev_==True or all_==True:
-		if len(numeric_columns)==0:
-			out['stddev']=None
-		else:  
-			stddev_df = stddev_describe(df.select(numeric_columns))
-			out = out.merge(stddev_df, on ='variable', how='left')
-		out_columns.append('stddev')
-
-	if min_==True or range_==True or all_==True:
-		min_df = min_describe(df)
-		out = out.merge(min_df, on ='variable', how='left')
-		if min_==True or all_==True:
-			out_columns.append('min')
-
-	if max_==True or range_==True or all_==True:
-		max_df = max_describe(df)
-		out = out.merge(max_df, on ='variable', how='left')
-		if max_==True or all_==True:
-			out_columns.append('max')
-
-	if range_==True or all_==True:
-		range_df = out[out['type'].isin(numeric_types)]\
-		.reset_index(drop=True)
-		range_df['range'] = range_df['max']-range_df['min']
-		range_df = range_df[['variable','range']]
-		out = out.merge(range_df, on ='variable', how='left')
-		out_columns.append('range')
-		if min_==False and all_==False:
-			out = out.drop(['min'],axis=1)
-		if max_==False and all_==False:
-			out = out.drop(['max'],axis=1)
-
-	if mode_==True or all_==True:
-		mode_df = mode_describe(df)
-		out = out.merge(mode_df, on ='variable', how='left')
-		out_columns.append('mode')
-
-	#================================================================================
-	'''
-	if any measure of value length is selected in user arguments, a dataframe of 
-	value lengths in the principle data frame is created and analysed
-	'''
-
-	#================================================================================
-
-	if length_mean_==True or\
-		length_stddev_==True or\
-		length_mode_==True or\
-		length_min_==True or\
-		length_max_==True or\
-		length_range_==True or\
-		all_==True:
-
-		df = df.na.fill('')  
-		length_df = df.select(df.columns)
-		for col in df.columns:
-			length_df = length_df.withColumn(col+'_l',F.length(df[col]))
-			length_df = length_df.drop(col)
-		length_df = length_df.toDF(*[x[:-2] for x in length_df.columns])
-
-	if length_mean_==True or all_==True:
-		mean_length_df = mean_describe(length_df)
-		mean_length_df.columns = ['variable','length_mean']
-		out = out.merge(mean_length_df, on ='variable', how='left')
-		out_columns.append('length_mean')
-
-	if length_stddev_==True or all_==True:
-		stddev_length_df = max_describe(length_df)
-		stddev_length_df.columns = ['variable','length_stddev']
-		out = out.merge(stddev_length_df, on ='variable', how='left')
-		out_columns.append('length_stddev')
-
-	if length_min_==True or length_range_==True or all_==True:
-		min_length_df = min_describe(length_df)
-		min_length_df.columns = ['variable','length_min']
-		out = out.merge(min_length_df, on ='variable', how='left')
-		if length_min_==True or all_==True:
-			out_columns.append('length_min')
-
-	if length_max_==True or length_range_==True or all_==True:
-		max_length_df = max_describe(length_df)
-		max_length_df.columns = ['variable','length_max']
-		out = out.merge(max_length_df, on ='variable', how='left')
-		if length_max_==True or all_==True:
-			out_columns.append('length_max')
-
-	if length_range_==True or all_==True:
-		out['length_range'] = out['length_max']-out['length_min']
-		out_columns.append('length_range')
-		if length_min_==False and all_==False:
-			out = out.drop(['length_min'],axis=1)
-		if length_max_==False and all_==False:
-			out = out.drop(['length_max'],axis=1)
-
-	if length_mode_==True or all_==True:
-		mode_length_df = mode_describe(length_df)
-		mode_length_df.columns = ['length_mode','variable']
-		out = out.merge(mode_length_df, on ='variable', how='left')
-		out_columns.append('length_mode')
-
-	#================================================================================
-	'''dynamically orders output columns depemnding on user arguments'''
-	#================================================================================
-
-	fixed_columns = [
-		'variable',
-		'type',
-		'total_rows',
-		'total_columns',
-		'active_columns',
-		'null_columns',
-		'sum',
-		'mean',
-		'stddev',
-		'min',
-		'max',
-		'range',
-		'mode',
-		'unique',
-		'length_mean',
-		'length_stddev',
-		'length_min',
-		'length_max',
-		'length_range',  
-		'length_mode',
-	]
-
-	fixed_columns = [x for x in fixed_columns if x in out_columns]
-	out = out.fillna(np.nan)
-
-	if percent_==True:
-		percent_columns = [x for x in list(out) 
-											 if x not in fixed_columns]
-
-		for column in percent_columns:
-			out[column+'_%'] = [(x/count)*100 for x in out[column].astype(float)]
-
-	out_columns = [x for x in list(out) if x not in fixed_columns]
-	out_columns = fixed_columns + sorted(out_columns)
-
-	out = out[out_columns]
-
-	#================================================================================
-	'''fills na depending on user argument'''
-	#================================================================================
-	if fillna_!=False: 
-		out = out.fillna(fillna_)
-
-
-	#================================================================================
-	'''orientates output depending on user argument'''
-	#================================================================================
-	if axis_==0:
-		out = (out.transpose()
-					.reset_index())
-		out.columns = ['summary']+(list(out.iloc[0])[1:])
-		out = out.iloc[1:].reset_index(drop=True)
-
-	#================================================================================
-	'''outputs in pandas/spark depending on user argument'''
-	#================================================================================
-	if pandas_==False:
-			out = df[list(df)].astype(str)
-			out = spark.createDataFrame(out)
-
-	return out
-
 
 	
 
