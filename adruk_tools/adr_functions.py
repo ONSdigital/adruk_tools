@@ -1,3 +1,34 @@
+def pandas_to_hdfs(dataframe, write_path):
+  """
+  :WHAT IT IS: Python function
+  :WHAT IT DOES: write a pandas dataframe to HDFS as .csv without the need for a spark cluster
+  :RETURNS: N/A
+  :OUTPUT VARIABLE TYPE: N/A
+  
+  :AUTHOR: Johannes Hechler
+  :DATE: 09/11/2021
+  :VERSION: 0.0.1
+  :KNOWN ISSUES: None
+  
+  :PARAMETERS:
+  * dataframe = pandas dataframe you want to write to HDFS
+      `(datatype = dataframe, no string)`, e.g. my_data
+  * file_path = full destination file path including extension
+      `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
+      
+  :EXAMPLE:
+  >>> pandas_to_hdfs( dataframe = my_data, 
+                      file_path = '/dapsen/workspace_zone/my_project/sample.csv')
+	"""
+  
+  import pydoop.hdfs as pdh  # import package to read from HDFS without spark
+  
+  # write file from HDFS
+  with pdh.open(write_path, "wt") as f:
+    dataframe.to_csv(f, index=False) 
+    f.close()
+
+
 def cull_columns(cluster, old_files, reference_columns, directory_out):
   """
   :WHAT IT IS: pyspark function
@@ -53,7 +84,7 @@ def equalise_file_and_folder_name(path):
 
 
 
-def update_file(cluster, file_path, template, join_variable):
+def update_small_file(cluster, file_path, template, join_variable):
   """
   :WHAT IT IS: pyspark function
   :WHAT IT DOES: 
@@ -79,14 +110,14 @@ def update_file(cluster, file_path, template, join_variable):
       `(datatype = string, without extension)`, e.g. '/dapsen/workspace_zone/my_project/file'
     :template = name of the spark dataframe that you want to update from:
       `(datatype = dataframe name, unquoted)`, e.g. template_df
-    :join_variable = name of the variable to join input file and template on:
-      `(datatype = string)`, e.g. 'nino'
+    :join_variable = name(s) of the variable to join input file and template on:
+      `(datatype = list of string)`, e.g. ['nino']
 
   :EXAMPLE:
   >>> update_file( cluster = spark,
                     file_path = '/dap/project/02_specified_metadata/old_data',
                     template = good_order,
-                    join_variable = 'nhs_number'
+                    join_variable = ['nhs_number']
                     )
   """
   
@@ -110,7 +141,7 @@ def update_file(cluster, file_path, template, join_variable):
                                how= 'left')   # keeps only records with values that exist in the template's join variable. NB can lead to duplication if the join column isn't unique in either dataset.
 
     # write the updated file back to HDFS, but for now into a temporary directory
-    (updated_file.repartition(1)
+    (updated_file.coalesce(1)
      .write.csv(file_path + '_temp',
                 sep = ',',
                 header = "true",
@@ -127,7 +158,7 @@ def update_file(cluster, file_path, template, join_variable):
     
   # ... and if there is no such file yet then save the template in its place
   else: 
-    (template.repartition(1)
+    (template.coalesce(1)
      .write.csv(file_path,
                 sep = ',',
                 header = "true",
@@ -169,6 +200,9 @@ def pydoop_read(file_path):
 
 
 
+
+    
+    
 def session_small():
   """
   :WHAT IT IS: pyspark function
