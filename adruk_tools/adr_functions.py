@@ -1,3 +1,38 @@
+def hdfs_to_pandas(file_path):
+  """
+  :WHAT IT IS: Python function
+  :WHAT IT DOES: reads in small csv dataset from HDFS without the need for a spark cluster
+  :RETURNS: dataframe
+  :OUTPUT VARIABLE TYPE: pandas
+  
+
+  :AUTHOR: Johannes Hechler
+  :DATE: 19/11/2021
+  :VERSION: 0.0.1
+  :KNOWN ISSUES: only works on .csv files
+  
+  :PARAMETERS:
+  * file_path = full path to file to import
+      `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
+      
+  :EXAMPLE:
+  >>> pydoop_read(file_path = '/dapsen/workspace_zone/my_project/sample.csv')
+	"""
+  
+  import pydoop.hdfs as pdh  # import package to read from HDFS without spark
+  import pandas as pd # import package to convert imported data to a pandas dataframe
+  
+  # read in file from HDFS
+  with pdh.open(file_path, "r") as f:
+    data = pd.read_csv(f)
+    f.close()
+    
+  return data
+
+
+    
+
+
 def pandas_to_hdfs(dataframe, write_path):
   """
   :WHAT IT IS: Python function
@@ -168,40 +203,6 @@ def update_small_file(cluster, file_path, template, join_variable):
     
     
 
-def pydoop_read(file_path):
-  """
-  :WHAT IT IS: Python function
-  :WHAT IT DOES: reads in small dataset from HDFS without the need for a spark cluster
-  :RETURNS: un-parsed, unformatted dataset
-  :OUTPUT VARIABLE TYPE: bytes
-  
-
-  :AUTHOR: Johannes Hechler
-  :DATE: 28/09/2021
-  :VERSION: 0.0.1
-  :KNOWN ISSUES: None
-  
-  :PARAMETERS:
-  * file_path = full path to file to import
-      `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
-      
-  :EXAMPLE:
-  >>> pydoop_read(file_path = '/dapsen/workspace_zone/my_project/sample.csv')
-	"""
-  
-  import pydoop.hdfs as pdh  # import package to read from HDFS without spark
-
-  # read in file from HDFS
-  with pdh.open(file_path, "r") as f:
-    data = f.read()
-    f.close()
-    
-  return data
-
-
-
-
-    
     
 def session_small():
   """
