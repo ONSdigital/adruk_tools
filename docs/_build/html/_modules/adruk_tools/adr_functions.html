@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>adruk_tools.adr_functions &#8212; adruk_tools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/agogo.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/haiku.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -15,47 +15,381 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="header-wrapper" role="banner">
-      <div class="header">
-        <div class="headertitle"><a
-          href="../../index.html">adruk_tools  documentation</a></div>
-        <div class="rel" role="navigation" aria-label="related navigation">
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a>
-        </div>
-       </div>
-    </div>
+      <div class="header" role="banner"><h1 class="heading"><a href="../../index.html">
+          <span>adruk_tools  documentation</span></a></h1>
+        <h2 class="heading"><span>adruk_tools.adr_functions</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
 
-    <div class="content-wrapper">
-      <div class="content">
-        <div class="document">
-            
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+      </div>
+      <div class="content" role="main">
+        
+        
   <h1>Source code for adruk_tools.adr_functions</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="session_small"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.session_small">[docs]</a><span></span><span class="k">def</span> <span class="nf">session_small</span><span class="p">():</span>
+<div class="viewcode-block" id="pydoop_read"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.pydoop_read">[docs]</a><span></span><span class="k">def</span> <span class="nf">pydoop_read</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  Small Session</span>
+<span class="sd">  :WHAT IT IS: Python function</span>
+<span class="sd">  :WHAT IT DOES: reads in small dataset from HDFS without the need for a spark cluster</span>
+<span class="sd">  :RETURNS: un-parsed, unformatted dataset</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: bytes</span>
+<span class="sd">  </span>
 
-<span class="sd">  This session is similar to that used for DAPCATS training</span>
-<span class="sd">  It is the smallest session that is realistically used</span>
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 28/09/2021</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  :KNOWN ISSUES: not all parsing functions accept this output. pd.read_excel() does, pd.read_csv() does not</span>
+<span class="sd">  </span>
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * file_path = full path to file to import</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;/dapsen/workspace_zone/my_project/sample.csv&#39;</span>
+<span class="sd">      </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; pydoop_read(file_path = &#39;/dapsen/workspace_zone/my_project/sample.csv&#39;)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+  
+  <span class="kn">import</span> <span class="nn">pydoop.hdfs</span> <span class="k">as</span> <span class="nn">pdh</span>  <span class="c1"># import package to read from HDFS without spark</span>
 
-<span class="sd">  Details:</span>
-<span class="sd">      Only 1g of memory and 3 executors</span>
-<span class="sd">      Only 1 core</span>
-<span class="sd">      Number of partitions are limited to 12, which can improve</span>
-<span class="sd">      performance with smaller data</span>
+  <span class="c1"># read in file from HDFS</span>
+  <span class="k">with</span> <span class="n">pdh</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+  <span class="k">return</span> <span class="n">data</span></div>
 
-<span class="sd">  Use case:</span>
-<span class="sd">      Simple data exploration of small survey data</span>
 
-<span class="sd">  Example of actual usage:</span>
-<span class="sd">      Used for DAPCATS PySpark training</span>
-<span class="sd">      Mostly simple calculations</span>
+
+<div class="viewcode-block" id="hdfs_to_pandas"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.hdfs_to_pandas">[docs]</a><span class="k">def</span> <span class="nf">hdfs_to_pandas</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: Python function</span>
+<span class="sd">  :WHAT IT DOES: reads in small csv dataset from HDFS without the need for a spark cluster</span>
+<span class="sd">  :RETURNS: dataframe</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: pandas</span>
+<span class="sd">  </span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 19/11/2021</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  :KNOWN ISSUES: only works on .csv files</span>
+<span class="sd">  </span>
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * file_path = full path to file to import</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;/dapsen/workspace_zone/my_project/sample.csv&#39;</span>
+<span class="sd">      </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; pydoop_read(file_path = &#39;/dapsen/workspace_zone/my_project/sample.csv&#39;)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+  
+  <span class="kn">import</span> <span class="nn">pydoop.hdfs</span> <span class="k">as</span> <span class="nn">pdh</span>  <span class="c1"># import package to read from HDFS without spark</span>
+  <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span> <span class="c1"># import package to convert imported data to a pandas dataframe</span>
+  
+  <span class="c1"># read in file from HDFS</span>
+  <span class="k">with</span> <span class="n">pdh</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+  <span class="k">return</span> <span class="n">data</span></div>
+
+
+    
+
+
+<div class="viewcode-block" id="pandas_to_hdfs"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.pandas_to_hdfs">[docs]</a><span class="k">def</span> <span class="nf">pandas_to_hdfs</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">write_path</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: Python function</span>
+<span class="sd">  :WHAT IT DOES: write a pandas dataframe to HDFS as .csv without the need for a spark cluster</span>
+<span class="sd">  :RETURNS: N/A</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: N/A</span>
+<span class="sd">  </span>
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 09/11/2021</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  :KNOWN ISSUES: None</span>
+<span class="sd">  </span>
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * dataframe = pandas dataframe you want to write to HDFS</span>
+<span class="sd">      `(datatype = dataframe, no string)`, e.g. my_data</span>
+<span class="sd">  * file_path = full destination file path including extension</span>
+<span class="sd">      `(datatype = string)`, e.g. &#39;/dapsen/workspace_zone/my_project/sample.csv&#39;</span>
+<span class="sd">      </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; pandas_to_hdfs( dataframe = my_data, </span>
+<span class="sd">                      file_path = &#39;/dapsen/workspace_zone/my_project/sample.csv&#39;)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+  
+  <span class="kn">import</span> <span class="nn">pydoop.hdfs</span> <span class="k">as</span> <span class="nn">pdh</span>  <span class="c1"># import package to read from HDFS without spark</span>
+  
+  <span class="c1"># write file from HDFS</span>
+  <span class="k">with</span> <span class="n">pdh</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">write_path</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">dataframe</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> 
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="cull_columns"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.cull_columns">[docs]</a><span class="k">def</span> <span class="nf">cull_columns</span><span class="p">(</span><span class="n">cluster</span><span class="p">,</span> <span class="n">old_files</span><span class="p">,</span> <span class="n">reference_columns</span><span class="p">,</span> <span class="n">directory_out</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  :WHAT IT DOES: </span>
+<span class="sd">  * reads in one or more HDFS csv files in turn</span>
+<span class="sd">  * removes any columns not listed in a reference</span>
+<span class="sd">  * write table back out</span>
+<span class="sd">  </span>
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 04/10/2021</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">for</span> <span class="n">wrong_dataset</span> <span class="ow">in</span> <span class="n">old_files</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">directory_out</span> <span class="o">+</span> <span class="n">wrong_dataset</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># read in dataset</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">read</span>
+            <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;header&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">)</span> <span class="c1">#Yes headers are required</span>
+            <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;inferSchema&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">)</span> <span class="c1">#Yes do infer the schema</span>
+            <span class="o">.</span><span class="n">csv</span><span class="p">(</span><span class="n">wrong_dataset</span><span class="p">)</span>
+              <span class="p">)</span>
+
+    <span class="c1"># cleaning: make sure all column names are upper case, just like the reference list</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+      <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">column</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+
+    <span class="c1"># identify which columns in current datasets are also on list of approved columns</span>
+    <span class="n">columns_allowed</span> <span class="o">=</span> <span class="p">[</span><span class="n">column</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">reference_columns</span><span class="p">]</span>
+
+    <span class="c1"># keep only agreed variables, write back out to HDFS</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">select</span><span class="p">(</span> <span class="o">*</span><span class="n">columns_allowed</span> <span class="p">)</span><span class="o">.</span><span class="n">coalesce</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">csv</span><span class="p">(</span><span class="n">directory_out</span> <span class="o">+</span> <span class="n">wrong_dataset</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>           
+                                                             <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span>       <span class="c1"># set the seperator</span>
+                                                             <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="c1">#Set a header</span>
+                                                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">)</span> <span class="c1">#overwrite is on</span></div>
+
+
+
+
+<div class="viewcode-block" id="equalise_file_and_folder_name"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.equalise_file_and_folder_name">[docs]</a><span class="k">def</span> <span class="nf">equalise_file_and_folder_name</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: Python function</span>
+<span class="sd">  :WHAT IT DOES: renames a .csv file to what their folder is called</span>
+<span class="sd">  </span>
+<span class="sd">  :NOTES: only works if the file is in only 1 partition</span>
+<span class="sd">  </span>
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+<span class="sd">  :DATE: 04/10/2021</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="kn">import</span> <span class="nn">pydoop.hdfs</span> <span class="k">as</span> <span class="nn">pdh</span>  <span class="c1"># import package that can manipulate HDFs</span>
+
+  <span class="n">path_parts</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>  <span class="c1"># identify folder levels in path</span>
+  <span class="n">path_new</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">path_parts</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]])</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>   <span class="c1"># construct the file name from the folder name, and add the file extension</span>
+  <span class="n">pdh</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_new</span><span class="p">)</span>   <span class="c1"># do the actual renaming</span></div>
+
+
+
+
+<div class="viewcode-block" id="update_file"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.update_file">[docs]</a><span class="k">def</span> <span class="nf">update_file</span><span class="p">(</span><span class="n">cluster</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">join_variable</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  :WHAT IT DOES: </span>
+<span class="sd">  * tries to update a file, if it exists, with information from a template. Else it writes out the template in its place.</span>
+<span class="sd">  :RETURNS: updated input file, or template</span>
+<span class="sd">  :OUTPUT TYPE: .csv file on HDFS, on 1 partition</span>
+
+<span class="sd">  :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler</span>
+<span class="sd">  :DATE: 15/10/2021</span>
+<span class="sd">  :VERSION: 0.1</span>
+
+<span class="sd">  :CAVEATS:</span>
+<span class="sd">  * file_path: there must be no directory named like file_path + &#39;_temp&#39;</span>
+<span class="sd">  * file_path: only accepts csv</span>
+<span class="sd">  * assumes files have headers</span>
+<span class="sd">  * assumes both datasets have the join variable under the same name</span>
+<span class="sd">  * assumes template is already in memory</span>
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">    :cluster = name of the spark cluster to use:</span>
+<span class="sd">      `(datatype = session name, unquoted)`, e.g. spark</span>
+<span class="sd">    :file_path = full path to the file that you want to update:</span>
+<span class="sd">      `(datatype = string, without extension)`, e.g. &#39;/dapsen/workspace_zone/my_project/file&#39;</span>
+<span class="sd">    :template = name of the spark dataframe that you want to update from:</span>
+<span class="sd">      `(datatype = dataframe name, unquoted)`, e.g. template_df</span>
+<span class="sd">    :join_variable = name(s) of the variable to join input file and template on:</span>
+<span class="sd">      `(datatype = list of string)`, e.g. [&#39;nino&#39;]</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; update_file( cluster = spark,</span>
+<span class="sd">                    file_path = &#39;/dap/project/02_specified_metadata/old_data&#39;,</span>
+<span class="sd">                    template = good_order,</span>
+<span class="sd">                    join_variable = [&#39;nhs_number&#39;]</span>
+<span class="sd">                    )</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  
+  <span class="kn">import</span> <span class="nn">pydoop.hdfs</span> <span class="k">as</span> <span class="nn">pdh</span>  <span class="c1"># package that lets you operate with HDFS</span>
+
+  <span class="c1"># check if the file actually exists, and if it does then...</span>
+  <span class="k">if</span> <span class="n">pdh</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+
+    <span class="c1"># subset the template to only the join variable. NB the template controls the number of rows left, it doesn&#39;t add columns</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">join_variable</span><span class="p">)</span>
+
+    <span class="c1"># read in the file to update from HDFS</span>
+    <span class="n">file_to_update</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;csv&#39;</span><span class="p">)</span>\
+                    <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;header&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">)</span>\
+                    <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;inferSchema&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">)</span>\
+                    <span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+    <span class="c1"># join the file onto the template.</span>
+    <span class="n">updated_file</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_to_update</span><span class="p">,</span>
+                               <span class="n">on</span> <span class="o">=</span> <span class="n">join_variable</span><span class="p">,</span>
+                               <span class="n">how</span><span class="o">=</span> <span class="s1">&#39;left&#39;</span><span class="p">)</span>   <span class="c1"># keeps only records with values that exist in the template&#39;s join variable. NB can lead to duplication if the join column isn&#39;t unique in either dataset.</span>
+
+    <span class="c1"># write the updated file back to HDFS, but for now into a temporary directory</span>
+    <span class="p">(</span><span class="n">updated_file</span><span class="o">.</span><span class="n">coalesce</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+     <span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">csv</span><span class="p">(</span><span class="n">file_path</span> <span class="o">+</span> <span class="s1">&#39;_temp&#39;</span><span class="p">,</span>
+                <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                <span class="n">mode</span> <span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">))</span>
+
+    
+    <span class="c1"># tidy up directories</span>
+    <span class="n">pdh</span><span class="o">.</span><span class="n">rm</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>                   <span class="c1"># delete the original file</span>
+    <span class="n">pdh</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">file_path</span> <span class="o">+</span> <span class="s1">&#39;_temp&#39;</span><span class="p">,</span>     <span class="c1"># rename the newly saved file to the old filepath</span>
+               <span class="n">file_path</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;file updated&#39;</span><span class="p">)</span>
+
+    
+  <span class="c1"># ... and if there is no such file yet then save the template in its place</span>
+  <span class="k">else</span><span class="p">:</span> 
+    <span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">coalesce</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+     <span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span>
+                <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                <span class="n">mode</span> <span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">))</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;template written to HDFS&#39;</span><span class="p">)</span></div>
+    
+    
+
+    
+
+<div class="viewcode-block" id="update_file_later"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.update_file_later">[docs]</a><span class="k">def</span> <span class="nf">update_file_later</span><span class="p">(</span><span class="n">cluster</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">join_variable</span><span class="p">,</span> <span class="n">drop_from_template</span><span class="p">,</span> <span class="n">keep_before_join</span><span class="p">,</span> <span class="n">keep_after_join</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  :WHAT IT DOES: </span>
+<span class="sd">  * tries to update a file, if it exists, with information from a template. Else it writes out the template in its place.</span>
+<span class="sd">  * difference from update_file: used later in ASHE pipeline, slightly difference logic; too much hassle to combine the functions</span>
+<span class="sd">  :RETURNS: updated input file, or template</span>
+<span class="sd">  :OUTPUT TYPE: .csv file on HDFS, on 1 partition</span>
+
+<span class="sd">  :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler</span>
+<span class="sd">  :DATE: 15/10/2021</span>
+<span class="sd">  :VERSION: 0.1</span>
+
+<span class="sd">  :CAVEATS:</span>
+<span class="sd">  * file_path: there must be no directory named like file_path + &#39;_temp&#39;</span>
+<span class="sd">  * file_path: only accepts csv</span>
+<span class="sd">  * assumes files have headers</span>
+<span class="sd">  * assumes both datasets have the join variable under the same name</span>
+<span class="sd">  * assumes template is already in memory</span>
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">    :cluster = name of the spark cluster to use:</span>
+<span class="sd">      `(datatype = session name, unquoted)`, e.g. spark</span>
+<span class="sd">    :file_path = full path to the file that you want to update:</span>
+<span class="sd">      `(datatype = string, without extension)`, e.g. &#39;/dapsen/workspace_zone/my_project/file&#39;</span>
+<span class="sd">    :template = name of the spark dataframe that you want to update from:</span>
+<span class="sd">      `(datatype = dataframe name, unquoted)`, e.g. template_df</span>
+<span class="sd">    :join_variable = name(s) of the variable to join input file and template on:</span>
+<span class="sd">      `(datatype = list of string)`, e.g. [&#39;nino&#39;]</span>
+<span class="sd">    :drop_from_template = name(s) of the variable to join input file and template on:</span>
+<span class="sd">      `(datatype = list of string)`, e.g. [&#39;nino&#39;]</span>
+<span class="sd">    :keep_before_join = name(s) of the variable to join input file and template on:</span>
+<span class="sd">      `(datatype = list of string)`, e.g. [&#39;nino&#39;]</span>
+<span class="sd">    :keep_after_join = name(s) of the variable to join input file and template on:</span>
+<span class="sd">      `(datatype = list of string)`, e.g. [&#39;nino&#39;]</span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; update_file( cluster = spark,</span>
+<span class="sd">                    file_path = &#39;/dap/project/02_specified_metadata/old_data&#39;,</span>
+<span class="sd">                    template = good_order,</span>
+<span class="sd">                    join_variable = [&#39;nhs_number&#39;]</span>
+<span class="sd">                    )</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  
+  <span class="kn">import</span> <span class="nn">pydoop.hdfs</span> <span class="k">as</span> <span class="nn">pdh</span>  <span class="c1"># package that lets you operate with HDFS</span>
+
+  <span class="c1"># check if the file actually exists, and if it does then...</span>
+  <span class="k">if</span> <span class="n">pdh</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+
+    <span class="c1"># subset the template to only the join variable. NB the template controls the number of rows left, it doesn&#39;t add columns</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span> <span class="o">*</span><span class="n">drop_from_template</span> <span class="p">)</span>
+
+    <span class="c1"># read in the file to update from HDFS</span>
+    <span class="n">file_to_update</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;csv&#39;</span><span class="p">)</span>\
+                    <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;header&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">)</span>\
+                    <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;inferSchema&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">)</span>\
+                    <span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span> <span class="o">*</span><span class="n">keep_before_join</span> <span class="p">)</span>
+
+    <span class="c1"># join the file onto the template.</span>
+    <span class="n">updated_file</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_to_update</span><span class="p">,</span>
+                               <span class="n">on</span> <span class="o">=</span> <span class="n">join_variable</span><span class="p">,</span>
+                               <span class="n">how</span><span class="o">=</span> <span class="s1">&#39;left&#39;</span><span class="p">)</span>   <span class="c1"># keeps only records with values that exist in the template&#39;s join variable. NB can lead to duplication if the join column isn&#39;t unique in either dataset.</span>
+
+    <span class="c1"># keep only required variables</span>
+    <span class="n">updated_file</span> <span class="o">=</span> <span class="n">updated_file</span><span class="o">.</span><span class="n">keep</span><span class="p">(</span> <span class="o">*</span><span class="n">keep_after_join</span> <span class="p">)</span>
+    
+    
+    <span class="c1"># write the updated file back to HDFS, but for now into a temporary directory</span>
+    <span class="p">(</span><span class="n">updated_file</span><span class="o">.</span><span class="n">coalesce</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+     <span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">csv</span><span class="p">(</span><span class="n">file_path</span> <span class="o">+</span> <span class="s1">&#39;_temp&#39;</span><span class="p">,</span>
+                <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                <span class="n">mode</span> <span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">))</span>
+
+    
+    <span class="c1"># tidy up directories</span>
+    <span class="n">pdh</span><span class="o">.</span><span class="n">rm</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>                   <span class="c1"># delete the original file</span>
+    <span class="n">pdh</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">file_path</span> <span class="o">+</span> <span class="s1">&#39;_temp&#39;</span><span class="p">,</span>     <span class="c1"># rename the newly saved file to the old filepath</span>
+               <span class="n">file_path</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;file updated&#39;</span><span class="p">)</span>
+
+    
+  <span class="c1"># ... and if there is no such file yet then save the template in its place</span>
+  <span class="k">else</span><span class="p">:</span> 
+    <span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">coalesce</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+     <span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span>
+                <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                <span class="n">mode</span> <span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">))</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;template written to HDFS&#39;</span><span class="p">)</span></div>
+
+
+
+
+
+
+<div class="viewcode-block" id="session_small"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.session_small">[docs]</a><span class="k">def</span> <span class="nf">session_small</span><span class="p">():</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  :WHAT IT DOES: creates spark cluster with these parameters. Designed for simple data exploration of small survey data.</span>
+<span class="sd">      * 1g of memory</span>
+<span class="sd">      * 3 executors</span>
+<span class="sd">      * 1 core</span>
+<span class="sd">      * Number of partitions are limited to 12, which can improve performance with smaller data</span>
+
+<span class="sd">  :RETURNS: spark cluster</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: spark cluster</span>
+<span class="sd">  </span>
+<span class="sd">  :NOTES:</span>
+<span class="sd">  * This session is similar to that used for DAPCATS training</span>
+<span class="sd">  * It is the smallest session that is realistically used</span>
+
+<span class="sd">  :AUTHOR: DAPCATS</span>
+<span class="sd">  :DATE: 2021</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  :KNOWN ISSUES: None</span>
+<span class="sd">       </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; session_small()</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="k">import</span> <span class="n">SparkSession</span>
 
@@ -74,27 +408,29 @@
 
 <div class="viewcode-block" id="session_medium"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.session_medium">[docs]</a><span class="k">def</span> <span class="nf">session_medium</span><span class="p">():</span>
   <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  Medium Session</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  :WHAT IT DOES: creates spark cluster with these parameters. Designed for analysing survey or synthetic datasets. Also used for some Production pipelines based on survey and/or smaller administrative data.</span>
+<span class="sd">      * 6g of memory</span>
+<span class="sd">      * 3 executors</span>
+<span class="sd">      * 3 cores</span>
+<span class="sd">      * Number of partitions are limited to 18, which can improve performance with smaller data</span>
 
-<span class="sd">  A standard session used for analysing survey or synthetic</span>
-<span class="sd">  datasets. Also used for some Production pipelines based on</span>
-<span class="sd">  survey and/or smaller administrative data.</span>
+<span class="sd">  :RETURNS: spark cluster</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: spark cluster</span>
+<span class="sd">  </span>
+<span class="sd">  :USE CASE:</span>
+<span class="sd">    * Developing code in Dev Test</span>
+<span class="sd">    * Data exploration in Production</span>
+<span class="sd">    * Developing Production pipelines on a sample of data</span>
+<span class="sd">    * Running smaller Production pipelines on mostly survey data</span>
 
-<span class="sd">  Details:</span>
-<span class="sd">      6g of memory and 3 executors</span>
-<span class="sd">      3 cores</span>
-<span class="sd">      Number of partitions are limited to 18, which can improve</span>
-<span class="sd">      performance with smaller data</span>
-
-<span class="sd">  Use case:</span>
-<span class="sd">      Developing code in Dev Test</span>
-<span class="sd">      Data exploration in Production</span>
-<span class="sd">      Developing Production pipelines on a sample of data</span>
-<span class="sd">      Running smaller Production pipelines on mostly survey data</span>
-
-<span class="sd">  Example of actual usage:</span>
-<span class="sd">      Complex calculations, but on smaller synthetic data in</span>
-<span class="sd">          Dev Test</span>
+<span class="sd">  :AUTHOR: DAPCATS</span>
+<span class="sd">  :DATE: 2021</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  :KNOWN ISSUES: None</span>
+<span class="sd">       </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; session_medium()</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="k">import</span> <span class="n">SparkSession</span>
 
@@ -113,25 +449,28 @@
 
 <div class="viewcode-block" id="session_large"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.session_large">[docs]</a><span class="k">def</span> <span class="nf">session_large</span><span class="p">():</span>
   <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  Large Session</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  :WHAT IT DOES: creates spark cluster with these parameters. Designed for running Production pipelines on large administrative data, rather than just survey data. Will often develop using a smaller session then change to this once the pipeline is complete.</span>
+<span class="sd">      * 10g of memory</span>
+<span class="sd">      * 5 executors</span>
+<span class="sd">      * 1g of memory overhead</span>
+<span class="sd">      * 5 cores, which is generally optimal on larger sessions</span>
+<span class="sd">      * Number of partitions are limited to 18, which can improve performance with smaller data</span>
 
-<span class="sd">  Session designed for running Production pipelines on large</span>
-<span class="sd">  administrative data, rather than just survey data. Will often</span>
-<span class="sd">  develop using a smaller session then change to this once the</span>
-<span class="sd">  pipeline is complete.</span>
+<span class="sd">  :RETURNS: spark cluster</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: spark cluster</span>
+<span class="sd">  </span>
+<span class="sd">  :NOTES:</span>
+<span class="sd">  * for production pipelines on administrative data</span>
+<span class="sd">  * Cannot be used in Dev Test, as 9 GB limit per executor</span>
 
-<span class="sd">  Details:</span>
-<span class="sd">      10g of memory and 5 executors</span>
-<span class="sd">      1g of memory overhead</span>
-<span class="sd">      5 cores, which is generally optimal on larger sessions</span>
-
-<span class="sd">  Use case:</span>
-<span class="sd">      Production pipelines on administrative data</span>
-<span class="sd">      Cannot be used in Dev Test, as 9 GB limit per executor</span>
-
-<span class="sd">  Example of actual usage:</span>
-<span class="sd">      One administrative dataset of 100 million rows</span>
-<span class="sd">      Many calculations</span>
+<span class="sd">  :AUTHOR: DAPCATS</span>
+<span class="sd">  :DATE: 2021</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  :KNOWN ISSUES: None</span>
+<span class="sd">       </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; session_large()</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="k">import</span> <span class="n">SparkSession</span>
 
@@ -151,29 +490,31 @@
   
 <div class="viewcode-block" id="session_xl"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.session_xl">[docs]</a><span class="k">def</span> <span class="nf">session_xl</span><span class="p">():</span>
   <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  Extra Large session</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  :WHAT IT DOES: creates spark cluster with these parameters. Designed for the most complex pipelines, with huge administrative data sources and complex calculations. Uses a large amount of resource on the cluster, so only use when running Production pipelines</span>
+<span class="sd">      * 20g of memory</span>
+<span class="sd">      * 12 executors</span>
+<span class="sd">      * 2g of memory overhead</span>
+<span class="sd">      * 5 cores, using too many cores can actually cause worse performance on larger sessions</span>
 
-<span class="sd">  Used for the most complex pipelines, with huge administrative</span>
-<span class="sd">  data sources and complex calculations. Uses a large amount of</span>
-<span class="sd">  resource on the cluster, so only use when running Production</span>
-<span class="sd">  pipelines</span>
+<span class="sd">  :RETURNS: spark cluster</span>
+<span class="sd">  :OUTPUT VARIABLE TYPE: spark cluster</span>
+<span class="sd">  </span>
+<span class="sd">  :NOTES:</span>
+<span class="sd">  * use for large, complex pipelines in Production on mostly administrative data</span>
+<span class="sd">  * Do not use for development purposes; use a smaller session and work on a sample of data or synthetic data</span>
 
-<span class="sd">  Details:</span>
-<span class="sd">      20g of memory and 12 executors</span>
-<span class="sd">      2g of memory overhead</span>
-<span class="sd">      5 cores; using too many cores can actually cause worse</span>
-<span class="sd">          performance on larger sessions</span>
+<span class="sd">  :EXAMPLE USE:</span>
+<span class="sd">  * Three administrative datasets of around 300 million rows</span>
+<span class="sd">  * Significant calculations, including joins and writing/reading to many intermediate tables</span>
 
-<span class="sd">  Use case:</span>
-<span class="sd">      Running large, complex pipelines in Production on mostly</span>
-<span class="sd">          administrative data</span>
-<span class="sd">      Do not use for development purposes; use a smaller session</span>
-<span class="sd">          and work on a sample of data or synthetic data</span>
-
-<span class="sd">  Example of actual usage:</span>
-<span class="sd">      Three administrative datasets of around 300 million rows</span>
-<span class="sd">      Significant calculations, including joins and writing/reading</span>
-<span class="sd">          to many intermediate tables</span>
+<span class="sd">  :AUTHOR: DAPCATS</span>
+<span class="sd">  :DATE: 2021</span>
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  :KNOWN ISSUES: None</span>
+<span class="sd">       </span>
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; session_xl()</span>
 <span class="sd">  &quot;&quot;&quot;</span>
 
   <span class="k">return</span> <span class="p">(</span>
@@ -719,408 +1060,6 @@
   <span class="k">return</span> <span class="n">df</span></div>
 
   
-  
-  
-  
-  
-  
-  
-<div class="viewcode-block" id="extended_describe"><a class="viewcode-back" href="../../index.html#adruk_tools.adr_functions.extended_describe">[docs]</a><span class="k">def</span> <span class="nf">extended_describe</span><span class="p">(</span>
-	<span class="n">df</span><span class="p">,</span>
-	<span class="n">all_</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-	<span class="n">trim_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">active_columns_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">sum_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">positive_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">negative_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">zero_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">null_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">nan_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">count_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">unique_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">special_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">blank_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">mean_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">stddev_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">min_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">max_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">range_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">mode_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">length_mean_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">length_stddev_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">length_min_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-	<span class="n">length_max_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">length_range_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">length_mode_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">special_dict_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">percent_</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-	<span class="n">pandas_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-	<span class="n">axis_</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-	<span class="n">fillna_</span><span class="o">=</span><span class="mi">0</span>
-<span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot;  </span>
-<span class="sd">	:WHAT IT IS: PYSPARK FUNCTION</span>
-
-<span class="sd">	:WHAT IT DOES: This function extends all of the functions listed in parameters to apply on a dataset.</span>
-<span class="sd">	:RETURNS: dataframe with information on the data in the specified dataframe.</span>
-<span class="sd">	:OUTPUT VARIABLE TYPE: pandas dataframe</span>
-<span class="sd">	</span>
-
-<span class="sd">	:AUTHOR: David Cobbledick</span>
-<span class="sd">	:DATE: 01/12/2020</span>
-<span class="sd">	:VERSION: 0.0.1</span>
-<span class="sd">	:KNOWN ISSUES: There are multiple columns that require boolean and some that do not work on boolean data.</span>
-<span class="sd">	</span>
-<span class="sd">		:PARAMETERS:</span>
-<span class="sd">	* df = the dataframe that you are calling this on.</span>
-<span class="sd">	* all = chooses that all are true and overwrites calling subfunctions.</span>
-<span class="sd">	* trim = this imports the trim function to be used a sub functon.</span>
-<span class="sd">	* Active_columns = </span>
-<span class="sd">	* Sum = The function sum_describe gets called in here.</span>
-<span class="sd">	* Positive = The function posiitve_describe gets called in here.</span>
-<span class="sd">	* Negative = The function negative_decribe gets called in here.</span>
-<span class="sd">	* Zero = The function zero_describe gets called in here.</span>
-<span class="sd">	* Null = The function null_describe gets called in here.</span>
-<span class="sd">	* Nan = The function nan_describe gets called in here.</span>
-<span class="sd">	* count = The function count gets called in here.</span>
-<span class="sd">	* Unique = The function unique_descrbie gets called in here.</span>
-<span class="sd">	* Special = The function special_describe gets called in here.</span>
-<span class="sd">	* Blank = The function blank_describe gets called in here.</span>
-<span class="sd">	* Mean = The function mean_describe gets called in here.</span>
-<span class="sd">	* Stddev = The function stddev_describe gets called in here.</span>
-<span class="sd">	* Min = The function min_descrie gets called in here.</span>
-<span class="sd">	* Max = The function max_describe gets called in here.</span>
-<span class="sd">	* Range =</span>
-<span class="sd">	* Mode = The function mode_descrie gets called in here.</span>
-<span class="sd">	* Length-mean = The length of the mean in mean_describe is set here.</span>
-<span class="sd">	* Length-stddev = This sets the default ofr the length of Stddev.</span>
-<span class="sd">	* Length-min = The function here describes the lenght of the min_describe function.</span>
-<span class="sd">	* Length-max = The funciton defines the length of the max-describe function.</span>
-<span class="sd">	* Length-range = </span>
-<span class="sd">	* Length-mode = The length of the mode_describe function is set here.</span>
-<span class="sd">	* Special-dict = </span>
-<span class="sd">	* Percent = </span>
-<span class="sd">	* Pandas = </span>
-<span class="sd">	* Axis = </span>
-<span class="sd">	* Fillna = </span>
-<span class="sd">     </span>
-<span class="sd">	:EXAMPLE:</span>
-<span class="sd">		&gt;&gt;&gt; raw_describe = extended_describe(raw_df,</span>
-<span class="sd">                                         all_=False,</span>
-<span class="sd">                                         trim_=True,</span>
-<span class="sd">                                         active_columns_=True,</span>
-<span class="sd">                                         null_=True,</span>
-<span class="sd">                                         nan_=True,</span>
-<span class="sd">                                         special_=True,</span>
-<span class="sd">                                         special_dict_=nulls_dict,</span>
-<span class="sd">                                         unique_=True,</span>
-<span class="sd">                                         #length_max_=False,</span>
-<span class="sd">                                         percent_=False,</span>
-<span class="sd">                                         pandas_=True,</span>
-<span class="sd">                                         axis_=1,</span>
-<span class="sd">                                        fillna_=0)</span>
-
-<span class="sd"> 	&quot;&quot;&quot;</span>
-
-	
-	<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-	<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-	<span class="kn">import</span> <span class="nn">string</span>
-	<span class="kn">from</span> <span class="nn">ashe.setup.functions</span> <span class="k">import</span> <span class="n">clean_header</span>
-	<span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="nn">F</span>
-	<span class="kn">from</span> <span class="nn">pyspark.sql.types</span> <span class="k">import</span> <span class="p">(</span><span class="n">StructType</span><span class="p">,</span> <span class="n">StructField</span><span class="p">,</span> <span class="n">ArrayType</span><span class="p">,</span> <span class="n">FloatType</span><span class="p">,</span>
-                               <span class="n">DoubleType</span><span class="p">,</span> <span class="n">IntegerType</span><span class="p">,</span> <span class="n">StringType</span><span class="p">,</span> <span class="n">DateType</span><span class="p">)</span>
-
-	<span class="c1">#================================================================================</span>
-	<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">	default output and determines numeric columns - so that numeric methodologies are</span>
-<span class="sd">	only applied to the numeric columns where they are relevant</span>
-
-<span class="sd">	the base output file is &#39;out&#39; to which all other measurment output is merged</span>
-<span class="sd">	&#39;&#39;&#39;</span>
-	<span class="c1">#================================================================================</span>
-
-	<span class="n">count</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-	<span class="n">column_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-
-	<span class="n">out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;variable&#39;</span><span class="p">:[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="p">],</span>
-											<span class="s1">&#39;type&#39;</span><span class="p">:[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="p">],</span>
-											<span class="s1">&#39;total_columns&#39;</span><span class="p">:</span><span class="n">column_count</span><span class="p">,</span>
-											<span class="s1">&#39;total_rows&#39;</span><span class="p">:</span><span class="n">count</span><span class="p">})</span>
-
-	<span class="n">numeric_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">,</span>
-									 <span class="s1">&#39;bigint&#39;</span><span class="p">,</span>
-									 <span class="s1">&#39;smallint&#39;</span><span class="p">,</span>
-									 <span class="s1">&#39;double&#39;</span><span class="p">,</span>
-									 <span class="s1">&#39;float&#39;</span><span class="p">,</span>
-									 <span class="s1">&#39;decimal&#39;</span><span class="p">]</span>
-
-	<span class="n">numeric_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
-														 <span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">numeric_types</span><span class="p">)][</span><span class="s1">&#39;variable&#39;</span><span class="p">])</span>
-
-	<span class="n">out_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span>
-							 <span class="s1">&#39;type&#39;</span><span class="p">,</span>
-							 <span class="s1">&#39;total_rows&#39;</span><span class="p">,</span>
-							 <span class="s1">&#39;total_columns&#39;</span><span class="p">]</span>
-
-	<span class="c1">#================================================================================</span>
-	<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">	option to trim whitespace</span>
-<span class="sd">	&#39;&#39;&#39;</span>
-	<span class="c1">#================================================================================</span>
-
-	<span class="k">if</span> <span class="n">trim_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">F</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">c</span><span class="p">))</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
-
-	<span class="c1">#================================================================================</span>
-	<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">	application of measure sub functions depending on user arguments</span>
-<span class="sd">	&#39;&#39;&#39;</span>  
-	<span class="c1">#================================================================================</span>
-
-	<span class="k">if</span> <span class="n">sum_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-			<span class="n">out</span><span class="p">[</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="n">sum_df</span> <span class="o">=</span> <span class="n">sum_describe</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">))</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">sum_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">positive_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-			<span class="n">out</span><span class="p">[</span><span class="s1">&#39;positive&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="n">positive_df</span> <span class="o">=</span> <span class="n">positive_describe</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">))</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">positive_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">negative_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-			<span class="n">out</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="n">negative_df</span> <span class="o">=</span> <span class="n">negative_describe</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">))</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">negative_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">zero_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-			<span class="n">out</span><span class="p">[</span><span class="s1">&#39;zero&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="n">zero_df</span> <span class="o">=</span> <span class="n">zero_describe</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">))</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">zero_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">null_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">active_columns_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">count_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">null_df</span> <span class="o">=</span> <span class="n">null_describe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">null_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">active_columns_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">null_column_count</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;total_rows&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;null&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-		<span class="n">active_column_count</span> <span class="o">=</span> <span class="n">column_count</span><span class="o">-</span><span class="n">null_column_count</span>
-		<span class="n">out</span><span class="p">[</span><span class="s1">&#39;active_columns&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">active_column_count</span>
-		<span class="n">out</span><span class="p">[</span><span class="s1">&#39;null_columns&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">null_column_count</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;active_columns&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;null_columns&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">count_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">out</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;total_rows&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;null&#39;</span><span class="p">]</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="p">(</span><span class="n">active_columns_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">count_</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="n">null_</span><span class="o">==</span><span class="kc">False</span> <span class="ow">and</span> <span class="n">all_</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;null&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">nan_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-			<span class="n">out</span><span class="p">[</span><span class="s1">&#39;NaN&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="n">nan_df</span> <span class="o">=</span> <span class="n">nan_describe</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">))</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">nan_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">unique_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">unique_df</span> <span class="o">=</span> <span class="n">unique_describe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">unique_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;unique&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="p">(</span><span class="n">special_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="n">special_dict_</span><span class="o">!=</span><span class="kc">False</span><span class="p">:</span>
-		<span class="n">special_df</span> <span class="o">=</span> <span class="n">special_describe</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">special_dict_</span><span class="p">)</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">special_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">blank_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">blank_df</span> <span class="o">=</span> <span class="n">blank_describe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">blank_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">mean_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-			<span class="n">out</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="n">mean_df</span> <span class="o">=</span> <span class="n">mean_describe</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">))</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">mean_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">stddev_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-			<span class="n">out</span><span class="p">[</span><span class="s1">&#39;stddev&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
-		<span class="k">else</span><span class="p">:</span>  
-			<span class="n">stddev_df</span> <span class="o">=</span> <span class="n">stddev_describe</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_columns</span><span class="p">))</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">stddev_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;stddev&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">min_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">range_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">min_df</span> <span class="o">=</span> <span class="n">min_describe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">min_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">min_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-			<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">max_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">range_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">max_df</span> <span class="o">=</span> <span class="n">max_describe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">max_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">max_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-			<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">range_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">range_df</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">numeric_types</span><span class="p">)]</span>\
-		<span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-		<span class="n">range_df</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_df</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">range_df</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">]</span>
-		<span class="n">range_df</span> <span class="o">=</span> <span class="n">range_df</span><span class="p">[[</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">]]</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">range_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;range&#39;</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">min_</span><span class="o">==</span><span class="kc">False</span> <span class="ow">and</span> <span class="n">all_</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;min&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">max_</span><span class="o">==</span><span class="kc">False</span> <span class="ow">and</span> <span class="n">all_</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;max&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">mode_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">mode_df</span> <span class="o">=</span> <span class="n">mode_describe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">mode_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;mode&#39;</span><span class="p">)</span>
-
-	<span class="c1">#================================================================================</span>
-	<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">	if any measure of value length is selected in user arguments, a dataframe of </span>
-<span class="sd">	value lengths in the principle data frame is created and analysed</span>
-<span class="sd">	&#39;&#39;&#39;</span>
-
-	<span class="c1">#================================================================================</span>
-
-	<span class="k">if</span> <span class="n">length_mean_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span>\
-		<span class="n">length_stddev_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span>\
-		<span class="n">length_mode_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span>\
-		<span class="n">length_min_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span>\
-		<span class="n">length_max_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span>\
-		<span class="n">length_range_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span>\
-		<span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-
-		<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">na</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>  
-		<span class="n">length_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-		<span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-			<span class="n">length_df</span> <span class="o">=</span> <span class="n">length_df</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="n">col</span><span class="o">+</span><span class="s1">&#39;_l&#39;</span><span class="p">,</span><span class="n">F</span><span class="o">.</span><span class="n">length</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]))</span>
-			<span class="n">length_df</span> <span class="o">=</span> <span class="n">length_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
-		<span class="n">length_df</span> <span class="o">=</span> <span class="n">length_df</span><span class="o">.</span><span class="n">toDF</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">length_df</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
-
-	<span class="k">if</span> <span class="n">length_mean_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">mean_length_df</span> <span class="o">=</span> <span class="n">mean_describe</span><span class="p">(</span><span class="n">length_df</span><span class="p">)</span>
-		<span class="n">mean_length_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span><span class="s1">&#39;length_mean&#39;</span><span class="p">]</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">mean_length_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;length_mean&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">length_stddev_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">stddev_length_df</span> <span class="o">=</span> <span class="n">max_describe</span><span class="p">(</span><span class="n">length_df</span><span class="p">)</span>
-		<span class="n">stddev_length_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span><span class="s1">&#39;length_stddev&#39;</span><span class="p">]</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">stddev_length_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;length_stddev&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">length_min_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">length_range_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">min_length_df</span> <span class="o">=</span> <span class="n">min_describe</span><span class="p">(</span><span class="n">length_df</span><span class="p">)</span>
-		<span class="n">min_length_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span><span class="s1">&#39;length_min&#39;</span><span class="p">]</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">min_length_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">length_min_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-			<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;length_min&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">length_max_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">length_range_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">max_length_df</span> <span class="o">=</span> <span class="n">max_describe</span><span class="p">(</span><span class="n">length_df</span><span class="p">)</span>
-		<span class="n">max_length_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span><span class="s1">&#39;length_max&#39;</span><span class="p">]</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">max_length_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">length_max_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-			<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;length_max&#39;</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">length_range_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">out</span><span class="p">[</span><span class="s1">&#39;length_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;length_max&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;length_min&#39;</span><span class="p">]</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;length_range&#39;</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">length_min_</span><span class="o">==</span><span class="kc">False</span> <span class="ow">and</span> <span class="n">all_</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;length_min&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">length_max_</span><span class="o">==</span><span class="kc">False</span> <span class="ow">and</span> <span class="n">all_</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;length_max&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">length_mode_</span><span class="o">==</span><span class="kc">True</span> <span class="ow">or</span> <span class="n">all_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">mode_length_df</span> <span class="o">=</span> <span class="n">mode_describe</span><span class="p">(</span><span class="n">length_df</span><span class="p">)</span>
-		<span class="n">mode_length_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;length_mode&#39;</span><span class="p">,</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">mode_length_df</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-		<span class="n">out_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;length_mode&#39;</span><span class="p">)</span>
-
-	<span class="c1">#================================================================================</span>
-	<span class="sd">&#39;&#39;&#39;dynamically orders output columns depemnding on user arguments&#39;&#39;&#39;</span>
-	<span class="c1">#================================================================================</span>
-
-	<span class="n">fixed_columns</span> <span class="o">=</span> <span class="p">[</span>
-		<span class="s1">&#39;variable&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;type&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;total_rows&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;total_columns&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;active_columns&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;null_columns&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;sum&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;mean&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;stddev&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;min&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;max&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;range&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;mode&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;unique&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;length_mean&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;length_stddev&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;length_min&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;length_max&#39;</span><span class="p">,</span>
-		<span class="s1">&#39;length_range&#39;</span><span class="p">,</span>  
-		<span class="s1">&#39;length_mode&#39;</span><span class="p">,</span>
-	<span class="p">]</span>
-
-	<span class="n">fixed_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fixed_columns</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">out_columns</span><span class="p">]</span>
-	<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-
-	<span class="k">if</span> <span class="n">percent_</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-		<span class="n">percent_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> 
-											 <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fixed_columns</span><span class="p">]</span>
-
-		<span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">percent_columns</span><span class="p">:</span>
-			<span class="n">out</span><span class="p">[</span><span class="n">column</span><span class="o">+</span><span class="s1">&#39;_%&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="o">/</span><span class="n">count</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">out</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)]</span>
-
-	<span class="n">out_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fixed_columns</span><span class="p">]</span>
-	<span class="n">out_columns</span> <span class="o">=</span> <span class="n">fixed_columns</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">out_columns</span><span class="p">)</span>
-
-	<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">out_columns</span><span class="p">]</span>
-
-	<span class="c1">#================================================================================</span>
-	<span class="sd">&#39;&#39;&#39;fills na depending on user argument&#39;&#39;&#39;</span>
-	<span class="c1">#================================================================================</span>
-	<span class="k">if</span> <span class="n">fillna_</span><span class="o">!=</span><span class="kc">False</span><span class="p">:</span> 
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">fillna_</span><span class="p">)</span>
-
-
-	<span class="c1">#================================================================================</span>
-	<span class="sd">&#39;&#39;&#39;orientates output depending on user argument&#39;&#39;&#39;</span>
-	<span class="c1">#================================================================================</span>
-	<span class="k">if</span> <span class="n">axis_</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-					<span class="o">.</span><span class="n">reset_index</span><span class="p">())</span>
-		<span class="n">out</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">:])</span>
-		<span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-	<span class="c1">#================================================================================</span>
-	<span class="sd">&#39;&#39;&#39;outputs in pandas/spark depending on user argument&#39;&#39;&#39;</span>
-	<span class="c1">#================================================================================</span>
-	<span class="k">if</span> <span class="n">pandas_</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="p">)]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-			<span class="n">out</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-
-	<span class="k">return</span> <span class="n">out</span></div>
-
 
 	
 
@@ -1205,56 +1144,18 @@
   <span class="k">return</span> <span class="n">files</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
-          </div>
-        </div>
       </div>
-        </div>
-        <div class="sidebar">
-          
-          <h3>Table of Contents</h3>
-          <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../adruk_tools.html">adruk_tools package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../conf.html">conf module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../setup.html">setup module</a></li>
-</ul>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
 
-          <div role="search">
-            <h3 style="margin-top: 1.5em;">Search</h3>
-            <form class="search" action="../../search.html" method="get">
-                <input type="text" name="q" />
-                <input type="submit" value="Go" />
-            </form>
-          </div>
-
-        </div>
-        <div class="clearer"></div>
       </div>
-    </div>
 
-    <div class="footer-wrapper">
-      <div class="footer">
-        <div class="left">
-          <div role="navigation" aria-label="related navigaton">
-            <a href="../../py-modindex.html" title="Python Module Index"
-              >modules</a> |
-            <a href="../../genindex.html" title="General Index"
-              >index</a>
-          </div>
-          <div role="note" aria-label="source link">
-          </div>
-        </div>
-
-        <div class="right">
-          
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Johannes Hechler.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.1.2.
     </div>
-        </div>
-        <div class="clearer"></div>
-      </div>
-    </div>
-
   </body>
 </html>

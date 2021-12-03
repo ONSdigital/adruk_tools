@@ -30,7 +30,57 @@
         
         
   <h1>Source code for adruk_tools.diagnostics</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="missing_count"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.diagnostics.missing_count">[docs]</a><span></span><span class="k">def</span> <span class="nf">missing_count</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="list_columns_by_file"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.diagnostics.list_columns_by_file">[docs]</a><span></span><span class="k">def</span> <span class="nf">list_columns_by_file</span><span class="p">(</span> <span class="n">cluster</span><span class="p">,</span> <span class="n">paths</span> <span class="p">):</span>  
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  :WHAT IT IS: pyspark function</span>
+<span class="sd">  :WHAT IT DOES: records variable names by dataset, for a list of .csv files on HDFS</span>
+
+<span class="sd">  :RETURNS:</span>
+<span class="sd">  * 1 dictionary where key = file name, values = variable names</span>
+<span class="sd">  * 1 dictionary where key = file name, values = row count</span>
+<span class="sd">  </span>
+<span class="sd">  :OUTPUT VARIABLES TYPE: Python dictionaries</span>
+
+<span class="sd">  :AUTHOR: Johannes Hechler</span>
+
+<span class="sd">  :VERSION: 0.0.1</span>
+<span class="sd">  :DATE: 07/10/2021</span>
+<span class="sd">  :CAVEATS: only runs on .csv files on HDFS</span>
+
+<span class="sd">  :PARAMETERS:</span>
+<span class="sd">  * cluster : an active spark cluster</span>
+<span class="sd">      `(datatype = cluster name, no string)`, e.g. spark</span>
+<span class="sd">  * paths : list of file paths to examine</span>
+<span class="sd">      `(datatype = list of strings)`, e.g. [&#39;/folder1/file1.csv&#39;, &#39;folder2/file2.csv&#39;]</span>
+<span class="sd">        </span>
+
+<span class="sd">  :EXAMPLE:</span>
+<span class="sd">  &gt;&gt;&gt; list_columns_by_file( cluster = spark, paths =  [&#39;/folder1/file1.csv&#39;, &#39;folder2/file2.csv&#39;])</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="c1"># make an empty dictionaries to later add results to</span>
+  <span class="n">cols_by_file</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># ... for column names</span>
+  <span class="n">counts</span> <span class="o">=</span> <span class="p">{}</span>         <span class="c1"># ... for counts</span>
+  
+  <span class="c1"># read in and evaluate columns from each dataset in turn</span>
+  <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+    
+    <span class="c1"># tell users which file is being processed</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;current file: &#39;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
+    
+    <span class="c1"># read in file</span>
+    <span class="n">current_file</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;csv&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;header&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span> <span class="n">path</span> <span class="p">)</span>
+    
+    <span class="c1"># record file name (without folder path) and variable names in dictionary</span>
+    <span class="n">cols_by_file</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="p">{</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span>   <span class="n">current_file</span><span class="o">.</span><span class="n">columns</span> <span class="p">})</span>
+    <span class="n">counts</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span>   <span class="n">current_file</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="p">})</span>
+
+  <span class="k">return</span> <span class="n">cols_by_file</span><span class="p">,</span> <span class="n">counts</span></div>
+
+
+
+
+<div class="viewcode-block" id="missing_count"><a class="viewcode-back" href="../../adruk_tools.html#adruk_tools.diagnostics.missing_count">[docs]</a><span class="k">def</span> <span class="nf">missing_count</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  :WHAT IT IS: FUNCTION</span>
 <span class="sd">  </span>
