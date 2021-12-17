@@ -612,7 +612,7 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
   :DATE: 17/12/2021
   :VERSION: 0.0.2
   :CHANGE FROM PREVIOUS VERSION: uses pydoop for writing out sample instead of spark cluster
-  :KNOWN ISSUES: None
+  :KNOWN ISSUES: requires package pydoop
   
   :PARAMETERS:
   * dataframe = spark dataframe
@@ -932,15 +932,15 @@ def complex_harmonisation(df, log = None):
     df = harmonised_df.toDF( *[x.split('<<>>')[0] for x in harmonised_df.columns])
   
   if log != None:
-	  log.append(f"made {col} reflect _mr when duplicated")
+    log.append(f"made {col} reflect _mr when duplicated")
     "LEFTOVER DATAFRAME1 DATAFRAME2 NOT IN CODE"
-	  return dataframe1, dataframe2, log
+    return dataframe1, dataframe2, log
   else:
-	  return df
+    return df
 
 
-	  
-	  
+
+
 def complex_standardisation(df, gender):
   
   '''
