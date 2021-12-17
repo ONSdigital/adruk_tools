@@ -1,3 +1,35 @@
+def pydoop_read(file_path):
+  """
+  :WHAT IT IS: Python function
+  :WHAT IT DOES: reads in small dataset from HDFS without the need for a spark cluster
+  :RETURNS: un-parsed, unformatted dataset
+  :OUTPUT VARIABLE TYPE: bytes
+  
+
+  :AUTHOR: Johannes Hechler
+  :DATE: 28/09/2021
+  :VERSION: 0.0.1
+  :KNOWN ISSUES: not all parsing functions accept this output. pd.read_excel() does, pd.read_csv() does not
+  
+  :PARAMETERS:
+  * file_path = full path to file to import
+      `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
+      
+  :EXAMPLE:
+  >>> pydoop_read(file_path = '/dapsen/workspace_zone/my_project/sample.csv')
+	"""
+  
+  import pydoop.hdfs as pdh  # import package to read from HDFS without spark
+
+  # read in file from HDFS
+  with pdh.open(file_path, "r") as f:
+    data = f.read()
+    f.close()
+    
+  return data
+
+
+
 def hdfs_to_pandas(file_path):
   """
   :WHAT IT IS: Python function
@@ -119,7 +151,7 @@ def equalise_file_and_folder_name(path):
 
 
 
-def update_small_file(cluster, file_path, template, join_variable):
+def update_file(cluster, file_path, template, join_variable):
   """
   :WHAT IT IS: pyspark function
   :WHAT IT DOES: 
@@ -204,6 +236,105 @@ def update_small_file(cluster, file_path, template, join_variable):
     
 
     
+
+def update_file_later(cluster, file_path, template, join_variable, drop_from_template, keep_before_join, keep_after_join):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: 
+  * tries to update a file, if it exists, with information from a template. Else it writes out the template in its place.
+  * difference from update_file: used later in ASHE pipeline, slightly difference logic; too much hassle to combine the functions
+  :RETURNS: updated input file, or template
+  :OUTPUT TYPE: .csv file on HDFS, on 1 partition
+
+  :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler
+  :DATE: 15/10/2021
+  :VERSION: 0.1
+
+  :CAVEATS:
+  * file_path: there must be no directory named like file_path + '_temp'
+  * file_path: only accepts csv
+  * assumes files have headers
+  * assumes both datasets have the join variable under the same name
+  * assumes template is already in memory
+
+  :PARAMETERS:
+    :cluster = name of the spark cluster to use:
+      `(datatype = session name, unquoted)`, e.g. spark
+    :file_path = full path to the file that you want to update:
+      `(datatype = string, without extension)`, e.g. '/dapsen/workspace_zone/my_project/file'
+    :template = name of the spark dataframe that you want to update from:
+      `(datatype = dataframe name, unquoted)`, e.g. template_df
+    :join_variable = name(s) of the variable to join input file and template on:
+      `(datatype = list of string)`, e.g. ['nino']
+    :drop_from_template = name(s) of the variable to join input file and template on:
+      `(datatype = list of string)`, e.g. ['nino']
+    :keep_before_join = name(s) of the variable to join input file and template on:
+      `(datatype = list of string)`, e.g. ['nino']
+    :keep_after_join = name(s) of the variable to join input file and template on:
+      `(datatype = list of string)`, e.g. ['nino']
+
+  :EXAMPLE:
+  >>> update_file( cluster = spark,
+                    file_path = '/dap/project/02_specified_metadata/old_data',
+                    template = good_order,
+                    join_variable = ['nhs_number']
+                    )
+  """
+  
+  import pydoop.hdfs as pdh  # package that lets you operate with HDFS
+
+  # check if the file actually exists, and if it does then...
+  if pdh.path.exists(file_path):
+
+    # subset the template to only the join variable. NB the template controls the number of rows left, it doesn't add columns
+    template = template.drop( *drop_from_template )
+
+    # read in the file to update from HDFS
+    file_to_update = cluster.read.format('csv')\
+                    .option('header', 'true')\
+                    .option('inferSchema', 'True')\
+                    .load(file_path).select( *keep_before_join )
+
+    # join the file onto the template.
+    updated_file = template.join(file_to_update,
+                               on = join_variable,
+                               how= 'left')   # keeps only records with values that exist in the template's join variable. NB can lead to duplication if the join column isn't unique in either dataset.
+
+    # keep only required variables
+    updated_file = updated_file.keep( *keep_after_join )
+    
+    
+    # write the updated file back to HDFS, but for now into a temporary directory
+    (updated_file.coalesce(1)
+     .write.csv(file_path + '_temp',
+                sep = ',',
+                header = "true",
+                mode ='overwrite'))
+
+    
+    # tidy up directories
+    pdh.rm(file_path)                   # delete the original file
+    pdh.rename(file_path + '_temp',     # rename the newly saved file to the old filepath
+               file_path)
+    
+    print('file updated')
+
+    
+  # ... and if there is no such file yet then save the template in its place
+  else: 
+    (template.coalesce(1)
+     .write.csv(file_path,
+                sep = ',',
+                header = "true",
+                mode ='overwrite'))
+    
+    print('template written to HDFS')
+
+
+
+
+
+
 def session_small():
   """
   :WHAT IT IS: pyspark function
@@ -469,15 +600,19 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
 	"""
   :WHAT IT IS: PYSPARK FUNCTION
   
-  :WHAT IT DOES: draws as user-specified number of records from the top of a dataset and saves them to a selected location in csv format
+  :WHAT IT DOES: 
+  * draws as user-specified number of records from the top of a spark dataframe
+  * saves them to a selected HDFS location in csv format
+  
   :RETURNS: nothing in memory; writes out a comma-separated file
   :OUTPUT VARIABLE TYPE: not applicable
   
   :TESTED TO RUN ON: spark dataframe from covid test and trace dataset
 
-  :AUTHOR: Ben Marshall-Sheen, Johannes Hechler
-  :DATE: 17/12/2020
-  :VERSION: 0.0.1
+  :AUTHOR: Johannes Hechler
+  :DATE: 17/12/2021
+  :VERSION: 0.0.2
+  :CHANGE FROM PREVIOUS VERSION: uses pydoop for writing out sample instead of spark cluster
   :KNOWN ISSUES: None
   
   :PARAMETERS:
@@ -495,17 +630,18 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
                    sample_size = 20, 
                    filepath = '/dapsen/workspace_zone/my_project/sample.csv)))
 	"""
-	
-	dataframe = dataframe.na.drop(subset=na_variables, how = 'any') #This filters out na.drop values.
+	# import package with function that writes to HDFS using pydoop
+  import adruk_tools.adr_functions as adr
   
-	out = dataframe.limit(sample_size) # draws the sample
+	# removes records with missing values in the chosen columns, if any were chosen
+  dataframe = dataframe.na.drop(subset = na_variables, how = 'any')
+  
+	# draws the sample and converts it to a pandas dataframe
+  results = dataframe.limit(sample_size).toPandas
 	
-	return (out.coalesce(1) # This writes out the sample to csv to the location called file_path.
-          .write
-          .csv(filepath,
-               sep = ',',
-               header = "true",
-               mode='overwrite'))
+	# write sample to the chosen HDFS file_path in comma-separate format.
+  adr.pandas_to_hdfs( dataframe = results, write_path = filepath)
+
 
   
   
@@ -747,7 +883,6 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
 	  
 	  
 def complex_harmonisation(df, log = None):
-  
   '''
   :WHAT IT IS: function
   :WHAT IT DOES:
@@ -766,36 +901,31 @@ def complex_harmonisation(df, log = None):
   dup_cols = pd.DataFrame({'dup_cols':df.columns})
   dup_cols = list((dup_cols[dup_cols.duplicated(['dup_cols'],keep=False)]
      .drop_duplicates()['dup_cols']))
-
+  
   for col in dup_cols:
-
+    
     df = df.toDF(*[y+'<<>>'+str(x) for x,y in enumerate(df.columns)])
-
+    
     #dup_cols_raw = [x for x in df.columns if x.startswith(col)]
     dup_cols_raw = [x for x in df.columns if x.split('<<>>')[0]==col]
-
+    
     df = df.withColumn(col+'_mr',
                      F.col(dup_cols_raw[0])!=F.col(dup_cols_raw[1]))
-
+    
     harmonised_df = (df
-               .select([x for x in df.columns if x not in dup_cols_raw])
-               .withColumn(col,F.lit(None))
-              .limit(0))
-
-    #harmonised_df = (harmonised_df
-    #                 .toDF(*[x.split('<<>>')[0] for x in harmonised_df.columns]))
-
+                     .select([x for x in df.columns if x not in dup_cols_raw])
+                     .withColumn(col,F.lit(None))
+                     .limit(0))
+    
     harmonised_df = (harmonised_df
                      .toDF(*[x.split('<<>>')[0] if x.split('<<>>')[0]==col
                              else x
                              for x in harmonised_df.columns]))  
-
+    
     for col_raw in dup_cols_raw:
-
+      
       temp_df = df.drop(col_raw)
-
-      #temp_df = temp_df.toDF(*[x.split('<<>>')[0] for x in temp_df.columns])
-
+      
       temp_df = (temp_df
                      .toDF(*[x.split('<<>>')[0] if x.split('<<>>')[0]==col
                              else x
@@ -803,10 +933,11 @@ def complex_harmonisation(df, log = None):
 
       harmonised_df = harmonised_df.unionByName(temp_df).dropDuplicates()
 
-    df = harmonised_df.toDF(*[x.split('<<>>')[0] for x in harmonised_df.columns])
+    df = harmonised_df.toDF( *[x.split('<<>>')[0] for x in harmonised_df.columns])
   
   if log != None:
 	  log.append(f"made {col} reflect _mr when duplicated")
+    "LEFTOVER DATAFRAME1 DATAFRAME2 NOT IN CODE"
 	  return dataframe1, dataframe2, log
   else:
 	  return df
