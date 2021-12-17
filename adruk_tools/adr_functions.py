@@ -633,7 +633,7 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
   dataframe = dataframe.na.drop(subset = na_variables, how = 'any')
   
   # draws the sample and converts it to a pandas dataframe
-  results = dataframe.limit(sample_size).toPandas
+  results = dataframe.limit(sample_size).toPandas()
 	
 	# write sample to the chosen HDFS file_path in comma-separate format.
   pandas_to_hdfs( dataframe = results, write_path = filepath)
