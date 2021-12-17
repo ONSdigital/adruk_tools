@@ -596,8 +596,7 @@ def unzip_to_csv(file_path,file_name,destination_path):
 
   
 def save_sample(dataframe, sample_size, filepath, na_variables = []):
-	
-	"""
+  """
   :WHAT IT IS: PYSPARK FUNCTION
   
   :WHAT IT DOES: 
@@ -608,7 +607,7 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
   :OUTPUT VARIABLE TYPE: not applicable
   
   :TESTED TO RUN ON: spark dataframe from covid test and trace dataset
-
+  
   :AUTHOR: Johannes Hechler
   :DATE: 17/12/2021
   :VERSION: 0.0.2
@@ -630,17 +629,14 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
                    sample_size = 20, 
                    filepath = '/dapsen/workspace_zone/my_project/sample.csv)))
 	"""
-	# import package with function that writes to HDFS using pydoop
-  import adruk_tools.adr_functions as adr
-  
-	# removes records with missing values in the chosen columns, if any were chosen
+  # removes records with missing values in the chosen columns, if any were chosen
   dataframe = dataframe.na.drop(subset = na_variables, how = 'any')
   
-	# draws the sample and converts it to a pandas dataframe
+  # draws the sample and converts it to a pandas dataframe
   results = dataframe.limit(sample_size).toPandas
 	
 	# write sample to the chosen HDFS file_path in comma-separate format.
-  adr.pandas_to_hdfs( dataframe = results, write_path = filepath)
+  pandas_to_hdfs( dataframe = results, write_path = filepath)
 
 
   
