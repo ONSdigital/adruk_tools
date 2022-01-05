@@ -691,25 +691,26 @@ def make_test_df(session_name):
 def generate_ids(session, df, id_cols, start_year, id_len = None):
   """
   :WHAT IT IS: pyspark function
-  :WHAT ID DOES: recodes a given column to random numerical values
+  :WHAT ID DOES: recodes a set of columns to random numerical values
   :WHY IT DOES IT: to anonymise ID variables in ADRUK projects
-  :RETURNS: dataframe with 1 new column called 'adr_id', holding the new ID
-  :OUTPUT VARIABLE TYPE: spark dataframe
-  :KNOWN ISSUES: input dataset must not have existing column called 'adr_id'
-
+  :RETURNS: dataframe with 2 columns, mapping old and new IDs
+  * old ID (unique values only)
+  * new ID (unique values only) , called 'adr_id'
+  :OUTPUT VARIABLE TYPE: spark dataframe. new ID column = string type
+  
   :AUTHOR: David Cobbledick
   :DATE: 2020
   :VERSION: 0.0.1
-
+  :KNOWN ISSUES: input dataset must not have existing column called 'adr_id'
 
   :PARAMETERS:
-    * session = name of current spark cluster
+    * session = name of active spark cluster
       `(datatype = cluster name, no string)`, e.g. spark
-    * df = spark dataframe
+    * df = spark dataframe with ID you want derive random IDs from
       `(datatype = dataframe name, no string)`, e.g. PDS
-    * id_cols = column(s) to use for new ID
+    * id_cols = column(s) to turn into randomised new ID
       `(datatype = list of strings)`, e.g. ['year', 'name']
-    * start_year = name of additional column(s) to use in ID
+    * start_year = name of additional column(s) to prefix (in the clear) to the random IDs
       `(datatype = list of strings)`, e.g. ['year', 'name']
     * id_len = set uniform length of ID values if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths
       `(datatype = numeric)`, e.g. 9
@@ -884,7 +885,7 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
 	  
 def complex_harmonisation(df, log = None):
   '''
-  :WHAT IT IS: function
+  :WHAT IT IS: pyspark function
   :WHAT IT DOES:
   * where harmonisation leads to duplicate named variables within a dataset, this function harmonised to a single variable
   * a multiple record (_mr) flag is generated as an additional column to indicate if there is discrepancy in values for harmonised variables
@@ -892,53 +893,88 @@ def complex_harmonisation(df, log = None):
   :USE: used in 05c_aggregate_hive_tables.py
   :AUTHOR: David Cobbledick
   :DATE: 08/01/2021
+
+  :PARAMETERS:
+  * :df = the dataframe to standardise:
+      `(datatype = dataframe name, no string)`, e.g. ashe_data
+  * :log = name of an existing list to record engineering steps in, if any exists. Default value = None:
+      `(datatype = list)`, e.g. engineering_log
+  
+
+  :EXAMPLE:
+  >>> complex_harmonisation(df = my_dataframe, log = engineering_log)
+
   '''
 	
+  " IMPORT REQUIRED PACKAGES "
   import pandas as pd
   import pyspark.sql.functions as F
 	
   
-  dup_cols = pd.DataFrame({'dup_cols':df.columns})
-  dup_cols = list((dup_cols[dup_cols.duplicated(['dup_cols'],keep=False)]
-     .drop_duplicates()['dup_cols']))
   
+  # create pandas dataframe with 1 column that lists all the spark dataframe's columns
+  "LEFTOVER: why make a dataframe if next thing you make it a list? "
+  dup_cols = pd.DataFrame({'dup_cols' : df.columns})
+  
+  # make a list of column names that appear repeatedly
+  dup_cols = list((dup_cols[ dup_cols.duplicated(['dup_cols'], keep = False)]
+     .drop_duplicates()['dup_cols']
+                  )
+                 )
+  
+  # for each column that appears more than once...
   for col in dup_cols:
     
-    df = df.toDF(*[y+'<<>>'+str(x) for x,y in enumerate(df.columns)])
+    # add to dataframe columns named after the existing columns, an index number and a special string
+    df = df.toDF( *[ column_name + '<<>>' + str( column_name ) for index_number, column_name in enumerate(df.columns)])
     
+    # record columns in this new dataframe that have the same name as the current column when the above renaming is removed
     #dup_cols_raw = [x for x in df.columns if x.startswith(col)]
-    dup_cols_raw = [x for x in df.columns if x.split('<<>>')[0]==col]
+    dup_cols_raw = [x for x in df.columns if x.split('<<>>')[0] == col]
     
-    df = df.withColumn(col+'_mr',
-                     F.col(dup_cols_raw[0])!=F.col(dup_cols_raw[1]))
+    # create a boolean column, named after the current column with a 'multiple record' suffix, that flags where values of the identified duplicate columns are different
+    " LEFTOVER: this assumes only 2 duplicate columns are found each time "
+    df = df.withColumn(col + '_mr',
+                       F.col(dup_cols_raw[0]) != F.col(dup_cols_raw[1]))
     
+    # make a new spark dataframe by selecting only non-duplicated columns from the original dataframe
+    # add a new column, named after the current duplicate column, with all values None
     harmonised_df = (df
-                     .select([x for x in df.columns if x not in dup_cols_raw])
-                     .withColumn(col,F.lit(None))
+                     .select([column for column in df.columns if column not in dup_cols_raw])
+                     .withColumn(col, F.lit(None))
                      .limit(0))
     
+    # ???
     harmonised_df = (harmonised_df
-                     .toDF(*[x.split('<<>>')[0] if x.split('<<>>')[0]==col
-                             else x
-                             for x in harmonised_df.columns]))  
+                     .toDF(*[column.split('<<>>')[0] if column.split('<<>>')[0] == col
+                             else column
+                             for column in harmonised_df.columns]))  
     
+    # inner loop: for each recorded duplicate column ...
     for col_raw in dup_cols_raw:
       
+      # make a copy of the original dataframe, without the duplicate column
       temp_df = df.drop(col_raw)
       
+      # ???
       temp_df = (temp_df
                      .toDF(*[x.split('<<>>')[0] if x.split('<<>>')[0]==col
                              else x
                              for x in temp_df.columns]))  
-
+      
+      # then add the dataframe to the dataframe with only non-duplicated column, and remove duplicate rows
       harmonised_df = harmonised_df.unionByName(temp_df).dropDuplicates()
 
+    # ???
     df = harmonised_df.toDF( *[x.split('<<>>')[0] for x in harmonised_df.columns])
   
+  # if the user specified an engineering log, then record which columns were marked as duplicates, then return dataframe1, datafram2 and the log
   if log != None:
 	  log.append(f"made {col} reflect _mr when duplicated")
     "LEFTOVER DATAFRAME1 DATAFRAME2 NOT IN CODE"
 	  return dataframe1, dataframe2, log
+  
+  # if there is no log, then only return the dataframe
   else:
 	  return df
 
@@ -946,81 +982,122 @@ def complex_harmonisation(df, log = None):
 	  
 	  
 def complex_standardisation(df, gender):
-  
   '''
   :WHAT IT IS: pyspark function
   :WHAT IT DOES: 
-  * Enables more detailed secondary engineering of columns secified within the function
+  * tidies and standardises name, postcode and sex columns. Use only for ASHE and AEDE data.
+  * recodes sex columns to 1, 2, 3 for male, female, other
+  * removes titles from name columns, trims and upper-cases them
+  * removes bad values from postcode columns, trims and upper-cases them
   
+  :AUTHOR: David Cobbledick
+  :DATE: 08/01/2021
   :USE: used in 05c_aggregate_hive_tables.py
+  
   :NOTES: 
   * This can be adapted to suit data and processing requirements
   * The examples below show application for standardising sex, name and postcode variables
+  * the function should only be used on ASHE and maybe AEDE data. It uses hard-coded column names and regex definitions that will not be universally true.
+  * assumes name columns are called either of these: 'FORENAME', 'MIDDLENAMES', 'SURNAME'
+  * assumes postcode columns are called either of these: 'POSTCODE', 'HOMEPOSTCODE', 'WORKPOSTCODE'
 
-  :AUTHOR: David Cobbledick
-  :DATE: 08/01/2021
+
+  :PARAMETERS:
+  * :df = the dataframe to standardise:
+      `(datatype = dataframe name, no string)`, e.g. ashe_data
+  * :gender = names of columsn that contain gender data that you want to standardise:
+      `(datatype = list of string)`, e.g. ['sex', 'gender']
+        
+
+  :EXAMPLE:
+  >>> complex_standardisation(df = my_dataframe, gender = ['sex'])
+
   '''
+  # generally useful package of spark functions
   import pyspark.sql.functions as F
 	
   #========================================================================================
   #========================================================================================
   ''' Standardises gender'''
   #========================================================================================
+  # identify which expected gender columns are actually in data
+  sex_cols = [column for column in df.columns if column in gender] 
   
-  sex_cols = [x for x in df.columns if x in gender] 
-  
+  # if there are any gender columns, then define what male, female and other values look like ...
+  "LEFTOVER: these IF clauses look redundant. If there are no columns then the loop below will not error"
   if len(sex_cols)!=0:
     
+    "LEFTOVER: this doesn't account for different cases"
     male_regex = "(?i)^m$"
     female_regex = "(?i)^f$"
     other_regex = "(?i)^N$|(?i)^u$|0|9"
     #gender_null_regex = "N"
     
+    # ... and recode them to standard values
     for column in sex_cols:
     
-      df = df.withColumn(column,F.regexp_replace(F.col(column),male_regex, '1'))
-      df = df.withColumn(column,F.regexp_replace(F.col(column),female_regex, '2'))
-      df = df.withColumn(column,F.regexp_replace(F.col(column),other_regex, '3'))
+      df = df.withColumn(column, F.regexp_replace(F.col(column), male_regex, '1'))
+      df = df.withColumn(column, F.regexp_replace(F.col(column), female_regex, '2'))
+      df = df.withColumn(column, F.regexp_replace(F.col(column), other_regex, '3'))
     
   #========================================================================================
   #========================================================================================
   ''' Standardises name columns'''
   #========================================================================================
-    
+  # identify any name columns in dataframe. assumes name columns are called one of 3 options.
   name_cols = [x for x in df.columns if x in ['FORENAME',
                                              'MIDDLENAMES',
                                              'SURNAME']]
   
+  # if any such columns were found, then define what personal titles are called and ...
   if len(name_cols)!=0:
     
     clean_name_regex = \
     "|".join(['^Mr.$','^Mrs.$','^Miss.$','^Ms.$','^Mx.$','^Sir.$','^Dr.$'])\
     +"|[^ A-Za-z'-]"
     
+    # ... in each identified column ...
     for column in name_cols:
       
-      df = df.withColumn(column,F.upper(F.col(column)))
-      df = df.withColumn(column,F.trim(F.regexp_replace(F.col(column),clean_name_regex, "")))
-      df = df.withColumn(column,F.trim(F.regexp_replace(F.col(column), " +", " ")))
+      # ... make all values upper case ...
+      df = df.withColumn(column, F.upper(F.col(column)))
+      
+      " LEFTOVER: surely the regex won't work when values are all upper case "
+      # ... remove leading / trailing whitespace and remove previously defined patterns ...
+      df = df.withColumn(column, F.trim(F.regexp_replace(F.col(column), clean_name_regex, "")))
+      
+      # ... trim whitespace again (sic!) and replace any instances of ' +' with just a space
+      df = df.withColumn(column, F.trim(F.regexp_replace(F.col(column), " +", " ")))
        
 
   #========================================================================================
   #========================================================================================
   ''' Standardises postcode columns'''
   #========================================================================================
-    
+  # identify any postcode columns in dataframe. assumes name columns are called one of 3 options.
   postcode_cols = [x for x in df.columns if x in ['POSTCODE',
                                                  'HOMEPOSTCODE',
                                                  'WORKPOSTCODE']]
   
+  # if there are any postcode columns at all then...
   if len(postcode_cols)!=0:
     
+    "LEFTOVER: this looks fishy, especially case-wise"
+    # define what bad values look like
     postcode_regex = "[^A-za-z0-9]|[_]|[\^]"
     
+    # ... go through all columns and ...
     for column in postcode_cols:
-
-      df = df.withColumn(column,F.trim(F.regexp_replace(F.col(column),postcode_regex, "")))    
-      df = df.withColumn(column,F.upper(F.col(column)))
+      
+      # ... trim leading/trailing whitepsace, then remove instances of bad values defines above ...
+      df = df.withColumn(column, F.trim( F.regexp_replace( F.col(column), 
+                                                          postcode_regex, 
+                                                          "")
+                                       )
+                        )
+      
+      # ... and make all values upper case
+      df = df.withColumn(column, F.upper( F.col(column)))
 
   #========================================================================================
   #========================================================================================    
