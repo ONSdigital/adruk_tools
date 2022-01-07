@@ -694,7 +694,7 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
   * new ID (unique values only) , called 'adr_id'
   :OUTPUT VARIABLE TYPE: spark dataframe. new ID column = string type
   
-  :AUTHOR: David Cobbledick
+  :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler
   :DATE: 2020
   :VERSION: 0.0.1
   :KNOWN ISSUES: input dataset must not have existing column called 'adr_id'
@@ -706,9 +706,9 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
       `(datatype = dataframe name, no string)`, e.g. PDS
     * id_cols = column(s) to turn into randomised new ID
       `(datatype = list of strings)`, e.g. ['year', 'name']
-    * start_year = name of additional column(s) to prefix (in the clear) to the random IDs
-      `(datatype = list of strings)`, e.g. ['year', 'name']
-    * id_len = set uniform length of ID values if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths
+    * start_year = name of additional column to prefix (in the clear) to the random IDs. NB if several columns are supplied, only the first is used.
+      `(datatype = list of strings)`, e.g. ['year']
+    * id_len = set uniform length of ID values (ignoring length of start_year values) if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths
       `(datatype = numeric)`, e.g. 9
 
   :EXAMPLE:
@@ -717,6 +717,18 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
                     id_cols = ['name', 'ID'],
                     start_year = ['year'], 
                     id_len = 9)
+  
+  :SAMPLE OUTPUT:
+  +-----+---+-------------+
+  | name| ID|       adr_id|
+  +-----+---+-------------+
+  | john|AA3|2019782853507|
+  |  Tom|AA8|2019659404170|
+  |Alice|AA1|2019145833675|
+  | Matt|AA6|2019485000031|
+  |Linda|AA2|2019156515405|
+  |Susan|AA4|2019621073989|
+  +-----+---+-------------+
   """
   
   
@@ -735,15 +747,15 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
   #==========================================================================
   
   # check that the ID columns were passed as a list, and if not, make it one
-  if type(id_cols)!=list:
+  if type(id_cols) != list:
     id_cols = [id_cols]
   
   # check that the columns expressing which period an ID first appeared were passed as a list, and if not, make it one
-  if type(start_year)!=list:
+  if type(start_year) != list:
     start_year = [start_year]
   
   # reduce dataframe to only the ID and the Year columns. then remove records where the same ID was used more than once in the year it was first used.
-  df = df.select(id_cols + start_year)
+  df = df.select( id_cols + start_year )
   df = df.drop_duplicates()
   
   # count how many IDs ( = people) are left, i.e. how many need a new ID generated
@@ -765,30 +777,30 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
   # using range() means there are no duplicates in the numbers that get sampled from, i.e. sampling is without replacement
   # abs() is a safeguard in case users passed a negative value
   else:
-    id_list = random.sample(range(1*10**abs(id_len)),
+    id_list = random.sample( range( 1 * 10 ** abs(id_len)),
                             n_persons)
 
   # turn the base Python list into a spark dataframe
-  list_df = session.createDataFrame(id_list, T.IntegerType())
+  list_df = session.createDataFrame( id_list, T.IntegerType() )
 
   # change the default column name to 'adr_id'
-  list_df = list_df.withColumnRenamed('value','adr_id')
+  list_df = list_df.withColumnRenamed( 'value', 'adr_id' )
 
   
   #==========================================================================
   """MAIN DATASET: GIVE EACH OLD ID VALUE A UNIQUE BUT UNRELATED NUMBER TO LATER JOIN ON"""
   #==========================================================================
   # make a new, purely auxiliary columm called 'instance'. For now populated with the number 1, to be used in a calculation, then later deleted
-  df = df.withColumn('instance',F.lit(1))
+  df = df.withColumn( 'instance', F.lit(1) )
   
   # define a window function specification that...
   w = (W.Window
        .partitionBy('instance')   # for each unique value in the 'instance' column...
        .orderBy(id_cols)          # ... and ordered by the column of ID values created earlier ...
-       .rangeBetween(W.Window.unboundedPreceding, 0))   # ... add as many to the previous group's value as there are records in the current groups
+       .rangeBetween( W.Window.unboundedPreceding, 0))   # ... add as many to the previous group's value as there are records in the current groups
 
   # apply the window specification - essentially makes a (non-unique) ranking, where each group's rank number is the previous group's number, plus as the number of times that the current ID value appears in the data
-  df = df.withColumn('cum_sum', F.sum('instance').over(w))
+  df = df.withColumn( 'cum_sum', F.sum('instance').over(w))
 
   # remove the auxiliary 'instance' column from the main dataframe
   df = df.drop('instance')
@@ -799,13 +811,13 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
   """NEW ID DATASET: GIVE EACH NEW ID VALUE A UNIQUE BUT UNRELATED NUMBER TO LATER JOIN ON"""
   #==========================================================================
   # make a new, auxiliary column called 'instance' in the auxiliary dataframe that holds the numbers created for use as IDs
-  list_df = list_df.withColumn('instance',F.lit(1))
+  list_df = list_df.withColumn( 'instance', F.lit(1) )
 
   # define a window function specification that is the same as for the main dataframe but...
   w = (W.Window
        .partitionBy('instance')
        .orderBy('adr_id')   # ... orders by the newly created ID values
-       .rangeBetween(W.Window.unboundedPreceding, 0))
+       .rangeBetween( W.Window.unboundedPreceding, 0) )
 
   # apply the window specification - essentially makes a (non-unique) ranking, where each group's rank number is the previous group's number, plus as the number of times that the current ID value appears in the data
   list_df = list_df.withColumn('cum_sum', F.sum('instance').over(w))
@@ -844,7 +856,9 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
   # "%0" means 'potentially start with leading zeroes'
   # n_characters means 'if the original value isn't this long already
   # "d" : unclear what it does but without it spark throws a memory error
-  df = df.withColumn("adr_id", F.format_string("%0"+n_characters+"d","adr_id"))
+  df = df.withColumn("adr_id", F.format_string( "%0" + n_characters + "d",
+                                               "adr_id")
+                    )
 
   
   
@@ -859,6 +873,7 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
                     )
   
   # remove from the main dataframe the (first) column used to specify the period an original ID value was added
+  # NB while start_year must be a list, at this point it only uses the first element anyway. Ought to just make it a string to avoid user confusion.
   df = df.drop(start_year[0])
 
   #==========================================================================
