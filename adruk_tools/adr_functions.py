@@ -92,7 +92,7 @@ def pandas_to_hdfs(dataframe, write_path):
   
   # write file from HDFS
   with pdh.open(write_path, "wt") as f:
-    dataframe.to_csv(f, index=False) 
+    dataframe.to_csv(f, index = False) 
     f.close()
 
 
