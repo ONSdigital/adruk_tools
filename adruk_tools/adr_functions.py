@@ -689,8 +689,8 @@ def generate_ids(session, df, id_cols, start_year = None, id_len = None):
   :WHAT IT IS: pyspark function
   :WHAT IT DOES: recodes a column, or combinations of columns, into a unique random numerical values.
   
-  Creates unique random numerical values for all unique combinations (permeatations) of columns entered under id_cols. 
-  If a start_year is provided, this is added to id_cols and as a prefix to the generated numerical 
+  Creates unique random numerical values for all unique combinations (permutations) of columns entered under 
+  id_cols and start_year, with start_year added as a prefix to the generated numerical 
   values. Output is a new table with columns under id_cols, allowing a join back to the original dataset, 
   and the new numerical id. Additional option to create numerical id of specified length.
 
@@ -730,27 +730,70 @@ def generate_ids(session, df, id_cols, start_year = None, id_len = None):
       `(datatype = numeric)`, e.g. 9
 
   #####################################################
-  #####################################################
-  :EXAMPLE: UPDATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # UPDATE!!!!!!!!!!!!!!!!!!!!!!!!!!
+  
+  :EXAMPLES:
+  
+  :SAMPLE INPUT:
+  
+  +-----+---+----+
+  | name| ID| age|
+  +-----+---+----+
+  | John|AA3|  23|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  | John|AA3|  61|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  +-----+---+----+
+
   >>> generate_ids(sessions = spark, 
                     df = AEDE, 
-                    id_cols = ['name', 'ID'],
-                    start_year = ['year'], 
+                    id_cols = ['name'],
+                    start_year = ['age'], 
                     id_len = 9)
   
   :SAMPLE OUTPUT:
-  +-----+---+-------------+
-  | name| ID|       adr_id|
-  +-----+---+-------------+
-  | john|AA3|2019782853507|
-  |  Tom|AA8|2019659404170|
-  |Alice|AA1|2019145833675|
-  | Matt|AA6|2019485000031|
-  |Linda|AA2|2019156515405|
-  |Susan|AA4|2019621073989|
-  +-----+---+-------------+
-  """
+  +-----+-----------+
+  | name|     adr_id|
+  +-----+-----------+
+  |Alice|44277926008|
+  | John|23534343875|
+  | John|61534343875|
+  |  Tom|32580421606|
+  +-----+-----------+
   
+   :SAMPLE INPUT:
+  
+  +-----+---+----+
+  | name| ID| age|
+  +-----+---+----+
+  | John|AA3|  23|
+  |  Tom|AA8|  32|
+  |Alice|AA1|  44|
+  | Matt|AA6|  61|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  +-----+---+----+
+
+  >>> generate_ids(sessions = spark, 
+                    df = AEDE, 
+                    id_cols = ['name', 'ID'],
+                    start_year = ['age'], 
+                    id_len = 9)
+  
+  :SAMPLE OUTPUT:
+  +-----+---+-----------+
+  | name| ID|     adr_id|
+  +-----+---+-----------+
+  |  Tom|AA8|32974159768|
+  |Alice|AA1|44074421659|
+  |Alice|AA4|44248294836|
+  | Matt|AA6|61683839080|
+  | John|AA3|23683839080|
+  +-----+---+-----------+
+  """
+
   
   #==========================================================================
   """LOAD REQUIRED PACKAGES"""
