@@ -1,3 +1,100 @@
+def make_dummy_ninos(cluster):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: provides dummy National Insurance Numbers of various types and quality, for testing functions on
+  :RETURNS: dataframe with 25 rows and these columns
+  * index - simply a row number
+  * ninos - dummy values
+  * description - summary what type of NINO a value represents
+  :OUTPUT VARIABLE TYPE: DataFrame[index: int, nino: string, description: string]
+  
+
+  :AUTHOR: Johannes Hechler
+  :DATE: 22/02/2022
+  :VERSION: 0.0.1
+
+  
+  :PARAMETERS:
+  * cluster = active spark cluster
+      `(datatype = cluster name, not string)`, e.g. spark
+      
+  :EXAMPLE:
+  >>> make_dummy_ninos( cluster = spark)
+  
+  :FULL OUTPUT:
+  +----------+--------------------+
+  |      nino|         description|
+  +----------+--------------------+
+  | AB123456A|full, valid, clea...|
+  | ab123456a|full, valid, all ...|
+  | Aa123456a|full, valid, mixe...|
+  |    AB1234|valid, truncated,...|
+  | AB123457A|full, valid, clea...|
+  | AB123457B|full, valid, clea...|
+  | AB123458E|full, invalid fin...|
+  |       bob|not nino, lower case|
+  |       BOB|not nino, upper case|
+  |    bob123|not nino, lower case|
+  |    BOB123|not nino, upper case|
+  |    boB123|not nino, mixed case|
+  |    BOb123|not nino, mixed case|
+  |AB1234TEMP|    valid, temporary|
+  | BT123456A|full, valid, clea...|
+  | BT123456a|full, valid, all ...|
+  | Bt123456a|full, valid, mixe...|
+  |    BT1234|valid, truncated,...|
+  | BT123457A|full, valid, clea...|
+  | BT123457B|full, valid, clea...|
+  +----------+--------------------+
+	"""
+  
+  # import package needed to column names and types in a spark dataframe
+  import pyspark.sql.types as T
+  
+  # what are the columns called, and what type are they?
+  fields = [
+    T.StructField("index", T.IntegerType(), True),
+    T.StructField("nino", T.StringType(), True),
+    T.StructField("description", T.StringType(), True)
+  ]
+
+  # create a schema that spark understands
+  schema = T.StructType(fields)
+  
+  # what data to put into the dataframe. row-wise.
+  contents = [
+    (1, 'AB123456A', 'full, valid, cleaned, unique'),
+    (2, 'ab123456a', 'full, valid, all lower case'),
+    (3, 'Aa123456a', 'full, valid, mixed case'),
+    (4, 'AB1234', 'valid, truncated, valid'),
+    (5, 'AB123457A', 'full, valid, cleaned, not unique'),
+    (6, 'AB123457B', 'full, valid, cleaned, not unique'),
+    (7, 'AB123458E', 'full, invalid final character, cleaned, unique'),
+    (8, 'bob', 'not nino, lower case'),
+    (9, 'BOB', 'not nino, upper case'),
+    (10, 'bob123', 'not nino, lower case'),
+    (11, 'BOB123', 'not nino, upper case'),
+    (12, 'boB123', 'not nino, mixed case'),
+    (13, 'BOb123', 'not nino, mixed case'),
+    (14, 'AB1234TEMP', 'valid, temporary'),
+    (15, 'BT123456A', 'full, valid, cleaned, unique, Northern Ireland'),
+    (16, 'bt123456a', 'full, valid, all lower case, Northern Ireland'),
+    (17, 'Bt123456a', 'full, valid, mixed case, Northern Ireland'),
+    (18, 'BT1234', 'valid, truncated, valid, Northern Ireland'),
+    (19, 'BT123457A', 'full, valid, cleaned, not unique, Northern Ireland'),
+    (20, 'BT123457B', 'full, valid, cleaned, not unique, Northern Ireland'),
+    (21, 'BT123458E', 'full, invalid final character, cleaned, unique, Northern Ireland'),
+    (22, 'AB123 456A', 'full, valid, internal white space, unique'),
+    (23, ' AB123456A ', 'full, valid, external white space, unique'),
+    (24, ' AB123 456A ', 'full, valid, internal and external white space, unique'),
+    (25, None, 'missing value')
+    ]
+
+  # create the actual dataframe
+  return cluster.createDataFrame(contents, schema = schema)
+
+
+
 def pydoop_read(file_path):
   """
   :WHAT IT IS: Python function
