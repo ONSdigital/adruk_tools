@@ -153,7 +153,7 @@ def test_one_col_prefix_adr_id_unique(spark_context):
   
   input_dataset = spark_context.createDataFrame(test_rows, test_columns)
   
-  real_output = adr.anonymise_ids(spark_context, input_dataset, ['id'], ['age']).toPandas()
+  real_output = adr.anonymise_ids(spark_context, input_dataset, ['id'], ['year']).toPandas()
 
   # Test whether anonymised adr_id column contains only unique values
   is_real_output_unique = real_output['adr_id'].nunique(dropna = False) == len(real_output['adr_id'])
@@ -177,7 +177,7 @@ def test_one_col_prefix_equal_count(spark_context):
   
   input_dataset = spark_context.createDataFrame(test_rows, test_columns)
 
-  real_output = adr.anonymise_ids(spark_context, input_dataset, ['id'], ['age']).toPandas()
+  real_output = adr.anonymise_ids(spark_context, input_dataset, ['id'], ['year']).toPandas()
   real_output_count = real_output['adr_id'].nunique(dropna = False)
   
   # Manually calculated number of unique values in permutations of id_cols and prefix
@@ -198,7 +198,7 @@ def test_two_col_prefix_adr_id_unique(spark_context):
 
   input_dataset = spark_context.createDataFrame(test_rows, test_columns)
   
-  real_output = adr.anonymise_ids(spark_context, input_dataset, ['name', 'id'], ['age']).toPandas()
+  real_output = adr.anonymise_ids(spark_context, input_dataset, ['name', 'id'], ['year']).toPandas()
 
   # Test whether anonymised adr_id column contains only unique values
   is_real_output_unique = real_output['adr_id'].nunique(dropna = False) == len(real_output['adr_id'])
@@ -222,12 +222,12 @@ def test_two_col_prefix_equal_count(spark_context):
   
   input_dataset = spark_context.createDataFrame(test_rows, test_columns)
 
-  real_output = adr.anonymise_ids(spark_context, input_dataset, ['name', 'id'], ['age']).toPandas()
+  real_output = adr.anonymise_ids(spark_context, input_dataset, ['name', 'id'], ['year']).toPandas()
   real_output_count = real_output['adr_id'].nunique(dropna = False)
   
   # Manually calculated number of unique values in permutations of id_cols and prefix
   
-  expected_output_count = 8
+  expected_output_count = 9
   
   # Test equality between expected and anonymised outcomes
   print("count of unique values do not match between adr_id and input columns")
