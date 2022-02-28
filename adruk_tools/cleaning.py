@@ -18,7 +18,9 @@ def remove_whitespace(column):
   :EXAMPLE:
   >>> remove_whitespace('messy_column')
   """
-  F.regex_replace(F.col( column ), " ", "")
+  import pyspark.sql.functions as F
+  
+  return F.regexp_replace(F.col( column ), r'\s+', "")
 
   
 def clean_nino(column):
