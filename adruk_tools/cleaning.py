@@ -49,7 +49,7 @@ def clean_nino(column):
   """
   F.upper(remove_whitespace( column ))
   
-  
+
 def clean_names(dataset, variables):
   """
   :WHAT IT IS: FUNCTION
