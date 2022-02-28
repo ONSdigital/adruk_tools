@@ -22,30 +22,36 @@ def make_dummy_ninos(cluster):
   >>> make_dummy_ninos( cluster = spark)
   
   :FULL OUTPUT:
-  +----------+--------------------+
-  |      nino|         description|
-  +----------+--------------------+
-  | AB123456A|full, valid, clea...|
-  | ab123456a|full, valid, all ...|
-  | Aa123456a|full, valid, mixe...|
-  |    AB1234|valid, truncated,...|
-  | AB123457A|full, valid, clea...|
-  | AB123457B|full, valid, clea...|
-  | AB123458E|full, invalid fin...|
-  |       bob|not nino, lower case|
-  |       BOB|not nino, upper case|
-  |    bob123|not nino, lower case|
-  |    BOB123|not nino, upper case|
-  |    boB123|not nino, mixed case|
-  |    BOb123|not nino, mixed case|
-  |AB1234TEMP|    valid, temporary|
-  | BT123456A|full, valid, clea...|
-  | BT123456a|full, valid, all ...|
-  | Bt123456a|full, valid, mixe...|
-  |    BT1234|valid, truncated,...|
-  | BT123457A|full, valid, clea...|
-  | BT123457B|full, valid, clea...|
-  +----------+--------------------+
+
+  +-----+------------+--------------------+
+  |index|        nino|         description|
+  +-----+------------+--------------------+
+  |    1|   AB123456A|full, valid, clea...|
+  |    2|   ab123456a|full, valid, all ...|
+  |    3|   Aa123456a|full, valid, mixe...|
+  |    4|      AB1234|valid, truncated,...|
+  |    5|   AB123457A|full, valid, clea...|
+  |    6|   AB123457B|full, valid, clea...|
+  |    7|   AB123458E|full, invalid fin...|
+  |    8|         bob|not nino, lower case|
+  |    9|         BOB|not nino, upper case|
+  |   10|      bob123|not nino, lower case|
+  |   11|      BOB123|not nino, upper case|
+  |   12|      boB123|not nino, mixed case|
+  |   13|      BOb123|not nino, mixed case|
+  |   14|  AB1234TEMP|    valid, temporary|
+  |   15|   BT123456A|full, valid, clea...|
+  |   16|   bt123456a|full, valid, all ...|
+  |   17|   Bt123456a|full, valid, mixe...|
+  |   18|      BT1234|valid, truncated,...|
+  |   19|   BT123457A|full, valid, clea...|
+  |   20|   BT123457B|full, valid, clea...|
+  |   21|   BT123458E|full, invalid fin...|
+  |   22|  AB123 456A|full, valid, inte...|
+  |   23|  AB123456A |full, valid, exte...|
+  |   24| AB123 456A |full, valid, inte...|
+  |   25|        null|       missing value|
+  +-----+------------+--------------------+
 	"""
   
   # import package needed to column names and types in a spark dataframe
