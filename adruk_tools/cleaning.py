@@ -47,7 +47,10 @@ def clean_nino(column):
   :EXAMPLE:
   >>> remove_whitespace('messy_nino_column')
   """
-  F.upper(remove_whitespace( column ))
+  
+  import pyspark.sql.functions as F
+  
+  return F.upper(remove_whitespace( column ))
   
 
 def clean_names(dataset, variables):
