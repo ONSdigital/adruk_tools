@@ -1,3 +1,58 @@
+def remove_whitespace(column):
+  """
+  :LANGUAGE: pyspark
+  
+  :WHAT IT DOES: removes all whitespace from values in a column object of type string
+  :RETURNS: column object with cleaned string values
+  :OUTPUT VARIABLE TYPE: spark column object
+
+  :AUTHOR: Johannes Hechler
+  :DATE: 28/02/2022
+  :VERSION: 0.0.1
+  :DEPENDENCIES: pyspark.sql.functions must be present, prefixed as F
+
+  :PARAMETERS:
+    : dataset = name of spark string type column to clean:
+      `(datatype = string)`, e.g. 'messy_column'
+
+  :EXAMPLE:
+  >>> remove_whitespace('messy_column')
+  """
+  import pyspark.sql.functions as F
+  
+  return F.regexp_replace(F.col( column ), r'\s+', "")
+
+  
+def clean_nino(column):
+  """
+  :LANGUAGE: pyspark
+  
+  :WHAT IT DOES: in a column object of type string
+  * removes all whitespace from values (includes trimming)
+  * makes all values upper case
+  :RETURNS: column object with cleaned string values
+  :OUTPUT VARIABLE TYPE: spark column object
+
+  :AUTHOR: Johannes Hechler
+  :DATE: 28/02/2022
+  :VERSION: 0.0.1
+  :DEPENDENCIES:
+  * library pyspark.sql.functions must be loaded, prefixed as F
+  * function remove_whitespace() must be present in the same library
+
+  :PARAMETERS:
+    : dataset = name of spark string type column to clean:
+      `(datatype = string)`, e.g. 'messy_nino_column'
+
+  :EXAMPLE:
+  >>> remove_whitespace('messy_nino_column')
+  """
+  
+  import pyspark.sql.functions as F
+  
+  return F.upper(remove_whitespace( column ))
+  
+
 def clean_names(dataset, variables):
   """
   :WHAT IT IS: FUNCTION
