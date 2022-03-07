@@ -741,13 +741,6 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
 	# write sample to the chosen HDFS file_path in comma-separate format.
   pandas_to_hdfs( dataframe = results, write_path = filepath)
 
-
-  
-  
-  
-  
-  
-  
   
 def make_test_df(session_name):
   """
@@ -784,9 +777,217 @@ def make_test_df(session_name):
   return session_name.createDataFrame(values, columns) #create pyspark dataframe with variables/value from above
 
 
-
-
  
+def anonymise_ids(session, df, id_cols, prefix = None):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: hashs a column, or unique combination (permutations) of columns.
+  
+  Creates a lookup with unique hashed values (SHA256) for all combinations (permutations) of columns 
+  entered as id_cols (incouding NULLs). Optional, hard coded prefix can be added. Output is a new 
+  table with each columns under id_cols and the new hashed id. 
+  This provides a method to join back to the original dataset.
+
+  :WHY IT DOES IT: to anonymise one or more ID variables in ADRUK projects
+  
+  :RETURNS: dataframe with columns 
+  * columns from id_cols
+  * hashed ID (unique values only) , called 'adr_id' if column doesnt exist, renamed 'adr_new' if column exists.
+
+  :OUTPUT VARIABLE TYPE: spark dataframe. new ID column = string type
+  
+  :AUTHOR: Nathan Shaw
+  :DATE: Feb2022
+
+  :PARAMETERS:
+    * session = name of active spark cluster
+      `(datatype = cluster name, no string)`, e.g. spark
+      
+    * df = spark dataframe with ID you want derive random IDs from
+      `(datatype = dataframe name, no string)`, e.g. PDS
+      
+    * id_cols = column(s) to turn into randomised new ID
+      `(datatype = list of strings)`, e.g. ['age', 'name']
+      
+    * prefix (optional) = String to add as a prefix
+      Default value = None
+      `(datatype = String)`, e.g. '2022'
+
+  
+  :EXAMPLES:
+  
+  :SAMPLE INPUT 1: General examples
+  
+  +-----+---+----+
+  | name| ID| age|
+  +-----+---+----+
+  | John|AA3|  23|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  | John|AA3|  61|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  |Alice|   |  44|
+  +-----+---+----+
+
+
+  >>> anonymise_ids(sessions = spark, 
+                    df = df, 
+                    id_cols = ['ID'],
+                    prefix = None)
+  
+  :SAMPLE OUTPUT:
+  
+  +----+--------------------+
+  |  ID|              adr_id|
+  +----+--------------------+
+  | AA3|b2866ef626d6d8260...|
+  | AA8|486340e9cc0f04a04...|
+  | AA4|2651e7dd70ff9ed3c...|
+  |null|                null|
+  +----+--------------------+
+
+  
+  >>> anonymise_ids(sessions = spark, 
+                    df = df, 
+                    id_cols = ['ID', 'age'],
+                    prefix = None)
+  
+  :SAMPLE OUTPUT:
+  
+  +----+---+--------------------+
+  |  ID|age|              adr_id|
+  +----+---+--------------------+
+  | AA3| 23|8ecc1648c3cd33f91...|
+  | AA8| 32|7a1b295804c9effcf...|
+  | AA4| 44|1c920b721a1f094fb...|
+  | AA3| 61|6664b717b66fa3234...|
+  |null| 44|71ee45a3c0db9a986...|
+  +----+---+--------------------+
+  
+  
+  >>> anonymise_ids(sessions = spark, 
+                    df = df, 
+                    id_cols = ['ID'],
+                    prefix = '2022')
+  
+  :SAMPLE OUTPUT:
+  
+  +----+--------------------+
+  |  ID|              adr_id|
+  +----+--------------------+
+  | AA3|2022b2866ef626d6d...|
+  | AA8|2022486340e9cc0f0...|
+  | AA4|20222651e7dd70ff9...|
+  |null|                null|
+  +----+--------------------+
+  
+  >>> anonymise_ids(sessions = spark, 
+                    df = df, 
+                    id_cols = ['ID', 'age'],
+                    prefix = '2022')
+  
+  :SAMPLE OUTPUT:
+  
+  +----+---+--------------------+
+  |  ID|age|              adr_id|
+  +----+---+--------------------+
+  | AA3| 61|20226664b717b66fa...|
+  | AA8| 32|20227a1b295804c9e...|
+  | AA4| 44|20221c920b721a1f0...|
+  |null| 44|202271ee45a3c0db9...|
+  | AA3| 23|20228ecc1648c3cd3...|
+  +----+---+--------------------+
+  
+  :SAMPLE INPUT 2: Example with column adr_id
+  
+  +-----+-------+----+
+  | name| adr_id| age|
+  +-----+-------+----+
+  | John|AA3    |  23|
+  |  Tom|AA8    |  32|
+  |Alice|AA4    |  44|
+  | John|AA3    |  61|
+  |  Tom|AA8    |  32|
+  |Alice|AA4    |  44|
+  +-----+-------+----+
+  
+  >>> anonymise_ids(sessions = spark, 
+                    df = df, 
+                    id_cols = ['adr_id'],
+                    prefix = '2022')
+                    
+  :SAMPLE OUTPUT 2:
+   
+  +------+--------------------+
+  |adr_id|          adr_id_new|
+  +------+--------------------+
+  |   AA3|2022b2866ef626d6d...|
+  |   AA8|2022486340e9cc0f0...|
+  |   AA4|20222651e7dd70ff9...|
+  +------+--------------------+
+  
+  """
+
+  # Load required packages
+  import pyspark.sql.functions as F 
+
+  # Check inputs
+  # id_cols must be passed as list
+  if type(id_cols) != list:
+    raise TypeError("id_cols must be a string")
+  
+  
+  # Prefix must be passed as string
+  if prefix != None:
+    if type(prefix) != str:
+      raise TypeError("prefix must be a string")
+      
+      
+  # Build lookup table
+  # Create new column name for hashed values
+  if('adr_id' in df.columns):
+    adr_id_column = 'adr_id_new'
+  else:
+    adr_id_column = 'adr_id'
+    
+  
+  # Filter dataframe to id_cols
+  df = df.select(id_cols)
+  
+  
+  # Keep only unique permutations of the combined columns above. 
+  # This provides a mapping back to the original data
+  df = df.drop_duplicates()
+      
+    
+  # Create unique column based on id_cols 
+  # which in turn allows a unique hased value to be created
+  # NB concat_ws doesnt ignore NULL values compared to concat
+  if(len(id_cols) > 1):
+    df = df.withColumn('id_cols_concat', F.concat_ws('_', *id_cols))
+  else:
+    df = df.withColumn('id_cols_concat', F.col(*id_cols))
+
+    
+  # Hash the data in the specified column using SHA256
+  df = df.withColumn(adr_id_column, F.sha2('id_cols_concat', 256))
+  
+  
+  # Prefix string if selected
+  if prefix != None:
+    
+    df = df.withColumn(adr_id_column,
+                       F.concat(F.lit(prefix),
+                                F.col(adr_id_column)))
+    
+  # Tidy up
+  df = df.drop(F.col('id_cols_concat'))
+
+  return df
+
+	  
+
 def generate_ids(session, df, id_cols, start_year, id_len = None):
   """
   :WHAT IT IS: pyspark function
@@ -1051,21 +1252,8 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
   #==========================================================================
   return df
 
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
+
+
 def complex_harmonisation(df, log = None):
   '''
   :WHAT IT IS: pyspark function
