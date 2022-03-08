@@ -1198,3 +1198,103 @@ def spark_glob_all(host,directory):
   files = list(set(files))    # deduplicate list of files
   
   return files
+
+
+class Lookup:
+  """doctstring expects both lookups and datasets to be in memory already
+  also assumes one doesn't exist as not sure how to do this, so hardcoded as no atm
+  
+  attributes and methods can exist - likely create attributes of key, value
+  """
+
+  def __init__(self, column, value, schema):
+    """Initiate the lookup class.
+
+    Instance attributes are column and value.
+    
+    schema likely added at some point, but maybe later on as only related to create
+    method, not class as a whole
+    
+    """
+    self.column = column
+    self.value = value
+    self.schema = schema
+    
+    # Check column, value are strings for time being
+    # Column might be list of strings in future
+    if type(column) != str:
+      raise TypeError("column must be a string")
+    
+    if type(value) != str:
+      raise TypeError("value must be a string")
+
+    
+    # Checks for schema
+    # column + value in schema
+    
+  def exists(self, filepath):
+    """ currently just marking as false so new one gets created
+      need to thnk about how we check this, against where etc???????
+      
+      """
+    # How are we defining exists?
+    # - by filepath
+    # - by table with just column / value already there
+    flag = False
+      
+    return flag
+    
+  def declare(self, dataframe):
+
+    """
+    import lookup that should be in memory???????"""
+
+    # need to map column names as might be different
+
+    # keep only columns of interest
+    # note do we need this? This is old lookup so in theory should be clean?
+    lookup = dataframe.select(self.column, self.value)
+
+    return lookup
+
+  def checks(self):
+    # checks on lookup
+
+    # column unique
+
+    # value unique
+
+    pass
+
+
+  def create(self, cluster):
+
+    """create empty spark dataframe, maybe taking into account schema"""
+
+    # schema here as only related to this method, not class as whole
+
+    return cluster.createDataFrame([], self.schema).select(self.column, self.value)
+
+
+
+  def update_lookup(self, cluster, dataset, dataset_column, source_lookup):
+
+    """updates values in lookup based on new dataset and column"""
+
+    # slightly different to flowchart in that anon function already filters
+    # to unique columns so run this first and then append only new unique keys
+
+    #' didnt know how to have source_lookup not in method.
+
+    dataset_lookup = adr.anonymise_ids(cluster, dataset, dataset_column)
+
+    # Have unique set of values in source_column and hashed value
+    # Identify source _column values not in lookup
+
+    # create list of keys?? in source_lookup
+    source_lookup_column_list = source_lookup.select(F.col(self.column)).toPandas()[self_column]
+
+    # filter dataset lookup to only records NOT IN lookup
+    dataset_new = dataset_lookup.where(~(dataset(F.col(self_column))).isin(source_lookup_column_list))
+
+    #
