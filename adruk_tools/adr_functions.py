@@ -1562,22 +1562,17 @@ def spark_glob_all(host,directory):
 
 
 class Lookup:
-  """doctstring expects both lookups and datasets to be in memory already
-  also assumes one doesn't exist as not sure how to do this, so hardcoded as no atm
-  
-  attributes and methods can exist - likely create attributes of key, value
+  """
+  Class for creating and managing lookups in adruk projects
   """
   
-
   def __init__(self, column, value, existing = None):
-    """Initiate the lookup class.
+    """
+    Initiate the lookup class.
 
-    Instance attributes are column and value.
-    
-    schema likely added at some point, but maybe later on as only related to create
-    method, not class as a whole
-    
-    existing lookup optional (spark dataframe) to provide df already in memory if it exists
+    column = string; DESCRIPTIONS assumption = one column
+    value = string; DESCRIPTIONS assumption = one column
+    existing = spark df; DESCRIPTIONS
     
     """
     self.column = column
@@ -1611,11 +1606,18 @@ class Lookup:
 
   def create_lookup(self, cluster, schema):
 
-    """create empty spark dataframe, maybe taking into account schema
+    """
+    Create a empty lookup (spark dataframe) based on column and value
+    
+    cluster; spark session
+    schema; spark schema
+    
+    schema = T.StructType([
+    T.StructField("name", T.StringType(), True),
+    T.StructField("id", T.StringType(), True)])
     """
 
-    # schema here as only related to this method, not class as whole
-
+    # Schema here as related to this method, not class as whole
     lookup = cluster.createDataFrame([], schema).select(self.column, self.value)
     
     return lookup
@@ -1623,7 +1625,9 @@ class Lookup:
 
   def update_lookup(self, dataset):
 
-    """appends values to a lookup based on new dataset and column"""
+    """
+    Adds values from a dataset into a lookup
+    """
     
     import pyspark.sql.functions as F
     import pyspark.sql.types as T
@@ -1633,7 +1637,7 @@ class Lookup:
     
     # check schema match
     if(dataset.schema != source_lookup.schema):
-      raise ValueError('shcemas dont match')
+      raise ValueError('ERROR: schemas dont match, append cannot take place')
 
     # append dataset
     dataset = dataset.union(self.existing)

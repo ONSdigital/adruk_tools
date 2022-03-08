@@ -49,11 +49,14 @@ empty_lookup = adr.Lookup(column = 'name', value = 'id')
 if empty_lookup.existing is None:
   empty_lookup.existing = empty_lookup.create_lookup(spark, schema)
 
+  
 # Create new dataset to add to lookup
 dataset_to_add = spark.createDataFrame(test_rows2, test_columns, schema)	
 
+
 # Update empty lookup with data from new dataset
 lookup = empty_lookup.update_lookup(dataset_to_add)
+
 
 #-----------------------------------------
 ## Second example with lookup to append to
@@ -62,14 +65,17 @@ lookup = empty_lookup.update_lookup(dataset_to_add)
 # Create existing lookup
 dataset_source = spark.createDataFrame(test_rows1, test_columns, schema)	
 
+
 # Intialise lookup 
 non_empty_lookup = adr.Lookup(column = 'name', value = 'id', existing = dataset_source)
+
 
 # Set existing lookup attribute if empty
 # Note: Not needed but keeping in for consistency with above example
 if non_empty_lookup.existing is None:
   non_empty_lookup.existing = non_empty_lookup.create_lookup(spark, schema)
-  
+ 
+
 # Update empty lookup with data from new dataset
 lookup = non_empty_lookup.update_lookup(dataset_to_add)
   
@@ -77,7 +83,6 @@ lookup = non_empty_lookup.update_lookup(dataset_to_add)
 #------------------------------------
 # Third example - using anonymise ids
 #------------------------------------  
-  
 
 
 data = spark.read.csv(
@@ -85,44 +90,74 @@ data = spark.read.csv(
   header = True, inferSchema = True
 )
 
+
+# convert id to string, only needed due to bug in anonymise_ids
+# silvia reviewing new MR atm
+data = data.withColumn('id', F.col('id').cast(T.StringType()))
+
+
 # create two smaller datasets for testing purposes
 source_data = data.sample(0.01)
 new_data = data.sample(0.01)
 
-# calculate number of extra ids that will be added
-source_data_columns = source_data.select('id').toPandas()['id']
-new_data_columns = new_data.select('id').toPandas()['id']
 
-extra = len(list(set(source_data_columns) - set(new_data_columns)))
+# calculate the total number of rows that should be expected after append takes place
+source_data_columns = list(source_data.select('id').toPandas()['id'])
+new_data_columns = list(new_data.select('id').toPandas()['id'])
 
-# create lookup using anonymise_ids
-
-anonymised_source = adr.anonymise_ids(spark, source_data, ['id'])
-
-#initialise lookup
-
-sd2011_source = adr.Lookup(column = 'id', value = 'adr_id', existing_lookup = anonymised_source)
-
-# create EMPTY lookup if existing lookup not provided
-if sd2011.existing_lookup is None:
-  lookup = sd2011.create_lookup(spark, schema)
-else:
-  lookup = sd2011.existing_lookup
-
-# update
-
-# create new lookup to add
-anonymised_new = adr.anonymise_ids(spark, new_data, ['id'])
+total_rows = len(list(set(source_data_columns + new_data_columns)))
 
 
-updated_lookup = sd2011.update_lookup(dataset_to_add, lookup) 
+# create lookup to be appended using anonymise_ids
+source_data_anonymised = adr.anonymise_ids(spark, source_data, ['id'])
 
 
+# initialise lookup
+# NOTE: assumes anonymise_ids created adr_id not adr_id_new
+source_lookup = adr.Lookup(column = 'id', value = 'adr_id', existing = source_data_anonymised)
 
 
+# Set existing lookup attribute if empty
+# Note: Not needed but keeping in for consistency with above example
+if source_lookup.existing is None:
+  source_lookup.existing = source_lookup.create_lookup(spark, schema)
 
-# check exceptions
+  
+#--------------------------------------------
+# Try to append new data to source lookup
+# NOTE: should fail as schemas dont match
 
-# types
+lookup = source_lookup.update_lookup(new_data)
+#---------------------------------------------
 
-# schema mismatch
+
+# So create lookup of same scheme
+new_data_anonymised = adr.anonymise_ids(spark, new_data, ['id'])
+
+
+# Try to append again
+lookup = source_lookup.update_lookup(new_data_anonymised)
+
+
+# Check correct amount of rows have been added
+if (lookup.count() != total_rows):
+  print('incorrect append')
+
+
+#---------------------------
+# Check some exceptions
+#---------------------------
+
+# column must be string
+
+
+# value must be string
+
+
+# column and value must be in existing lookup
+
+
+# schemas dont match
+# checked above
+
+
