@@ -970,8 +970,8 @@ def anonymise_ids(session, df, id_cols, prefix = None):
     df = df.withColumn('id_cols_concat', F.col(*id_cols))
 
     
-  # Hash the data in the specified column using SHA256
-  df = df.withColumn(adr_id_column, F.sha2('id_cols_concat', 256))
+  # Hash the data in the specified column using SHA256, making sure column is of string type
+  df = df.withColumn(adr_id_column, F.sha2(F.col('id_cols_concat').cast('string'), 256))
   
   
   # Prefix string if selected
@@ -1567,8 +1567,9 @@ class Lookup:
   
   attributes and methods can exist - likely create attributes of key, value
   """
+  
 
-  def __init__(self, column, value, schema):
+  def __init__(self, column, value, existing = None):
     """Initiate the lookup class.
 
     Instance attributes are column and value.
@@ -1576,87 +1577,68 @@ class Lookup:
     schema likely added at some point, but maybe later on as only related to create
     method, not class as a whole
     
+    existing lookup optional (spark dataframe) to provide df already in memory if it exists
+    
     """
     self.column = column
     self.value = value
-    self.schema = schema
+    self.existing = existing
     
     # Check column, value are strings for time being
     # Column might be list of strings in future
-    if type(column) != str:
-      raise TypeError("column must be a string")
+    if type(self.column) != str:
+      raise TypeError(f"{self.column} column must be a string")
     
-    if type(value) != str:
-      raise TypeError("value must be a string")
+    if type(self.value) != str:
+      raise TypeError(f"{self.value} value must be a string")
 
     
-    # Checks for schema
-    # column + value in schema
-    
-  def exists(self, filepath):
-    """ currently just marking as false so new one gets created
-      need to thnk about how we check this, against where etc???????
-      
-      """
-    # How are we defining exists?
-    # - by filepath
-    # - by table with just column / value already there
-    flag = False
-      
-    return flag
-    
-  def declare(self, dataframe):
+    # checks for existing lookup
 
+    if self.existing != None:
+      
+      # column and value in lookup
+      if(self.column not in self.existing.columns):
+        raise NameError(f"{self.column} column not in exisiting lookup")
+    
+      if(self.value not in self.existing.columns):
+        raise NameError(f"{self.value} value not in exisiting lookup")
+      
+      # is col unique if exisiting lookup provided
+      if(self.existing.select(self.column).distinct().count() != self.existing.count()):
+        raise ValueError(f"{self.column} column doesnt contain unique value")
+    
+
+  def create_lookup(self, cluster, schema):
+
+    """create empty spark dataframe, maybe taking into account schema
     """
-    import lookup that should be in memory???????"""
-
-    # need to map column names as might be different
-
-    # keep only columns of interest
-    # note do we need this? This is old lookup so in theory should be clean?
-    lookup = dataframe.select(self.column, self.value)
-
-    return lookup
-
-  def checks(self):
-    # checks on lookup
-
-    # column unique
-
-    # value unique
-
-    pass
-
-
-  def create(self, cluster):
-
-    """create empty spark dataframe, maybe taking into account schema"""
 
     # schema here as only related to this method, not class as whole
 
-    return cluster.createDataFrame([], self.schema).select(self.column, self.value)
+    lookup = cluster.createDataFrame([], schema).select(self.column, self.value)
+    
+    return lookup
 
 
+  def update_lookup(self, dataset):
 
-  def update_lookup(self, cluster, dataset, dataset_column, source_lookup):
+    """appends values to a lookup based on new dataset and column"""
+    
+    import pyspark.sql.functions as F
+    import pyspark.sql.types as T
+      
+    # filter source lookup to only two columns of interest
+    source_lookup = self.existing.select(F.col(self.column), F.col(self.value))
+    
+    # check schema match
+    if(dataset.schema != source_lookup.schema):
+      raise ValueError('shcemas dont match')
 
-    """updates values in lookup based on new dataset and column"""
-
-    # slightly different to flowchart in that anon function already filters
-    # to unique columns so run this first and then append only new unique keys
-
-    #' didnt know how to have source_lookup not in method.
-
-    dataset_lookup = adr.anonymise_ids(cluster, dataset, dataset_column)
-
-    # Have unique set of values in source_column and hashed value
-    # Identify source _column values not in lookup
-
-    # create list of keys?? in source_lookup
-    source_lookup_column_list = source_lookup.select(F.col(self.column)).toPandas()[self_column]
-
-    # filter dataset lookup to only records NOT IN lookup
-    dataset_new = dataset_lookup.where(~(dataset(F.col(self_column))).isin(source_lookup_column_list))
-
-    #
-
+    # append dataset
+    dataset = dataset.union(self.existing)
+    
+    # then drop duplicates
+    dataset = dataset.dropDuplicates([self.column])
+    
+    return dataset
