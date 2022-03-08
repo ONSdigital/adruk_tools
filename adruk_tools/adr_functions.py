@@ -935,7 +935,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   # Check inputs
   # id_cols must be passed as list
   if type(id_cols) != list:
-    raise TypeError("id_cols must be a string")
+    raise TypeError("id_cols must be a list")
   
   
   # Prefix must be passed as string
@@ -971,7 +971,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
 
     
   # Hash the data in the specified column using SHA256
-  df = df.withColumn(adr_id_column, F.sha2('id_cols_concat', 256))
+  df = df.withColumn(adr_id_column, F.sha2(F.col('id_cols_concat').cast('string'), 256))
   
   
   # Prefix string if selected
