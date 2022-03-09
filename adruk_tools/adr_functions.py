@@ -831,7 +831,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   +-----+---+----+
 
 
-  >>> anonymise_ids(sessions = spark, 
+  >>> anonymise_ids(session = spark, 
                     df = df, 
                     id_cols = ['ID'],
                     prefix = None)
@@ -848,7 +848,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   +----+--------------------+
 
   
-  >>> anonymise_ids(sessions = spark, 
+  >>> anonymise_ids(session = spark, 
                     df = df, 
                     id_cols = ['ID', 'age'],
                     prefix = None)
@@ -866,7 +866,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   +----+---+--------------------+
   
   
-  >>> anonymise_ids(sessions = spark, 
+  >>> anonymise_ids(session = spark, 
                     df = df, 
                     id_cols = ['ID'],
                     prefix = '2022')
@@ -882,7 +882,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   |null|                null|
   +----+--------------------+
   
-  >>> anonymise_ids(sessions = spark, 
+  >>> anonymise_ids(session = spark, 
                     df = df, 
                     id_cols = ['ID', 'age'],
                     prefix = '2022')
@@ -912,7 +912,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   |Alice|AA4    |  44|
   +-----+-------+----+
   
-  >>> anonymise_ids(sessions = spark, 
+  >>> anonymise_ids(session = spark, 
                     df = df, 
                     id_cols = ['adr_id'],
                     prefix = '2022')
