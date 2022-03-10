@@ -12,6 +12,7 @@ spark = (
     .getOrCreate()
 )
 
+
 #----------------------------
 # start tests
 #----------------------------
@@ -37,6 +38,7 @@ test_rows2 = [
      ('Sophie', 'B'),
      ('Ben', 'E')]
 
+
 #-------------------------------------------
 ## First example with no lookup to append to
 #-------------------------------------------
@@ -57,6 +59,7 @@ dataset_to_add = spark.createDataFrame(test_rows2, test_columns, schema)
 # Update empty lookup with data from new dataset
 lookup = empty_lookup.update_lookup(dataset_to_add)
 
+lookup.show()
 
 #-----------------------------------------
 ## Second example with lookup to append to
@@ -78,6 +81,8 @@ if non_empty_lookup.existing is None:
 
 # Update empty lookup with data from new dataset
 lookup = non_empty_lookup.update_lookup(dataset_to_add)
+
+lookup.show()
   
 
 #------------------------------------
@@ -89,11 +94,6 @@ data = spark.read.csv(
   "/ons/det_training/sd2011.csv",
   header = True, inferSchema = True
 )
-
-
-# convert id to string, only needed due to bug in anonymise_ids
-# silvia reviewing new MR atm
-data = data.withColumn('id', F.col('id').cast(T.StringType()))
 
 
 # create two smaller datasets for testing purposes
@@ -143,19 +143,28 @@ lookup = source_lookup.update_lookup(new_data_anonymised)
 if (lookup.count() != total_rows):
   print('incorrect append')
 
+  
+lookup.show()
+
 
 #---------------------------
-# Check some exceptions
+# Check some type/value errors
 #---------------------------
 
 # column must be string
-
+column_fail = adr.Lookup(['id'], 'adr_id')
 
 # value must be string
-
+value_fail = adr.Lookup('id', 2345)
 
 # column and value must be in existing lookup
+column_value_contained_in_existing = adr.Lookup(column = 'name', value = 'age', existing = dataset_source)
 
+# unique column in existing lookup
+# add both created spark dataframes together to create duplicate values in 'name' column
+
+duplicates_name_df = dataset_source.union(dataset_to_add)
+unique_column = adr.Lookup(column = 'name', value = 'id', existing = duplicates_name_df)
 
 # schemas dont match
 # checked above

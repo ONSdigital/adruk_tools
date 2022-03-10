@@ -1570,10 +1570,12 @@ class Lookup:
     """
     Initiate the lookup class.
 
-    column = string; DESCRIPTIONS assumption = one column
-    value = string; DESCRIPTIONS assumption = one column
-    existing = spark df; DESCRIPTIONS
+    column = string; contains lookup key; assumption = one column
+    value = string; contains lookup value; assumption = one column
+    existing = spark df; if initialising an existing lookup
     
+    NOTE called column to avoid any potential namespace clashes with 
+    dict key item
     """
     self.column = column
     self.value = value
@@ -1588,8 +1590,7 @@ class Lookup:
       raise TypeError(f"{self.value} value must be a string")
 
     
-    # checks for existing lookup
-
+    # checks for existing lookup and runs basic tests
     if self.existing != None:
       
       # column and value in lookup
@@ -1610,7 +1611,7 @@ class Lookup:
     Create a empty lookup (spark dataframe) based on column and value
     
     cluster; spark session
-    schema; spark schema
+    schema; spark schema (example below)
     
     schema = T.StructType([
     T.StructField("name", T.StringType(), True),
@@ -1627,6 +1628,8 @@ class Lookup:
 
     """
     Adds values from a dataset into a lookup
+    
+    dataset; spark dataframe to append
     """
     
     import pyspark.sql.functions as F
