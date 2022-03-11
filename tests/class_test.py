@@ -19,11 +19,6 @@ spark = (
 
 # Basic hard coded datasets
 # Initialise mock dataframes
-schema = T.StructType([
-    T.StructField("name", T.StringType(), True),
-    T.StructField("id", T.StringType(), True)])
-
-
 
 test_columns = ['name', 'id']
 
@@ -32,62 +27,117 @@ test_rows1 = [('Nathan', 'A'),
      ('Tom', 'A')]
 
 test_rows2 = [
-     ('Nathan', 'C'),
+     ('Nathan', 'A'),
      ('Mike', 'A'),
      ('Silvia', 'E'),
      ('Sophie', 'B'),
      ('Ben', 'E')]
 
+test_dataset_one = spark.createDataFrame(test_rows1, test_columns)
+test_dataset_two = spark.createDataFrame(test_rows2, test_columns)
 
-#-------------------------------------------
-## First example with no lookup to append to
-#-------------------------------------------
+#-----------------------------------------------------------
+## First example: No lookup source, created and then updated
+## Small hard coded dataset used above
+#-----------------------------------------------------------
 
-# Intialise lookup (existing = None)
-empty_lookup = adr.Lookup(column = 'name', value = 'id')
+# Intialise lookup
+empty_lookup = adr.Lookup(key = 'name', 
+                          value = 'id')
 
 
-# Set existing lookup attribute if empty
-if empty_lookup.existing is None:
-  empty_lookup.existing = empty_lookup.create_lookup(spark, schema)
+# Create lookup source
+if empty_lookup.source is None:
+  empty_lookup.create_lookup_source(spark)
 
   
-# Create new dataset to add to lookup
-dataset_to_add = spark.createDataFrame(test_rows2, test_columns, schema)	
+# Get dataset to append
+dataset_to_append = test_dataset_two
 
 
 # Update empty lookup with data from new dataset
-lookup = empty_lookup.update_lookup(dataset_to_add)
+empty_lookup.update_lookup(cluster = spark, 
+                           dataset = dataset_to_append, 
+                           dataset_key = 'name',
+                           dataset_value = 'id')
 
-lookup.show()
+empty_lookup.source.show()
 
-#-----------------------------------------
-## Second example with lookup to append to
-#-----------------------------------------
+#------------------------------------------------------------------------------------
+## Second example: No source lookup, updated
+## create_lookup_source method takes place in update method as well incase user forgot
+## left method in as could be useful in other workflows involving lookups
+## Small hard coded dataset used above
+#------------------------------------------------------------------------------------
 
-# Create existing lookup
-dataset_source = spark.createDataFrame(test_rows1, test_columns, schema)	
+# Intialise lookup
+empty_lookup = adr.Lookup(key = 'name', 
+                          value = 'id')
+
+
+# Create lookup source
+# Not needed as called in update
+#if empty_lookup.source is None:
+#  empty_lookup.create_lookup_source(spark)
+
+  
+# Get dataset to append
+dataset_to_append = test_dataset_two
+
+
+# Update empty lookup with data from new dataset
+empty_lookup.update_lookup(cluster = spark, 
+                           dataset = dataset_to_append, 
+                           dataset_key = 'name',
+                           dataset_value = 'id')
+
+empty_lookup.source.show()
+
+
+#-----------------------------------------------------------------------
+## Third example: Source lookup, updated with dataset with key and value
+## Simply append and de-depulicate lookup and dataset
+## Small hard coded dataset used above
+#-----------------------------------------------------------------------
+
+# Create source lookup
+source = test_dataset_one
 
 
 # Intialise lookup 
-non_empty_lookup = adr.Lookup(column = 'name', value = 'id', existing = dataset_source)
+non_empty_lookup = adr.Lookup(key = 'name', 
+                              value = 'id', 
+                              source = source)
 
 
-# Set existing lookup attribute if empty
-# Note: Not needed but keeping in for consistency with above example
-if non_empty_lookup.existing is None:
-  non_empty_lookup.existing = non_empty_lookup.create_lookup(spark, schema)
- 
+# Get dataset to append
+dataset_to_append = test_dataset_two
 
-# Update empty lookup with data from new dataset
-lookup = non_empty_lookup.update_lookup(dataset_to_add)
+# Update empty lookup with data from dataset two, where value has been provided
+non_empty_lookup.update_lookup(cluster = spark,
+                               dataset = dataset_to_append,
+                               dataset_key = 'name',
+                               dataset_value = 'id')
 
-lookup.show()
+non_empty_lookup.source.show()
+
+##########################################
+# GOT TO HERE
+##########################################
+
+#-------------------------------------------------------------------------------
+## Fourth example: Source lookup, updated with dataset with only key
+## As only dataset key provided, value will be generated when update takes place
+## Larger dataset imported from HDFS
+#-------------------------------------------------------------------------------
+
+
+
+
+
   
 
-#------------------------------------
-# Third example - using anonymise ids
-#------------------------------------  
+
 
 
 data = spark.read.csv(
@@ -169,4 +219,5 @@ unique_column = adr.Lookup(column = 'name', value = 'id', existing = duplicates_
 # schemas dont match
 # checked above
 
+# test new exceptions i update method.
 

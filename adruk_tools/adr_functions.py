@@ -1566,86 +1566,180 @@ class Lookup:
   Class for creating and managing lookups in adruk projects
   """
   
-  def __init__(self, column, value, existing = None):
+  def __init__(self, key, value, source = None):
     """
     Initiate the lookup class.
 
     column = string; contains lookup key; assumption = one column
     value = string; contains lookup value; assumption = one column
-    existing = spark df; if initialising an existing lookup
+    source = spark df; define here if lookup already exists
     
-    NOTE called column to avoid any potential namespace clashes with 
-    dict key item
-    """
-    self.column = column
-    self.value = value
-    self.existing = existing
-    
-    # Check column, value are strings for time being
-    # Column might be list of strings in future
-    if type(self.column) != str:
-      raise TypeError(f"{self.column} column must be a string")
-    
-    if type(self.value) != str:
-      raise TypeError(f"{self.value} value must be a string")
-
-    
-    # checks for existing lookup and runs basic tests
-    if self.existing != None:
-      
-      # column and value in lookup
-      if(self.column not in self.existing.columns):
-        raise NameError(f"{self.column} column not in exisiting lookup")
-    
-      if(self.value not in self.existing.columns):
-        raise NameError(f"{self.value} value not in exisiting lookup")
-      
-      # is col unique if exisiting lookup provided
-      if(self.existing.select(self.column).distinct().count() != self.existing.count()):
-        raise ValueError(f"{self.column} column doesnt contain unique value")
-    
-
-  def create_lookup(self, cluster, schema):
-
-    """
-    Create a empty lookup (spark dataframe) based on column and value
-    
-    cluster; spark session
-    schema; spark schema (example below)
-    
-    schema = T.StructType([
-    T.StructField("name", T.StringType(), True),
-    T.StructField("id", T.StringType(), True)])
-    """
-
-    # Schema here as related to this method, not class as whole
-    lookup = cluster.createDataFrame([], schema).select(self.column, self.value)
-    
-    return lookup
-
-
-  def update_lookup(self, dataset):
-
-    """
-    Adds values from a dataset into a lookup
-    
-    dataset; spark dataframe to append
     """
     
     import pyspark.sql.functions as F
-    import pyspark.sql.types as T
-      
-    # filter source lookup to only two columns of interest
-    source_lookup = self.existing.select(F.col(self.column), F.col(self.value))
     
-    # check schema match
-    if(dataset.schema != source_lookup.schema):
+    self.key = key
+    self.value = value
+    self.source = source
+    
+    # Check key, value are strings
+    try:
+      assert isinstance(self.key, str)
+    except AssertionError:
+      raise TypeError(f"{self.key} column must be a string")
+      
+    try:
+      assert isinstance(self.value, str)
+    except AssertionError:
+      raise TypeError(f"{self.value} value must be a string")
+
+    # checks for existing lookup and runs basic tests and filtering
+    if self.source != None:
+      
+      # key and value in lookup
+      if(self.key not in self.source.columns):
+        raise NameError(f"{self.key} column not in exisiting lookup")
+    
+      if(self.value not in self.source.columns):
+        raise NameError(f"{self.value} value not in exisiting lookup")
+      
+      # is key unique if exisiting lookup provided
+      if(self.source.select(self.key).distinct().count() != self.source.count()):
+        raise ValueError(f"{self.key} column doesnt contain unique value")
+        
+      # Filter source lookup to key and value column if not already so
+      if len(self.source.columns) > 2:
+        self.source = self.source.select(F.col(self.key), F.col(self.value))
+      
+
+
+  def create_lookup_source(self, cluster):
+
+    """
+    Create a empty lookup (spark dataframe) based on key and value
+    
+    Schema generated auotmatically as all string fields
+    
+    cluster; spark session
+    """
+
+    import pyspark.sql.types as T
+    
+    # Create schema as required to initialise empty spark data frame
+    schema = T.StructType([
+      T.StructField(f"{self.key}", T.StringType(), True),
+      T.StructField(f"{self.value}", T.StringType(), True)])
+    
+    # Schema here as related to this method, not class as whole
+    # Updates source flag in __init__
+    
+    self.source = cluster.createDataFrame([], schema).select(self.key, self.value)
+
+
+    
+  def add_to_lookup(self, cluster, dataset, dataset_key, dataset_value = None):
+
+    """
+    Takes a dataset with a key, creates values if necessary, and appends to lookup
+    
+    cluster; spark session
+    dataset; spark dataframe to append
+    dataset_key = string; key column in dataset
+    dataset_value # string; optional, one will be created if not defined.
+    """
+    
+    import pyspark.sql.functions as F
+    import adruk_tools.adr_functions as adr
+
+    # undercheck checks on dataset
+    #----------------------------
+    
+    # Dataset key checks
+    try:
+      assert isinstance(dataset_key, str)
+    except AssertionError:
+      raise TypeError(f"{dataset_key} column must be a string")
+      
+    # column in lookup
+    if(dataset_key not in dataset.columns):
+      raise NameError(f"{dataset_key} column not in dataset")
+
+
+    # Datset value checks
+    if dataset_value != None:
+      
+      try:
+        assert isinstance(dataset_value, str)
+      except AssertionError:
+        raise TypeError(f"{dataset_value} value must be a string")
+        
+      # value in lookup
+      if(dataset_value not in dataset.columns):
+        raise NameError(f"{dataset_value} column not in dataset")
+      
+      if(dataset.select(dataset_key).distinct().count() != dataset.count()):
+        raise ValueError(f"{dataset_key} column doesnt contain unique value")
+        
+      # Filter dataset to key and value column if value provided
+      if len(dataset.columns) > 2:
+        dataset = dataset.select(F.col(dataset_key), F.col(dataset_value))
+        
+         
+    # create value column for dataset if none provided
+    #-------------------------------------------------
+    
+    # Using anonymise_ids function but could be something else
+    # NOTE: assumes anonymise_ids created adr_id not adr_id_new
+    if dataset_value == None:
+      dataset = anonymise_ids(cluster, dataset, [dataset_key])
+      dataset_value = 'adr_id'
+      
+      # Filter dataset to key and value now value has been created
+      dataset = dataset.select(F.col(dataset_key), F.col(dataset_value))
+    
+    
+        
+    # Match columns between lookup and dataset
+    #-----------------------------------------
+    
+    # Both lookup and dataset only have two columns by this point
+    # so can simply rename
+    dataset = dataset.withColumnRenamed(dataset_key, self.key).withColumnRenamed(dataset_value, self.value)
+
+    
+    # Undertake checks on lookup
+    #---------------------------
+    
+    # If create_empty_lookup method not previously run, might be that
+    # lookup has no dataframe to append to. So check and run.
+    
+    # NOTE: This could be run outside of the method, in the users workflow
+    # but adding here incase they forget
+    # Left as a seperate method because could be useful elsewhere in other workflows.
+    if self.source == None:
+      self.create_lookup_source(cluster)
+
+      
+    # Check schema's match
+    #-------------------
+
+    if(dataset.schema != self.source.schema):
       raise ValueError('ERROR: schemas dont match, append cannot take place')
 
-    # append dataset
-    dataset = dataset.union(self.existing)
     
-    # then drop duplicates
-    dataset = dataset.dropDuplicates([self.column])
+    # Update lookup: Overwriting source
+    #----------------------------------
     
-    return dataset
+    # Remove key values from dataset that already exist using a left anti join
+    # An anti join returns values from the left relation that has no match with 
+    # the right. It is also referred to as a left anti join.
+ 
+    records_to_add = dataset.join(self.source,
+                                 on = self.key,
+                                 how = "leftanti")    
+    
+    # Append dataset to lookup
+    self.source = self.source.union(records_to_add)
+    
+
+    #def remove_from_lookup():
