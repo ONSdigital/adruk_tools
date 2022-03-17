@@ -1563,17 +1563,38 @@ def spark_glob_all(host,directory):
 
 class Lookup:
   """
-  Class for creating and managing lookups in adruk projects
+  :WHAT IT IS: python class
+  :WHAT IT DOES: represents a lookup table 
+
+  :AUTHOR: Nathan Shaw, Johannes Hechler
+  :DATE: March 2022
+  
+  :ASSUMPTIONS:
+  * only takes string columns as key, values
+  * adr_id thing
+
+  :PARAMETERS:
+    :key = column name for keys
+      `(datatype = string)`, e.g. 'ids'
+    :value = column name for values
+      `(datatype = string)`, e.g. 'hashed_ids'
+    :source (default None) = provide a lookup table if it already exists.
+      `(datatype = spark dataframe name, unquoted)`, e.g. input
+      
   """
   
   def __init__(self, key, value, source = None):
     """
-    Initiate the lookup class.
+    :WHAT IT IS: Class method (python function)
+    :WHAT IT DOES: Initiates lookup class
+    * If source provided, checks for unique values
+    * If source provided, filters source to key and value columns
 
-    column = string; contains lookup key; assumption = one column
-    value = string; contains lookup value; assumption = one column
-    source = spark df; define here if lookup already exists
+    :AUTHOR: Nathan Shaw, Johannes Hechler
+    :DATE: March 2022
     
+    :EXAMPLE:
+    >>> lookup = Lookup(key = 'key', value = 'value')
     """
     
     import pyspark.sql.functions as F
@@ -1591,7 +1612,7 @@ class Lookup:
     try:
       assert isinstance(self.value, str)
     except AssertionError:
-      raise TypeError(f"{self.value} value must be a string")
+      raise TypeError(f"{self.value} column must be a string")
 
     # checks for existing lookup and runs basic tests and filtering
     if self.source != None:
@@ -1601,7 +1622,7 @@ class Lookup:
         raise NameError(f"{self.key} column not in exisiting lookup")
     
       if(self.value not in self.source.columns):
-        raise NameError(f"{self.value} value not in exisiting lookup")
+        raise NameError(f"{self.value} column not in exisiting lookup")
       
       # is key unique if exisiting lookup provided
       if(self.source.select(self.key).distinct().count() != self.source.count()):
@@ -1614,13 +1635,25 @@ class Lookup:
 
 
   def create_lookup_source(self, cluster):
-
     """
-    Create a empty lookup (spark dataframe) based on key and value
+    :WHAT IT IS: Class method (python function)
+    :WHAT IT DOES: Creates a empty lookup, and assigns this to the 
+    source parameter in the class instance.
+    * required schema is created aswell.
+
+    :AUTHOR: Nathan Shaw, Johannes Hechler
+    :DATE: March 2022
     
-    Schema generated auotmatically as all string fields
-    
-    cluster; spark session
+    :ASSUMPTIONS:
+    key and values must be string type.
+
+    :PARAMETERS:
+      :cluster = spark cluster 
+        `(datatype = spark cluster, unquoted)`, e.g. spark
+        
+    :EXAMPLE:
+    >>> lookup.create_lookup_source(cluster = spark)
+      
     """
 
     import pyspark.sql.types as T
@@ -1640,14 +1673,41 @@ class Lookup:
 
     
   def add_to_lookup(self, cluster, dataset, dataset_key, dataset_value = None):
-
     """
-    Takes a dataset with a key, creates values if necessary, and appends to lookup
+    :WHAT IT IS: Class method (python function)
+    :WHAT IT DOES: Adds a dataset into a lookup.
+    * If the lookup has an empty source, one is created
+    * Dataset key must be specified, and will be renamed to the lookup key column name
+    * If dataset value is not given, one is created using anonymis_ids function.
+    This will be renamed to the lookup value column name
+    * Schemas must match before data can be appended
+    * Only new keys from dataset are added to the lookup
+
+
+    :AUTHOR: Nathan Shaw, Johannes Hechler
+    :DATE: March 2022
     
-    cluster; spark session
-    dataset; spark dataframe to append
-    dataset_key = string; key column in dataset
-    dataset_value # string; optional, one will be created if not defined.
+    :ASSUMPTIONS:
+    If anonymise_ids function is used (i.e. dataset_value is None) then assumes
+    hashed value column is called adr_id. This wont be the case if adr_id already existed
+    in the dataset, in that case it will be called adr_id_new.
+
+    :PARAMETERS:
+      :cluster = spark cluster 
+        `(datatype = spark cluster, unquoted)`, e.g. spark
+      :dataset = spark dataframe to append
+        `(datatype = spark dataframe, unquoted)`, e.g. dataframe
+      :dataset_key = key column name in the dataset 
+        `(datatype = string)`, e.g. 'key'
+      :dataset_value (default None) = value column name in the dataset, if one exists
+        `(datatype = string)`, e.g. 'value'
+        
+    :EXAMPLE:
+    >>> lookup.add_to_lookup(cluster = spark,
+                             dataset = input,
+                             dataset_key = 'ids',
+                             dataset_value = 'numVar')
+      
     """
     
     import pyspark.sql.functions as F
@@ -1673,7 +1733,7 @@ class Lookup:
       try:
         assert isinstance(dataset_value, str)
       except AssertionError:
-        raise TypeError(f"{dataset_value} value must be a string")
+        raise TypeError(f"{dataset_value} column must be a string")
         
       # value in lookup
       if(dataset_value not in dataset.columns):
@@ -1685,8 +1745,8 @@ class Lookup:
       # Filter dataset to key and value column if value provided
       if len(dataset.columns) > 2:
         dataset = dataset.select(F.col(dataset_key), F.col(dataset_value))
-        
-         
+    
+    
     # create value column for dataset if none provided
     #-------------------------------------------------
     
@@ -1719,7 +1779,7 @@ class Lookup:
     # but adding here incase they forget
     # Left as a seperate method because could be useful elsewhere in other workflows.
     if self.source == None:
-      self.source = self.create_lookup_source(cluster)
+      self.create_lookup_source(cluster)
 
       
     # Check schema's match
@@ -1743,7 +1803,7 @@ class Lookup:
     # https://spark.apache.org/docs/3.0.0-preview/sql-ref-null-semantics.html
  
     records_to_add = dataset.join(self.source,
-                                 on = self.source[self.key].eqNullSafe(dataset[self.value]),
+                                 on = self.source[self.key].eqNullSafe(dataset[self.key]),
                                  how = "leftanti")    
     
     # Append dataset to lookup
@@ -1754,15 +1814,24 @@ class Lookup:
 
   
   def remove_from_lookup(self, cluster, keys_to_remove):
-
     """
-    Takes a dataset with a key, creates values if necessary, and appends to lookup
+    :WHAT IT IS: Class method (python function)
+    :WHAT IT DOES: Removes rows from a lookup based on a tuple of keys
 
-    cluster; spark session
-    dataset; spark dataframe to append
-    dataset_key = string; key column in dataset
-    dataset_value # string; optional, one will be created if not defined.
+    :AUTHOR: Nathan Shaw, Johannes Hechler
+    :DATE: March 2022
+
+    :PARAMETERS:
+      :cluster = spark cluster 
+        `(datatype = spark cluster, unquoted)`, e.g. spark
+      :keys_to_remove = a tuple of the keys indicating which rows to remove
+        `(datatype = tuple)`, e.g. (1,2,3)
+        
+    :EXAMPLE:
+    >>> lookup.remove_from_lookup(cluster = spark, keys_to_remove = (1,2,3))
+      
     """
+    
     import pyspark.sql.functions as F
 
     # undercheck checks on dataset keys
@@ -1779,4 +1848,8 @@ class Lookup:
     # get key column name from look
     key_column_name = self.key
 
-    self.source = self.source.filter(F.expr(f"{key_column_name} NOT IN {keys_to_remove}"))
+    # note by defualt NULLS get dropped in SQL where statement so need to explicitly state they are required.
+    self.source = self.source.filter(F.expr(f"{key_column_name} NOT IN {keys_to_remove} OR {key_column_name} IS NULL"))
+    
+    # Returning self to allow chaining of methods
+    return self
