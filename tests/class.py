@@ -207,6 +207,33 @@ total_rows = len(list(set(source_data_columns + new_data_columns)))
 if (lookup.source.count() != total_rows):
   print('incorrect append')
 
+
+#-------------------------------------------------------------------------------
+## Sixth example: Removing records from lookup
+#-------------------------------------------------------------------------------  
+  
+df1 = adr.make_test_df(spark)
+
+# create lookup by chaining
+disco = adr.Lookup(key = 'key', value = 'value')\
+.create_lookup_source(cluster = spark)\
+.add_to_lookup(cluster = spark, dataset = df1, dataset_key = 'strVar', dataset_value = None)
+
+
+# try to add key, fails due to different type
+disco.add_to_lookup(spark, df1, 'numVar')
+
+# try again with another key
+disco.add_to_lookup(spark, df1, 'strNumVar')
+disco.source.show()
+
+# remove set of values
+keys_to_remove = [1,2,3]
+
+disco.remove_from_lookup(spark, keys_to_remove)
+
+disco.source.show()
+
   
 
 #---------------------------
@@ -259,3 +286,9 @@ lookup.add_to_lookup(cluster = spark,
                      dataset = duplicates_name_df,
                      dataset_key = 'name',
                      dataset_value = 'id')
+lookup.remove_from_lookup(cluster = spark, 
+                   keys_to_remove = (1,2,3))
+
+
+
+

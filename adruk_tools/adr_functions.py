@@ -1634,7 +1634,9 @@ class Lookup:
     # Updates source flag in __init__
     
     self.source = cluster.createDataFrame([], schema).select(self.key, self.value)
-
+    
+    # Returning self to allow chaining of methods
+    return self
 
     
   def add_to_lookup(self, cluster, dataset, dataset_key, dataset_value = None):
@@ -1717,7 +1719,7 @@ class Lookup:
     # but adding here incase they forget
     # Left as a seperate method because could be useful elsewhere in other workflows.
     if self.source == None:
-      self.create_lookup_source(cluster)
+      self.source = self.create_lookup_source(cluster)
 
       
     # Check schema's match
@@ -1733,13 +1735,48 @@ class Lookup:
     # Remove key values from dataset that already exist using a left anti join
     # An anti join returns values from the left relation that has no match with 
     # the right. It is also referred to as a left anti join.
+    
+    # NOTE: Adding eqNUllSafe method to ensure nulls get matched correctly. By default,
+    # null == null returns null and so in an example with two dataframes each containing
+    # one null value, they both get joined. Using the eqNullSafe method ensures they get
+    # matched in equality. See null semantinces for more details
+    # https://spark.apache.org/docs/3.0.0-preview/sql-ref-null-semantics.html
  
     records_to_add = dataset.join(self.source,
-                                 on = self.key,
+                                 on = self.source[self.key].eqNullSafe(dataset[self.value]),
                                  how = "leftanti")    
     
     # Append dataset to lookup
     self.source = self.source.union(records_to_add)
     
+    # Returning self to allow chaining of methods
+    return self
 
-    #def remove_from_lookup():
+  
+  def remove_from_lookup(self, cluster, keys_to_remove):
+
+    """
+    Takes a dataset with a key, creates values if necessary, and appends to lookup
+
+    cluster; spark session
+    dataset; spark dataframe to append
+    dataset_key = string; key column in dataset
+    dataset_value # string; optional, one will be created if not defined.
+    """
+    import pyspark.sql.functions as F
+
+    # undercheck checks on dataset keys
+    #----------------------------
+
+    try:
+      assert isinstance(keys_to_remove, tuple)
+    except AssertionError:
+      raise TypeError(f"{keys_to_remove} parameter must be a tuple")
+
+    # remove records from lookup
+    #---------------------------
+    
+    # get key column name from look
+    key_column_name = self.key
+
+    self.source = self.source.filter(F.expr(f"{key_column_name} NOT IN {keys_to_remove}"))
