@@ -1580,7 +1580,6 @@ class Lookup:
       `(datatype = string)`, e.g. 'hashed_ids'
     :source (default None) = provide a lookup table if it already exists.
       `(datatype = spark dataframe name, unquoted)`, e.g. input
-      
   """
   
   def __init__(self, key, value, source = None):
