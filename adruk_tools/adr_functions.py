@@ -1570,8 +1570,10 @@ class Lookup:
   :DATE: March 2022
   
   :ASSUMPTIONS:
-  * only takes string columns as key, values
-  * adr_id thing
+  * Key, Values can only be string type
+  * If anonymise_ids function is used (i.e. dataset_value is None) then assumes
+  hashed value column is called adr_id. This wont be the case if adr_id already existed
+  in the dataset, in that case it will be called adr_id_new.
 
   :PARAMETERS:
     :key = column name for keys
