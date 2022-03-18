@@ -6,7 +6,7 @@ import pyspark.sql.functions as F
 import pyspark.sql.types as T
 
 spark = (
-    SparkSession.builder.appName("easy_pipeline_nathan")
+    SparkSession.builder.appName("lookup_class_test")
 	.config("spark.sql.shuffle.partitions", 1)
     .enableHiveSupport()
     .getOrCreate()
@@ -224,11 +224,15 @@ disco = adr.Lookup(key = 'key', value = 'value')\
 disco.add_to_lookup(spark, df1, 'numVar')
 
 # try again with another key
+# we see two nulls here when using show(). This is because pysaprk classifies different
+# empty rows into null. If you use toPandas() and look at original data, you see that
+# these two rows actually empty different empty values
 disco.add_to_lookup(spark, df1, 'strNumVar')
 disco.source.show()
+disco.source.toPandas()
 
 # remove set of values
-keys_to_remove = [1,2,3]
+keys_to_remove = (1,2,3)
 
 disco.remove_from_lookup(spark, keys_to_remove)
 
@@ -286,6 +290,7 @@ lookup.add_to_lookup(cluster = spark,
                      dataset = duplicates_name_df,
                      dataset_key = 'name',
                      dataset_value = 'id')
+
 lookup.remove_from_lookup(cluster = spark, 
-                   keys_to_remove = (1,2,3))
+                   keys_to_remove = [1,2,3])
 
