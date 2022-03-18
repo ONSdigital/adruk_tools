@@ -1,3 +1,106 @@
+def make_dummy_ninos(cluster):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: provides dummy National Insurance Numbers of various types and quality, for testing functions on
+  :RETURNS: dataframe with 25 rows and these columns
+  * index - simply a row number
+  * ninos - dummy values
+  * description - summary what type of NINO a value represents
+  :OUTPUT VARIABLE TYPE: DataFrame[index: int, nino: string, description: string]
+  
+
+  :AUTHOR: Johannes Hechler
+  :DATE: 22/02/2022
+  :VERSION: 0.0.1
+
+  
+  :PARAMETERS:
+  * cluster = active spark cluster
+      `(datatype = cluster name, not string)`, e.g. spark
+      
+  :EXAMPLE:
+  >>> make_dummy_ninos( cluster = spark)
+  
+  :FULL OUTPUT:
+
+  +-----+------------+--------------------+
+  |index|        nino|         description|
+  +-----+------------+--------------------+
+  |    1|   AB123456A|full, valid, clea...|
+  |    2|   ab123456a|full, valid, all ...|
+  |    3|   Aa123456a|full, valid, mixe...|
+  |    4|      AB1234|valid, truncated,...|
+  |    5|   AB123457A|full, valid, clea...|
+  |    6|   AB123457B|full, valid, clea...|
+  |    7|   AB123458E|full, invalid fin...|
+  |    8|         bob|not nino, lower case|
+  |    9|         BOB|not nino, upper case|
+  |   10|      bob123|not nino, lower case|
+  |   11|      BOB123|not nino, upper case|
+  |   12|      boB123|not nino, mixed case|
+  |   13|      BOb123|not nino, mixed case|
+  |   14|  AB1234TEMP|    valid, temporary|
+  |   15|   BT123456A|full, valid, clea...|
+  |   16|   bt123456a|full, valid, all ...|
+  |   17|   Bt123456a|full, valid, mixe...|
+  |   18|      BT1234|valid, truncated,...|
+  |   19|   BT123457A|full, valid, clea...|
+  |   20|   BT123457B|full, valid, clea...|
+  |   21|   BT123458E|full, invalid fin...|
+  |   22|  AB123 456A|full, valid, inte...|
+  |   23|  AB123456A |full, valid, exte...|
+  |   24| AB123 456A |full, valid, inte...|
+  |   25|        null|       missing value|
+  +-----+------------+--------------------+
+	"""
+  
+  # import package needed to column names and types in a spark dataframe
+  import pyspark.sql.types as T
+  
+  # what are the columns called, and what type are they?
+  fields = [
+    T.StructField("index", T.IntegerType(), True),
+    T.StructField("nino", T.StringType(), True),
+    T.StructField("description", T.StringType(), True)
+  ]
+
+  # create a schema that spark understands
+  schema = T.StructType(fields)
+  
+  # what data to put into the dataframe. row-wise.
+  contents = [
+    (1, 'AB123456A', 'full, valid, cleaned, unique'),
+    (2, 'ab123456a', 'full, valid, all lower case'),
+    (3, 'Aa123456a', 'full, valid, mixed case'),
+    (4, 'AB1234', 'valid, truncated, valid'),
+    (5, 'AB123457A', 'full, valid, cleaned, not unique'),
+    (6, 'AB123457B', 'full, valid, cleaned, not unique'),
+    (7, 'AB123458E', 'full, invalid final character, cleaned, unique'),
+    (8, 'bob', 'not nino, lower case'),
+    (9, 'BOB', 'not nino, upper case'),
+    (10, 'bob123', 'not nino, lower case'),
+    (11, 'BOB123', 'not nino, upper case'),
+    (12, 'boB123', 'not nino, mixed case'),
+    (13, 'BOb123', 'not nino, mixed case'),
+    (14, 'AB1234TEMP', 'valid, temporary'),
+    (15, 'BT123456A', 'full, valid, cleaned, unique, Northern Ireland'),
+    (16, 'bt123456a', 'full, valid, all lower case, Northern Ireland'),
+    (17, 'Bt123456a', 'full, valid, mixed case, Northern Ireland'),
+    (18, 'BT1234', 'valid, truncated, valid, Northern Ireland'),
+    (19, 'BT123457A', 'full, valid, cleaned, not unique, Northern Ireland'),
+    (20, 'BT123457B', 'full, valid, cleaned, not unique, Northern Ireland'),
+    (21, 'BT123458E', 'full, invalid final character, cleaned, unique, Northern Ireland'),
+    (22, 'AB123 456A', 'full, valid, internal white space, unique'),
+    (23, ' AB123456A ', 'full, valid, external white space, unique'),
+    (24, ' AB123 456A ', 'full, valid, internal and external white space, unique'),
+    (25, None, 'missing value')
+    ]
+
+  # create the actual dataframe
+  return cluster.createDataFrame(contents, schema = schema)
+
+
+
 def pydoop_read(file_path):
   """
   :WHAT IT IS: Python function
@@ -638,13 +741,6 @@ def save_sample(dataframe, sample_size, filepath, na_variables = []):
 	# write sample to the chosen HDFS file_path in comma-separate format.
   pandas_to_hdfs( dataframe = results, write_path = filepath)
 
-
-  
-  
-  
-  
-  
-  
   
 def make_test_df(session_name):
   """
@@ -681,56 +777,333 @@ def make_test_df(session_name):
   return session_name.createDataFrame(values, columns) #create pyspark dataframe with variables/value from above
 
 
-
-
  
+def anonymise_ids(session, df, id_cols, prefix = None):
+  """
+  :WHAT IT IS: pyspark function
+  :WHAT IT DOES: hashs a column, or unique combination (permutations) of columns.
+  
+  Creates a lookup with unique hashed values (SHA256) for all combinations (permutations) of columns 
+  entered as id_cols (incouding NULLs). Optional, hard coded prefix can be added. Output is a new 
+  table with each columns under id_cols and the new hashed id. 
+  This provides a method to join back to the original dataset.
+
+  :WHY IT DOES IT: to anonymise one or more ID variables in ADRUK projects
+  
+  :RETURNS: dataframe with columns 
+  * columns from id_cols
+  * hashed ID (unique values only) , called 'adr_id' if column doesnt exist, renamed 'adr_new' if column exists.
+
+  :OUTPUT VARIABLE TYPE: spark dataframe. new ID column = string type
+  
+  :AUTHOR: Nathan Shaw
+  :DATE: Feb2022
+
+  :PARAMETERS:
+    * session = name of active spark cluster
+      `(datatype = cluster name, no string)`, e.g. spark
+      
+    * df = spark dataframe with ID you want derive random IDs from
+      `(datatype = dataframe name, no string)`, e.g. PDS
+      
+    * id_cols = column(s) to turn into randomised new ID
+      `(datatype = list of strings)`, e.g. ['age', 'name']
+      
+    * prefix (optional) = String to add as a prefix
+      Default value = None
+      `(datatype = String)`, e.g. '2022'
+
+  
+  :EXAMPLES:
+  
+  :SAMPLE INPUT 1: General examples
+  
+  +-----+---+----+
+  | name| ID| age|
+  +-----+---+----+
+  | John|AA3|  23|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  | John|AA3|  61|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  |Alice|   |  44|
+  +-----+---+----+
+
+
+  >>> anonymise_ids(session = spark, 
+                    df = df, 
+                    id_cols = ['ID'],
+                    prefix = None)
+  
+  :SAMPLE OUTPUT:
+  
+  +----+--------------------+
+  |  ID|              adr_id|
+  +----+--------------------+
+  | AA3|b2866ef626d6d8260...|
+  | AA8|486340e9cc0f04a04...|
+  | AA4|2651e7dd70ff9ed3c...|
+  |null|                null|
+  +----+--------------------+
+
+  
+  >>> anonymise_ids(session = spark, 
+                    df = df, 
+                    id_cols = ['ID', 'age'],
+                    prefix = None)
+  
+  :SAMPLE OUTPUT:
+  
+  +----+---+--------------------+
+  |  ID|age|              adr_id|
+  +----+---+--------------------+
+  | AA3| 23|8ecc1648c3cd33f91...|
+  | AA8| 32|7a1b295804c9effcf...|
+  | AA4| 44|1c920b721a1f094fb...|
+  | AA3| 61|6664b717b66fa3234...|
+  |null| 44|71ee45a3c0db9a986...|
+  +----+---+--------------------+
+  
+  
+  >>> anonymise_ids(session = spark, 
+                    df = df, 
+                    id_cols = ['ID'],
+                    prefix = '2022')
+  
+  :SAMPLE OUTPUT:
+  
+  +----+--------------------+
+  |  ID|              adr_id|
+  +----+--------------------+
+  | AA3|2022b2866ef626d6d...|
+  | AA8|2022486340e9cc0f0...|
+  | AA4|20222651e7dd70ff9...|
+  |null|                null|
+  +----+--------------------+
+  
+  >>> anonymise_ids(session = spark, 
+                    df = df, 
+                    id_cols = ['ID', 'age'],
+                    prefix = '2022')
+  
+  :SAMPLE OUTPUT:
+  
+  +----+---+--------------------+
+  |  ID|age|              adr_id|
+  +----+---+--------------------+
+  | AA3| 61|20226664b717b66fa...|
+  | AA8| 32|20227a1b295804c9e...|
+  | AA4| 44|20221c920b721a1f0...|
+  |null| 44|202271ee45a3c0db9...|
+  | AA3| 23|20228ecc1648c3cd3...|
+  +----+---+--------------------+
+  
+  :SAMPLE INPUT 2: Example with column adr_id
+  
+  +-----+-------+----+
+  | name| adr_id| age|
+  +-----+-------+----+
+  | John|AA3    |  23|
+  |  Tom|AA8    |  32|
+  |Alice|AA4    |  44|
+  | John|AA3    |  61|
+  |  Tom|AA8    |  32|
+  |Alice|AA4    |  44|
+  +-----+-------+----+
+  
+  >>> anonymise_ids(session = spark, 
+                    df = df, 
+                    id_cols = ['adr_id'],
+                    prefix = '2022')
+                    
+  :SAMPLE OUTPUT 2:
+   
+  +------+--------------------+
+  |adr_id|          adr_id_new|
+  +------+--------------------+
+  |   AA3|2022b2866ef626d6d...|
+  |   AA8|2022486340e9cc0f0...|
+  |   AA4|20222651e7dd70ff9...|
+  +------+--------------------+
+  
+  """
+
+  # Load required packages
+  import pyspark.sql.functions as F 
+
+  # Check inputs
+  # id_cols must be passed as list
+  if type(id_cols) != list:
+    raise TypeError("id_cols must be a list")
+  
+  
+  # Prefix must be passed as string
+  if prefix != None:
+    if type(prefix) != str:
+      raise TypeError("prefix must be a string")
+      
+      
+  # Build lookup table
+  # Create new column name for hashed values
+  if('adr_id' in df.columns):
+    adr_id_column = 'adr_id_new'
+  else:
+    adr_id_column = 'adr_id'
+    
+  
+  # Filter dataframe to id_cols
+  df = df.select(id_cols)
+  
+  
+  # Keep only unique permutations of the combined columns above. 
+  # This provides a mapping back to the original data
+  df = df.drop_duplicates()
+      
+    
+  # Create unique column based on id_cols 
+  # which in turn allows a unique hased value to be created
+  # NB concat_ws doesnt ignore NULL values compared to concat
+  if(len(id_cols) > 1):
+    df = df.withColumn('id_cols_concat', F.concat_ws('_', *id_cols))
+  else:
+    df = df.withColumn('id_cols_concat', F.col(*id_cols))
+
+    
+  # Hash the data in the specified column using SHA256
+  df = df.withColumn(adr_id_column, F.sha2(F.col('id_cols_concat').cast('string'), 256))
+  
+  
+  # Prefix string if selected
+  if prefix != None:
+    
+    df = df.withColumn(adr_id_column,
+                       F.concat(F.lit(prefix),
+                                F.col(adr_id_column)))
+    
+  # Tidy up
+  df = df.drop(F.col('id_cols_concat'))
+
+  return df
+
+	  
+
 def generate_ids(session, df, id_cols, start_year, id_len = None):
   """
   :WHAT IT IS: pyspark function
-  :WHAT ID DOES: recodes a set of columns to random numerical values
+  :WHAT IT DOES: recodes a column, or combinations of columns, into a unique random numerical values.
+  
+  Creates unique random numerical values for all unique combinations (permutations) of columns entered under 
+  id_cols and start_year, with start_year added as a prefix to the generated numerical 
+  values. Output is a new table with columns under id_cols, allowing a join back to the original dataset, 
+  and the new numerical id. Additional option to create numerical id of specified length.
+
   :WHY IT DOES IT: to anonymise ID variables in ADRUK projects
-  :RETURNS: dataframe with 2 columns, mapping old and new IDs
-  * old ID (unique values only)
+  
+  :RETURNS: dataframe with 2 or more columns, mapping old and new IDs
+  * old ID (unique combinations of columns in id_cols and start_year, displayed in seperate columns)
   * new ID (unique values only) , called 'adr_id'
+  
   :OUTPUT VARIABLE TYPE: spark dataframe. new ID column = string type
   
   :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler
   :DATE: 2020
   :VERSION: 0.0.1
-  :KNOWN ISSUES: input dataset must not have existing column called 'adr_id'
+  :KNOWN ISSUES:
+    * input dataset must not have existing column called 'adr_id'
+    * the parameter 'start_year' is actually used as part of the parameter 
+    'id_cols'. That means that the function distinguishes not just distinct 
+    values of the id columns, but distinct combinations of id columns and 
+    start_year. If you don't want this start_year must be a column with only
+    1 value. start_year is a compulsory parameter, so if you only want to 
+    distinguish distinct values of the id_cols then create an auxiliary 
+    column with just 1 distinct value to use as start_year.
 
   :PARAMETERS:
     * session = name of active spark cluster
       `(datatype = cluster name, no string)`, e.g. spark
+      
     * df = spark dataframe with ID you want derive random IDs from
       `(datatype = dataframe name, no string)`, e.g. PDS
+      
     * id_cols = column(s) to turn into randomised new ID
       `(datatype = list of strings)`, e.g. ['year', 'name']
-    * start_year = name of additional column to prefix (in the clear) to the random IDs. NB if several columns are supplied, only the first is used.
+      
+    * start_year = name of additional column to prefix (in the clear) to 
+      the anonymised ids.
+      NB if several columns are supplied, only the first is used.
+      NB this column is actually used with the id_cols, i.e. if start_year has
+      several distinct values it potentially inflates the number of ids identified
+      by the function
       `(datatype = list of strings)`, e.g. ['year']
+      
     * id_len = set uniform length of ID values (ignoring length of start_year values) if required. Pads out values with leading zeroes if needed. Default value = None, i.e. accept different lengths
       `(datatype = numeric)`, e.g. 9
 
-  :EXAMPLE:
+
+
+  :EXAMPLES:
+  
+  :SAMPLE INPUT:
+  
+  +-----+---+----+
+  | name| ID| age|
+  +-----+---+----+
+  | John|AA3|  23|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  | John|AA3|  61|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  +-----+---+----+
+
   >>> generate_ids(sessions = spark, 
                     df = AEDE, 
-                    id_cols = ['name', 'ID'],
-                    start_year = ['year'], 
+                    id_cols = ['name'],
+                    start_year = ['age'], 
                     id_len = 9)
   
   :SAMPLE OUTPUT:
-  +-----+---+-------------+
-  | name| ID|       adr_id|
-  +-----+---+-------------+
-  | john|AA3|2019782853507|
-  |  Tom|AA8|2019659404170|
-  |Alice|AA1|2019145833675|
-  | Matt|AA6|2019485000031|
-  |Linda|AA2|2019156515405|
-  |Susan|AA4|2019621073989|
-  +-----+---+-------------+
-  """
+  +-----+-----------+
+  | name|     adr_id|
+  +-----+-----------+
+  |Alice|44277926008|
+  | John|23534343875|
+  | John|61534343875|
+  |  Tom|32580421606|
+  +-----+-----------+
   
+   :SAMPLE INPUT:
+  
+  +-----+---+----+
+  | name| ID| age|
+  +-----+---+----+
+  | John|AA3|  23|
+  |  Tom|AA8|  32|
+  |Alice|AA1|  44|
+  | Matt|AA6|  61|
+  |  Tom|AA8|  32|
+  |Alice|AA4|  44|
+  +-----+---+----+
+
+  >>> generate_ids(sessions = spark, 
+                    df = AEDE, 
+                    id_cols = ['name', 'ID'],
+                    start_year = ['age'], 
+                    id_len = 9)
+  
+  :SAMPLE OUTPUT:
+  +-----+---+-----------+
+  | name| ID|     adr_id|
+  +-----+---+-----------+
+  |  Tom|AA8|32974159768|
+  |Alice|AA1|44074421659|
+  |Alice|AA4|44248294836|
+  | Matt|AA6|61683839080|
+  | John|AA3|23683839080|
+  +-----+---+-----------+
+  """
+
   
   #==========================================================================
   """LOAD REQUIRED PACKAGES"""
@@ -879,21 +1252,8 @@ def generate_ids(session, df, id_cols, start_year, id_len = None):
   #==========================================================================
   return df
 
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
+
+
 def complex_harmonisation(df, log = None):
   '''
   :WHAT IT IS: pyspark function
