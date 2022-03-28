@@ -1715,7 +1715,7 @@ class Lookup:
     import adruk_tools.adr_functions as adr
 
     # undercheck checks on dataset
-    #----------------------------
+    #-----------------------------
     
     # Dataset key checks
     try:
@@ -1746,69 +1746,59 @@ class Lookup:
       # Filter dataset to key and value column if value provided
       if len(dataset.columns) > 2:
         dataset = dataset.select(F.col(dataset_key), F.col(dataset_value))
+  
+
+    # Find keys in dataset that dont exist in the lookup
+    #---------------------------------------------------
+
+    # Remove key values from dataset that already exist using a left anti join
+    # An anti join returns values from the left relation that has no match with 
+    # the right. It is also referred to as a left anti join.
+
+    # NOTE: Adding eqNUllSafe method to ensure nulls get matched correctly. By default,
+    # null == null returns null and so in an example with two dataframes each containing
+    # one null value, they both get joined. Using the eqNullSafe method ensures they get
+    # matched in equality. See null semantinces for more details
+    # https://spark.apache.org/docs/3.0.0-preview/sql-ref-null-semantics.html
+
+    dataset = dataset.join(self.source,
+                           on = self.source[self.key].eqNullSafe(dataset[dataset_key]),
+                           how = "leftanti")  
+
     
-    
-    # create value column for dataset if none provided
-    #-------------------------------------------------
-    
-    # Using anonymise_ids function but could be something else
+    # Create value column for these keys if none provided
+    #----------------------------------------------------
+
     # NOTE: assumes anonymise_ids created adr_id not adr_id_new
     if dataset_value == None:
       dataset = anonymise_ids(cluster, dataset, [dataset_key])
       dataset_value = 'adr_id'
+
       
-      # Filter dataset to key and value now value has been created
-      dataset = dataset.select(F.col(dataset_key), F.col(dataset_value))
-    
-    
-        
     # Match columns between lookup and dataset
     #-----------------------------------------
+    
+    # Filter dataset to key and value
+    dataset = dataset.select(F.col(dataset_key), F.col(dataset_value))
     
     # Both lookup and dataset only have two columns by this point
     # so can simply rename
     dataset = dataset.withColumnRenamed(dataset_key, self.key).withColumnRenamed(dataset_value, self.value)
 
     
-    # Undertake checks on lookup
-    #---------------------------
-    
-    # If create_empty_lookup method not previously run, might be that
-    # lookup has no dataframe to append to. So check and run.
-    
-    # NOTE: This could be run outside of the method, in the users workflow
-    # but adding here incase they forget
-    # Left as a seperate method because could be useful elsewhere in other workflows.
-    if self.source == None:
-      self.create_lookup_source(cluster)
-
-      
     # Check schema's match
-    #-------------------
+    #---------------------
 
     if(dataset.schema != self.source.schema):
-      raise ValueError('ERROR: schemas dont match, append cannot take place')
-
+      raise ValueError('''ERROR: schemas dont match or source doesnt exist, 
+                      append cannot take place''')
+      
     
     # Update lookup: Overwriting source
     #----------------------------------
     
-    # Remove key values from dataset that already exist using a left anti join
-    # An anti join returns values from the left relation that has no match with 
-    # the right. It is also referred to as a left anti join.
-    
-    # NOTE: Adding eqNUllSafe method to ensure nulls get matched correctly. By default,
-    # null == null returns null and so in an example with two dataframes each containing
-    # one null value, they both get joined. Using the eqNullSafe method ensures they get
-    # matched in equality. See null semantinces for more details
-    # https://spark.apache.org/docs/3.0.0-preview/sql-ref-null-semantics.html
- 
-    records_to_add = dataset.join(self.source,
-                                 on = self.source[self.key].eqNullSafe(dataset[self.key]),
-                                 how = "leftanti")    
-    
     # Append dataset to lookup
-    self.source = self.source.union(records_to_add)
+    self.source = self.source.union(dataset)
     
     # Returning self to allow chaining of methods
     return self
