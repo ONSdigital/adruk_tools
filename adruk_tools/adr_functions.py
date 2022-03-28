@@ -1742,10 +1742,6 @@ class Lookup:
       
       if(dataset.select(dataset_key).distinct().count() != dataset.count()):
         raise ValueError(f"{dataset_key} column doesnt contain unique value")
-        
-      # Filter dataset to key and value column if value provided
-      if len(dataset.columns) > 2:
-        dataset = dataset.select(F.col(dataset_key), F.col(dataset_value))
   
 
     # Find keys in dataset that dont exist in the lookup
