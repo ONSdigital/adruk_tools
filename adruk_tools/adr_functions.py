@@ -778,7 +778,7 @@ def make_test_df(session_name):
 
 
  
-def anonymise_ids(session, df, id_cols, prefix = None):
+def anonymise_ids(df, id_cols, prefix = None):
   """
   :WHAT IT IS: pyspark function
   :WHAT IT DOES: hashs a column, or unique combination (permutations) of columns.
@@ -800,9 +800,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   :DATE: Feb2022
 
   :PARAMETERS:
-    * session = name of active spark cluster
-      `(datatype = cluster name, no string)`, e.g. spark
-      
+  
     * df = spark dataframe with ID you want derive random IDs from
       `(datatype = dataframe name, no string)`, e.g. PDS
       
@@ -831,8 +829,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   +-----+---+----+
 
 
-  >>> anonymise_ids(session = spark, 
-                    df = df, 
+  >>> anonymise_ids(df = df, 
                     id_cols = ['ID'],
                     prefix = None)
   
@@ -848,8 +845,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   +----+--------------------+
 
   
-  >>> anonymise_ids(session = spark, 
-                    df = df, 
+  >>> anonymise_ids(df = df, 
                     id_cols = ['ID', 'age'],
                     prefix = None)
   
@@ -866,8 +862,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   +----+---+--------------------+
   
   
-  >>> anonymise_ids(session = spark, 
-                    df = df, 
+  >>> anonymise_ids(df = df, 
                     id_cols = ['ID'],
                     prefix = '2022')
   
@@ -882,8 +877,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   |null|                null|
   +----+--------------------+
   
-  >>> anonymise_ids(session = spark, 
-                    df = df, 
+  >>> anonymise_ids(df = df, 
                     id_cols = ['ID', 'age'],
                     prefix = '2022')
   
@@ -912,8 +906,7 @@ def anonymise_ids(session, df, id_cols, prefix = None):
   |Alice|AA4    |  44|
   +-----+-------+----+
   
-  >>> anonymise_ids(session = spark, 
-                    df = df, 
+  >>> anonymise_ids(df = df, 
                     id_cols = ['adr_id'],
                     prefix = '2022')
                     
