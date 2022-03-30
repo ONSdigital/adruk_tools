@@ -1,0 +1,14 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    .ipynb_checkpoints,
+    .pytest_cache
+    
+max-line-length = 90
+ignore = 
+    # Line break occurred before a binary operator
+    W503
+per-file-ignores =
+    # Imported but not used - this is okay within the init file
+    adruk_tools/__init__.py:F401

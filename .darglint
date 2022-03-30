@@ -1,0 +1,5 @@
+[darglint]
+
+docstring_style=numpy
+strictness=long
+ignore=DAR101,DAR201,DAR402,DAR401
