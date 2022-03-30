@@ -1,3 +1,15 @@
+import os
+import random
+import pydoop.hdfs as pdh
+import pandas as pd
+
+from pyspark.sql import SparkSession
+from pyspark.context import SparkContext as sc
+import pyspark.sql.functions as F
+import pyspark.sql.types as T
+import pyspark.sql.window as W
+
+
 def make_dummy_ninos(cluster):
     """
     :WHAT IT IS: pyspark function
@@ -54,9 +66,6 @@ def make_dummy_ninos(cluster):
     |   25|        null|       missing value|
     +-----+------------+--------------------+
     """
-
-    # import package needed to column names and types in a spark dataframe
-    import pyspark.sql.types as T
 
     # what are the columns called, and what type are they?
     fields = [
@@ -128,8 +137,6 @@ def pydoop_read(file_path):
     >>> pydoop_read(file_path = '/dapsen/workspace_zone/my_project/sample.csv')
     """
 
-    import pydoop.hdfs as pdh  # import package to read from HDFS without spark
-
     # read in file from HDFS
     with pdh.open(file_path, "r") as f:
         data = f.read()
@@ -159,9 +166,6 @@ def hdfs_to_pandas(file_path):
     :EXAMPLE:
     >>> pydoop_read(file_path = '/dapsen/workspace_zone/my_project/sample.csv')
     """
-
-    import pydoop.hdfs as pdh  # import package to read from HDFS without spark
-    import pandas as pd  # import package to convert imported data to a pandas dataframe
 
     # read in file from HDFS
     with pdh.open(file_path, "r") as f:
@@ -194,8 +198,6 @@ def pandas_to_hdfs(dataframe, write_path):
     >>> pandas_to_hdfs( dataframe = my_data,
                         file_path = '/dapsen/workspace_zone/my_project/sample.csv')
     """
-
-    import pydoop.hdfs as pdh  # import package to read from HDFS without spark
 
     # write file from HDFS
     with pdh.open(write_path, "wt") as f:
@@ -254,8 +256,6 @@ def equalise_file_and_folder_name(path):
     :DATE: 04/10/2021
     """
 
-    import pydoop.hdfs as pdh  # import package that can manipulate HDFs
-
     path_parts = path.split("/")  # identify folder levels in path
     path_new = (
         "/".join(path_parts[:-1] + [path_parts[-2]]) + ".csv"
@@ -301,8 +301,6 @@ def update_file(cluster, file_path, template, join_variable):
                       join_variable = ['nhs_number']
                       )
     """
-
-    import pydoop.hdfs as pdh  # package that lets you operate with HDFS
 
     # check if the file actually exists, and if it does then...
     if pdh.path.exists(file_path):
@@ -407,8 +405,6 @@ def update_file_later(
                       )
     """
 
-    import pydoop.hdfs as pdh  # package that lets you operate with HDFS
-
     # check if the file actually exists, and if it does then...
     if pdh.path.exists(file_path):
 
@@ -488,8 +484,6 @@ def session_small():
     >>> session_small()
     """
 
-    from pyspark.sql import SparkSession
-
     return (
         SparkSession.builder.appName("small-session")
         .config("spark.executor.memory", "1g")
@@ -535,8 +529,6 @@ def session_medium():
     >>> session_medium()
     """
 
-    from pyspark.sql import SparkSession
-
     return (
         SparkSession.builder.appName("medium-session")
         .config("spark.executor.memory", "6g")
@@ -580,8 +572,6 @@ def session_large():
     :EXAMPLE:
     >>> session_large()
     """
-
-    from pyspark.sql import SparkSession
 
     return (
         SparkSession.builder.appName("large-session")
@@ -632,8 +622,6 @@ def session_xl():
     >>> session_xl()
     """
 
-    from pyspark.sql import SparkSession
-
     return (
         SparkSession.builder.appName("xl-session")
         .config("spark.executor.memory", "20g")
@@ -671,10 +659,8 @@ class manifest:
         :DATE: 09/02/2021
         :VERSION: 0.1
         """
-        import pydoop.hdfs as hdfs
-        import pandas as pd
 
-        with hdfs.open(path, "r") as f:
+        with pdh.open(path, "r") as f:
             self.content = pd.read_json(f)
             f.close()
 
@@ -702,8 +688,6 @@ class manifest:
         :DATE: 09/02/2021
         :VERSION: 0.1
         """
-
-        import pandas as pd
 
         return pd.DataFrame(list(self.content[variable]))
 
@@ -743,7 +727,6 @@ def unzip_to_csv(file_path, file_name, destination_path):
                         file_name = file,
                         destination_path = out)
     """
-    import os
 
     # separate file name from the extentions
     # (e.g. 'file_name.csv.gz' will become 'file_name')
@@ -795,6 +778,7 @@ def save_sample(dataframe, sample_size, filepath, na_variables=[]):
                      sample_size = 20,
                      filepath = '/dapsen/workspace_zone/my_project/sample.csv)))
     """
+
     # removes records with missing values in the chosen columns, if any were chosen
     dataframe = dataframe.na.drop(subset=na_variables, how="any")
 
@@ -1080,9 +1064,6 @@ def anonymise_ids(df, id_cols, prefix=None):
 
     """
 
-    # Load required packages
-    import pyspark.sql.functions as F
-
     # Check inputs
     # id_cols must be passed as list
     if type(id_cols) != list:
@@ -1253,14 +1234,6 @@ def generate_ids(session, df, id_cols, start_year, id_len=None):
     | John|AA3|23683839080|
     +-----+---+-----------+
     """
-
-    # ==========================================================================
-    """LOAD REQUIRED PACKAGES"""
-    # ==========================================================================
-    import pyspark.sql.functions as F  # generically useful functions package
-    import pyspark.sql.types as T  # package to create columns of specific type
-    import pyspark.sql.window as W  # package used for linking old to new IDs
-    import random  # package used to generate random numbers for new IDs
 
     # ==========================================================================
     """CHECK INPUTS AND PREPARE INPUT DATA"""
@@ -1443,10 +1416,6 @@ def complex_harmonisation(df, log=None):
 
     """
 
-    " IMPORT REQUIRED PACKAGES "
-    import pandas as pd
-    import pyspark.sql.functions as F
-
     # create pandas dataframe with 1 column that lists all the spark dataframe's columns
     "LEFTOVER: why make a dataframe if next thing you make it a list? "
     dup_cols = pd.DataFrame({"dup_cols": df.columns})
@@ -1575,10 +1544,7 @@ def complex_standardisation(df, gender):
     >>> complex_standardisation(df = my_dataframe, gender = ['sex'])
 
     """
-    # generally useful package of spark functions
-    import pyspark.sql.functions as F
 
-    # ======================================================================
     # ======================================================================
     """ Standardises gender"""
     # ======================================================================
@@ -1704,7 +1670,6 @@ def spark_glob(host, directory):
                     directory = '/dapsen/landing_zone/hmrc/self_assessment/2017/v1')
 
     """
-    from pyspark.context import SparkContext as sc
 
     URI = sc._gateway.jvm.java.net.URI
     Path = sc._gateway.jvm.org.apache.hadoop.fs.Path
@@ -1748,9 +1713,8 @@ def spark_glob_all(host, directory):
                     directory = '/dapsen/landing_zone/hmrc/self_assessment/2017/v1')
 
     """
-    import adruk_tools.adr_functions as adr
 
-    files = adr.spark_glob(host, directory)  # list all functions in selected directory
+    files = spark_glob(host, directory)  # list all functions in selected directory
 
     for file in files:
         if len(files) == len(set(files)):  # ... if no file has been listed twice...
@@ -1802,8 +1766,6 @@ class Lookup:
         :EXAMPLE:
         >>> lookup = Lookup(key = 'key', value = 'value')
         """
-
-        import pyspark.sql.functions as F
 
         self.key = key
         self.value = value
@@ -1860,8 +1822,6 @@ class Lookup:
 
         """
 
-        import pyspark.sql.types as T
-
         # Create schema as required to initialise empty spark data frame
         schema = T.StructType(
             [
@@ -1916,8 +1876,6 @@ class Lookup:
                                  dataset_value = 'numVar')
 
         """
-
-        import pyspark.sql.functions as F
 
         # undercheck checks on dataset
         # -----------------------------
@@ -2023,8 +1981,6 @@ class Lookup:
         >>> lookup.remove_from_lookup(cluster = spark, keys_to_remove = (1,2,3))
 
         """
-
-        import pyspark.sql.functions as F
 
         # undercheck checks on dataset keys
         # ----------------------------
