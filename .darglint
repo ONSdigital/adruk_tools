@@ -1,3 +1,10 @@
+# Specifies darlint components for pre-commit hooks to ensure
+# docstring's are styled correctly
+# Currently deactivated in .pre-commit-config.yaml but kept here
+# incase we convert to numpy docstring style
+# Includes specific codes to ignore. See here for complete list
+# https://github.com/terrencepreilly/darglint#error-codes
+
 [darglint]
 
 docstring_style=numpy

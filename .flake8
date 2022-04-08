@@ -1,3 +1,9 @@
+# Specifies flake8 components for pre-commit hooks to ensure
+# code adheres to PEP8 standard.
+# Includes list of files to exclude from the pre-commit hooks
+# and hooks to ignore per file
+# Max line length set to 90.
+
 [flake8]
 exclude =
     .git,

@@ -1,4 +1,11 @@
-# Pre commit hooks
+# Pre commit hooks (see Readme for how to install)
+# Config file for pre-commit hooks using flake 8 and
+# darglint. Hooks for doc string style have been
+# ommitted for timebeing as package currently uses
+# own docstring style.
+# see .flake8 and .darglint for specific pre-commit
+# hook details
+
 repos:
 -   repo: local
     hooks:
