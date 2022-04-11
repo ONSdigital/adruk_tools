@@ -1,3 +1,7 @@
+import pyspark.sql.functions as F
+import cleaning_postcode_prep
+
+
 def remove_whitespace(column):
     """
     :LANGUAGE: pyspark
@@ -18,7 +22,6 @@ def remove_whitespace(column):
     :EXAMPLE:
     >>> remove_whitespace('messy_column')
     """
-    import pyspark.sql.functions as F
 
     return F.regexp_replace(F.col(column), r"\s+", "")
 
@@ -47,8 +50,6 @@ def clean_nino(column):
     :EXAMPLE:
     >>> remove_whitespace('messy_nino_column')
     """
-
-    import pyspark.sql.functions as F
 
     return F.upper(remove_whitespace(column))
 
@@ -81,19 +82,15 @@ def clean_names(dataset, variables):
     >>> clean_names(PDS, ['family_names', 'first_given_name'])
 
     """
-    from pyspark.sql.functions import (
-        upper,
-        trim,
-        regexp_replace,
-    )  # import functions to make strings upper case,
-    # trim preceding/trailing whitespace, and replace regular expressions
 
     for variable in variables:  # loop over chosen variables one by one and...
         dataset = dataset.withColumn(
-            variable + "_clean", upper(trim(regexp_replace(variable, "[^a-zA-Z]", "")))
+            variable + "_clean", F.upper(F.trim(F.regexp_replace(variable,
+                                                                 "[^a-zA-Z]", "")))
         )  # remove anything not a character (of either case), then trim whitespace,
         # then make all upper case. save that as a new variable,
         # named after the input variable, with the suffix '_clean'
+
     return dataset
 
 
@@ -125,15 +122,6 @@ def clean_names_part(dataset, variables):
     >>> clean_names(PDS, ['family_names', 'first_given_name'])
 
     """
-    from pyspark.sql.functions import (
-        upper,
-        trim,
-        regexp_replace,
-        col,
-        split,
-        concat_ws,
-    )  # import functions to make strings upper case, trim preceding/trailing
-    # whitespace, and replace regular expressions
 
     for variable in [
         name
@@ -141,7 +129,7 @@ def clean_names_part(dataset, variables):
         if "array<string>" not in dtype
     ]:  # loop over chosen variables one by one and...
         dataset = dataset.withColumn(
-            variable, upper(trim(regexp_replace(variable, r"[^a-zA-Z\s-]", "")))
+            variable, F.upper(F.trim(F.regexp_replace(variable, r"[^a-zA-Z\s-]", "")))
         )  # remove anything not a character (of either case) or any length of whitespace,
         # then trim whitespace before the first/after the last character,
         # then make all upper case. save that as a new variable, named after the input
@@ -154,13 +142,13 @@ def clean_names_part(dataset, variables):
     ]:  # loop over chosen variables one by one and...
         dataset = dataset.withColumn(
             variable,
-            split(
-                upper(
-                    trim(
-                        regexp_replace(
-                            concat_ws(
+            F.split(
+                F.upper(
+                    F.trim(
+                        F.regexp_replace(
+                            F.concat_ws(
                                 "@",  # concatenate the array elements with an '@'
-                                col(variable),
+                                F.col(variable),
                             ),
                             r"[^a-zA-Z\s-@]",  # remove anything not like these
                             "",
@@ -201,15 +189,6 @@ def clean_names_full(dataset, variables):
     >>> clean_names_full(PDS, ['family_names', 'first_given_name'])
 
     """
-    from pyspark.sql.functions import (
-        upper,
-        trim,
-        regexp_replace,
-        col,
-        split,
-        concat_ws,
-    )  # import functions to make strings upper case, trim preceding/trailing whitespace,
-    # and replace regular expressions
 
     for variable in [
         name
@@ -217,7 +196,7 @@ def clean_names_full(dataset, variables):
         if "array<string>" not in dtype
     ]:  # loop over chosen variables one by one and...
         dataset = dataset.withColumn(
-            variable, upper(trim(regexp_replace(variable, "[^a-zA-Z]", "")))
+            variable, F.upper(F.trim(F.regexp_replace(variable, "[^a-zA-Z]", "")))
         )  # remove anything not a character (of either case), then trim whitespace,
         # then make all upper case. save that as a new variable,
         # named after the input variable, with the suffix '_clean'
@@ -229,13 +208,13 @@ def clean_names_full(dataset, variables):
     ]:  # loop over chosen variables one by one and...
         dataset = dataset.withColumn(
             variable,
-            split(
-                upper(
-                    trim(
-                        regexp_replace(
-                            concat_ws(
+            F.split(
+                F.upper(
+                    F.trim(
+                        F.regexp_replace(
+                            F.concat_ws(
                                 "@",  # concatenate the array elements with an '@'
-                                col(variable),
+                                F.col(variable),
                             ),
                             "[^a-zA-Z@]'`",  # remove anything not like these
                             "",
@@ -255,7 +234,6 @@ def array_to_columns(dataset, arrays, new_column_names, number_of_columns):
                               arrays = ['forename_clean', 'surname_clean'],
                               number_of_columns = 0)
     """
-    import pyspark.sql.functions as F
 
     for array, new_column_name in zip(arrays, new_column_names):
         for index in range(1, number_of_columns + 1):
@@ -299,7 +277,6 @@ def concatenate_columns(dataset, variable_new, variables, sep=" "):
                             variables = ['ADDRESS_LINE1', 'ADDRESS_LINE2'],
                             sep = ' ')
     """
-    import pyspark.sql.functions as F  # import generic pyspark functions
 
     return dataset.withColumn(
         variable_new,  # create new variable, named as user specified
@@ -344,7 +321,6 @@ def concatenate_distinct(dataset, variable_new, variables_to_combine, separator)
                               variable_new = 'all_names',
                               separator = ' ')
     """
-    import pyspark.sql.functions as F
 
     return dataset.withColumn(
         variable_new,
@@ -395,7 +371,6 @@ def date_recode(dataset, variable_input, variable_output, date_format="yyyy/MM/d
                     date_format = 'yyyy/MM/dd')
 
     """
-    import pyspark.sql.functions as F  # import generic pyspark functions
 
     dataset = dataset.withColumn(
         variable_output, F.to_date(F.col(variable_input), format=date_format)
@@ -409,6 +384,7 @@ def date_recode(dataset, variable_input, variable_output, date_format="yyyy/MM/d
     dataset = dataset.withColumn(
         variable_output + "_day", F.dayofmonth(dataset[variable_output])
     )  # extract year into separate column
+
     return dataset
 
 
@@ -463,8 +439,6 @@ def LAlookup(
               connection = spark).show()
     """
 
-    import pyspark.sql.functions as F
-
     reference = connection.sql(
         "SELECT {0}, {1} FROM {2}".format(
             reference_variable, LA_code_variable, reference_table
@@ -492,6 +466,7 @@ def LAlookup(
         # This will leave a new, merged-on variable that is Null for test values that
         # weren't matched. remove reference variable, it was only used for linking,
         # don't need the variable itself.
+
     return test_df  # remove reference variable(s) that were joined in;
     # repartition to improve processing speed
 
@@ -520,7 +495,6 @@ def make_missing_none(data, columns):
     >>> make_missing_none(PDS, columns = ['forename', 'surname'])
 
     """
-    import pyspark.sql.functions as F  # import generic pyspark functions
 
     for column in columns:  # for each variable in turn, do this following:
         data = data.withColumn(
@@ -549,6 +523,7 @@ def make_missing_none(data, columns):
                 data[column]
             ),  # ...turn it to NULL/None... else leave it unchanged
         )
+
     return data
 
 
@@ -582,7 +557,6 @@ def name_split(data, strings_to_split, separator):
                    'surname_clean'],
                    separator = '-')
     """
-    import pyspark.sql.functions as F
 
     for string in strings_to_split:
         # count how many sub-names any field will have at most,
@@ -638,12 +612,12 @@ def name_split_array(data, strings_to_split, separator, suffix=""):
                    separator = '-',
                    suffix = '_split')
     """
-    import pyspark.sql.functions as F
 
     # return data.select(['*'] + [F.split(F.col(s),
     # separator).alias(s + suffix) for s in strings_to_split])
     for column in strings_to_split:
         data = data.withColumn(column + suffix, F.split(F.col(column), separator))
+
     return data
 
 
@@ -693,9 +667,6 @@ def NHS_postcode_recode(datasetNHS, variables_old, variables_new, connection):
                             connection = spark)
 
     """
-    import cleaning_postcode_prep  # import function that will clean the postcodes
-    # before they get checked
-    import pyspark.sql.functions as F  # import generic pyspark functions
 
     NHSlookup = connection.sql(
         "SELECT postcode FROM nhs_postcodes_country_lookup.nhs_country_postcodes_std"
@@ -773,6 +744,7 @@ def NHS_postcode_recode(datasetNHS, variables_old, variables_new, connection):
             .when(F.col(variables_new[a]).isin(NONEU), F.lit("NONEU"))
             .otherwise(F.lit("NONHSPOSTCODE")),
         )
+
     return datasetNHS
 
 
@@ -806,8 +778,6 @@ def clean_postcode(dataset, variables, spaces):
 
     """
 
-    import pyspark.sql.functions as F  # import generic pyspark functions
-
     """
   ACTUAL CLEANING
   1. cycle through each selected variable in turn
@@ -831,6 +801,7 @@ def clean_postcode(dataset, variables, spaces):
                 )
             ),
         )
+
     return dataset
 
 
@@ -872,7 +843,6 @@ def postcode_pattern(test_df, test_postcodes):
     >>> postcode_pattern(testDF, 'postcode')
 
     """
-    import pyspark.sql.functions as F
 
     patterns = (
         "^([Gg][Ii][Rr] ?0[Aa]{2})$|^([Nn][Pp][Tt] ?[0-9]"
@@ -1065,6 +1035,7 @@ def rename_columns(dataset, variable_names_old, variable_names_new):
         new_name,
     ) in variable_lookup.items():  # Loop over key-value pairs of dict
         dataset = dataset.withColumnRenamed(old_name, new_name)  # Rename
+
     return dataset
 
 
@@ -1111,7 +1082,6 @@ def sex_recode(dataset, variable_input, variable_output):
     male = [1, "MALE", "M"]  # define what values to recode to 1
     female = [2, "FEMALE", "F"]  # define what value to recode to 2
     other = [0, 3, "I"]  # define what values to recode to 3
-    import pyspark.sql.functions as F  # import generic pyspark functions
 
     """
   ACTUAL RECODE
@@ -1127,6 +1097,7 @@ def sex_recode(dataset, variable_input, variable_output):
         .when(F.col(variable_input).isin(other), 3)
         .otherwise(None),
     )
+
     return dataset
 
 
@@ -1146,6 +1117,7 @@ def space_to_underscore(df):
     * df = spark dataframe
         `(datatype = dataframe name, not string)`, e.g. ESC
     """
+
     return df.replace(" ", "_")
 
 
@@ -1192,7 +1164,6 @@ def title_remove(dataset, variables):
 
     title_filter = (r"^DAME\s+|^DR\s+|^MR\s+|^MSTR\s+|^LADY\s+|^LORD\s+|"
                     r"^MISS\s+|^MRS\s+|^MS\s+|^SIR\s+|^REV\s+")
-    import pyspark.sql.functions as F  # import generic pyspark functions
 
     for variable in variables:  # loop over selected variables and...
         dataset = dataset.withColumn(
@@ -1200,4 +1171,5 @@ def title_remove(dataset, variables):
             F.regexp_replace(F.trim(F.upper(F.col(variable))), title_filter, ""),
         )  # ... make them upper-case, trim predeeding/trailing whitespace,
         # then remove any of the defines titles
+
     return dataset
