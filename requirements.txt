@@ -1,5 +1,5 @@
 # Add every library that's needed to run any of the code in this package,
-include version number.
+# include version number.
 
 # Development specific packages
 pre-commit>=2.6.0
