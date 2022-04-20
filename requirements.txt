@@ -1,1 +1,9 @@
-# Add every library that's needed to run any of the code in this package, include version number!
+# Add every library that's needed to run any of the code in this package,
+# include version number.
+
+# Development specific packages
+pre-commit>=2.6.0
+flake8>=3.8.0
+pydocstyle>=5.0.0
+darglint>=1.8.1
+pytest==5.4.3
