@@ -1,3 +1,7 @@
+import pyspark.sql.functions as F
+import pandas as pd
+
+
 def list_columns_by_file(cluster, paths):
     """
     :WHAT IT IS: pyspark function
@@ -71,9 +75,6 @@ def missing_count(*args):
     :EXAMPLE:
     >>> missing_count(PDS, HESA, WSC)
     """
-    # Import relevant modules
-    import pyspark.sql.functions as F
-    import pandas as pd
 
     pd.set_option("display.html.table_schema", True)
 
@@ -153,7 +154,6 @@ def missing_by_row(dataset, *args):
                        'postcode')
 
     """
-    import pyspark.sql.functions as F  # import generic pyspark functions
 
     return (
         dataset.select(*args)
@@ -193,9 +193,6 @@ def unique_function(*args):
     :EXAMPLE:
     >>> unique_function(PDSraw, PDSclean)
     """
-
-    import pyspark.sql.functions as F
-    import pandas as pd
 
     pd.set_option("display.html.table_schema", True)
 
