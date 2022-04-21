@@ -1,3 +1,11 @@
+from functools import reduce
+
+import pyspark.sql.functions as F
+import pyspark.sql.types as T
+import pandas as pd
+import numpy as np
+
+
 def pandas_describe(df):
     """
     :WHAT IT IS: PYSPARK FUNCTION
@@ -68,8 +76,6 @@ def positive_describe(df):
     * df = the dataframe that you are calling this on.
     """
 
-    import pyspark.sql.functions as F
-
     out = df.select([F.count(F.when(df[c] > 0, True)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
     out.columns = ["variable", "positive"]
@@ -94,8 +100,6 @@ def negative_describe(df):
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
     """
-
-    import pyspark.sql.functions as F
 
     out = df.select([F.count(F.when(df[c] < 0, True)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -123,8 +127,6 @@ def zero_describe(df):
     * df = the dataframe that you are calling this on.
     """
 
-    import pyspark.sql.functions as F
-
     out = df.select([F.count(F.when(df[c] == 0, True)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
     out.columns = ["variable", "zero"]
@@ -150,8 +152,6 @@ def null_describe(df):
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
     """
-
-    import pyspark.sql.functions as F
 
     out = df.select(
         [F.count(F.when(F.col(c).isNull(), c)).alias(c) for c in df.columns]
@@ -181,8 +181,6 @@ def nan_describe(df):
     * df = the dataframe that you are calling this on.
     """
 
-    import pyspark.sql.functions as F
-
     out = df.select([F.count(F.when(F.isnan(c), c)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
     out.columns = ["variable", "NaN"]
@@ -208,9 +206,6 @@ def unique_describe(df):
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
     """
-
-    import pyspark.sql.functions as F
-    import pyspark.sql.types as T
 
     df = df.select([F.col(c).cast(T.StringType()).alias(c) for c in df.columns])
     out = df.agg(*(F.countDistinct(F.col(c)).alias(c) for c in df.columns))
@@ -238,8 +233,6 @@ def blank_describe(df):
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
     """
-
-    import pyspark.sql.functions as F
 
     out = df.select([F.count(F.when(df[c] == "", True)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -321,8 +314,6 @@ def stddev_describe(df):
     * df = the dataframe that you are calling this on.
     """
 
-    import pyspark.sql.functions as F
-
     out = df.select([F.stddev(F.col(c)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
     out.columns = ["variable", "stddev"]
@@ -347,8 +338,6 @@ def min_describe(df):
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
     """
-
-    import pyspark.sql.functions as F
 
     out = df.select([F.min(F.col(c)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -375,8 +364,6 @@ def max_describe(df):
     * df = the dataframe that you are calling this on.
     """
 
-    import pyspark.sql.functions as F
-
     out = df.select([F.max(F.col(c)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
     out.columns = ["variable", "max"]
@@ -402,9 +389,6 @@ def mode_describe(df):
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
     """
-
-    import pyspark.sql.functions as F
-    from functools import reduce
 
     out = [
         (
@@ -442,8 +426,6 @@ def special_describe(df, regex_dict):
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
     """
-
-    import pyspark.sql.functions as F
 
     out_dict = {}
     for k, v in regex_dict.items():
@@ -560,9 +542,6 @@ def extended_describe(
                                     axis_=1,
                                     fillna_=0)
     """
-    import pandas as pd
-    import numpy as np
-    import pyspark.sql.functions as F
 
     # default output and determines numeric columns - so that numeric methodologies are
     # only applied to the numeric columns where they are relevant
