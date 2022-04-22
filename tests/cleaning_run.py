@@ -19,13 +19,10 @@ import pyspark.sql.functions as F
 # -------------------
 
 # Start session
-# Start session
 spark = adr.session_small()
 
 # Test dataframe
 df = adr.make_test_df(spark)
-
-<<<<<<< HEAD
 
 df_clean = df.withColumn('clean_postcode',
                          cln.remove_whitespace('postcode'))
