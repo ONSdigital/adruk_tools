@@ -165,9 +165,9 @@ def nan_describe(df):
     """
     :WHAT IT IS: PYSPARK FUNCTION
 
-    :WHAT IT DOES: This looks at the negative values in the dataset and
+    :WHAT IT DOES: This looks at the nan values in the dataset and
     counts them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing negative.
+    :RETURNS: Pandas dataframe with a numerical sum showing nan.
     :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the
     dataset as a pandas dataframe.
     :TESTED TO RUN ON: test data in adruk.test.QA
@@ -193,7 +193,7 @@ def unique_describe(df):
 
     :WHAT IT DOES: This looks at the unique values in the dataset and counts
     them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing negative.
+    :RETURNS: Pandas dataframe with a numerical sum showing unique.
     :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the
     dataset as a pandas dataframe.
     :TESTED TO RUN ON: test data in adruk.test.QA
@@ -218,9 +218,9 @@ def blank_describe(df):
     """
     :WHAT IT IS: PYSPARK FUNCTION
 
-    :WHAT IT DOES: This looks at the negative values in the dataset and counts
+    :WHAT IT DOES: This looks at the blank values in the dataset and counts
     them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing negative.
+    :RETURNS: Pandas dataframe with a numerical sum showing blank.
     :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
     as a pandas dataframe.
     :TESTED TO RUN ON: test data in adruk.test.QA
@@ -244,9 +244,9 @@ def mean_describe(df):
     """
     :WHAT IT IS: PYSPARK FUNCTION
 
-    :WHAT IT DOES: This looks at the negative values in the dataset and counts
+    :WHAT IT DOES: This looks at the mean values in the dataset and counts
     them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing negative.
+    :RETURNS: Pandas dataframe with a numerical sum showing mean.
     :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
     as a pandas dataframe.
     :TESTED TO RUN ON: test data in adruk.test.QA
@@ -271,9 +271,9 @@ def means_describe(df):
     """
     :WHAT IT IS: PYSPARK FUNCTION
 
-    :WHAT IT DOES: This looks at the negative values in the dataset and
+    :WHAT IT DOES: This looks at the means values in the dataset and
     counts them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing negative.
+    :RETURNS: Pandas dataframe with a numerical sum showing means.
     :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the
     dataset as a pandas dataframe.
     :TESTED TO RUN ON: test data in adruk.test.QA
@@ -349,9 +349,9 @@ def max_describe(df):
     """
     :WHAT IT IS: PYSPARK FUNCTION
 
-    :WHAT IT DOES: This looks at the negative values in the dataset and counts
+    :WHAT IT DOES: This looks at the max values in the dataset and counts
     them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing negative.
+    :RETURNS: Pandas dataframe with a numerical sum showing max.
     :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset.
     :TESTED TO RUN ON: test data in adruk.test.QA
 
