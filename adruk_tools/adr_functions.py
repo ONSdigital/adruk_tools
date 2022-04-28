@@ -1842,7 +1842,6 @@ class Lookup:
         """
         :WHAT IT IS: Class method (python function)
         :WHAT IT DOES: Adds a dataset into a lookup.
-        * If the lookup has an empty source, one is created
         * Dataset key must be specified, and will be renamed to the lookup key column name
         * If dataset value is not given, one is created using anonymis_ids function.
         This will be renamed to the lookup value column name
@@ -1901,6 +1900,12 @@ class Lookup:
 
             if dataset.select(dataset_key).distinct().count() != dataset.count():
                 raise ValueError(f"{dataset_key} column doesnt contain unique value")
+
+        # Check the lookup has a source
+        if self.source is None:
+            raise ValueError(
+                "Lookup doesnt have a source. Use create_lookup_source_method"
+            )
 
         # Find keys in dataset that dont exist in the lookup
         # ---------------------------------------------------
