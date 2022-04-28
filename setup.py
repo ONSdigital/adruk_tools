@@ -9,9 +9,9 @@ with open('requirements.txt') as f:
 setup(
     name='adruk_tools',
     version=__version__,
-    description='collection of pyspark functions written by the ADRUK team for data engineering',
-    url='http://np2rvlapxx507/data_engineering/de-utils.git',
-    author = 'Sophie-Louise Courtney, Johannes Hechler, Ben Marshall-Sheen, Thomas Heneghan',
-    packages = ['adruk_tools','adruk_tools.functions'],
+    description='collection of pyspark functions written by the ADRUK team',
+    url='http://np2rvlapxx507/hechlj/adruk_tools.git',
+    author='Sophie-Louise Courtney, Johannes Hechler, Nathan Shaw, Silvia Bardoni',
+    packages=['adruk_tools'],
     install_requires=requirements
 )
