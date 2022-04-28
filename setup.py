@@ -10,7 +10,7 @@ setup(
     name='adruk_tools',
     version=__version__,
     description='collection of pyspark functions written by the ADRUK team',
-    url='http://np2rvlapxx507/data_engineering/de-utils.git',
+    url='http://np2rvlapxx507/hechlj/adruk_tools.git',
     author='Sophie-Louise Courtney, Johannes Hechler, Nathan Shaw, Silvia Bardoni',
     packages=['adruk_tools'],
     install_requires=requirements
