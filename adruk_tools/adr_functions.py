@@ -1838,11 +1838,10 @@ class Lookup:
         # Returning self to allow chaining of methods
         return self
 
-    def add_to_lookup(self, cluster, dataset, dataset_key, dataset_value=None):
+    def add_to_lookup(self, dataset, dataset_key, dataset_value=None):
         """
         :WHAT IT IS: Class method (python function)
         :WHAT IT DOES: Adds a dataset into a lookup.
-        * If the lookup has an empty source, one is created
         * Dataset key must be specified, and will be renamed to the lookup key column name
         * If dataset value is not given, one is created using anonymis_ids function.
         This will be renamed to the lookup value column name
@@ -1860,8 +1859,6 @@ class Lookup:
         in the dataset, in that case it will be called adr_id_new.
 
         :PARAMETERS:
-          :cluster = spark cluster
-            `(datatype = spark cluster, unquoted)`, e.g. spark
           :dataset = spark dataframe to append
             `(datatype = spark dataframe, unquoted)`, e.g. dataframe
           :dataset_key = key column name in the dataset
@@ -1870,8 +1867,7 @@ class Lookup:
             `(datatype = string)`, e.g. 'value'
 
         :EXAMPLE:
-        >>> lookup.add_to_lookup(cluster = spark,
-                                 dataset = input,
+        >>> lookup.add_to_lookup(dataset = input,
                                  dataset_key = 'ids',
                                  dataset_value = 'numVar')
 
@@ -1905,6 +1901,12 @@ class Lookup:
             if dataset.select(dataset_key).distinct().count() != dataset.count():
                 raise ValueError(f"{dataset_key} column doesnt contain unique value")
 
+        # Check the lookup has a source
+        if self.source is None:
+            raise ValueError(
+                "Lookup doesnt have a source. Use create_lookup_source_method"
+            )
+
         # Find keys in dataset that dont exist in the lookup
         # ---------------------------------------------------
 
@@ -1930,7 +1932,7 @@ class Lookup:
 
         # NOTE: assumes anonymise_ids created adr_id not adr_id_new
         if dataset_value is None:
-            dataset = anonymise_ids(cluster, dataset, [dataset_key])
+            dataset = anonymise_ids(dataset, [dataset_key])
             dataset_value = "adr_id"
 
         # Match columns between lookup and dataset
@@ -1963,7 +1965,7 @@ class Lookup:
         # Returning self to allow chaining of methods
         return self
 
-    def remove_from_lookup(self, cluster, keys_to_remove):
+    def remove_from_lookup(self, keys_to_remove):
         """
         :WHAT IT IS: Class method (python function)
         :WHAT IT DOES: Removes rows from a lookup based on a tuple of keys
@@ -1972,13 +1974,11 @@ class Lookup:
         :DATE: March 2022
 
         :PARAMETERS:
-          :cluster = spark cluster
-            `(datatype = spark cluster, unquoted)`, e.g. spark
           :keys_to_remove = a tuple of the keys indicating which rows to remove
             `(datatype = tuple)`, e.g. (1,2,3)
 
         :EXAMPLE:
-        >>> lookup.remove_from_lookup(cluster = spark, keys_to_remove = (1,2,3))
+        >>> lookup.remove_from_lookup(keys_to_remove = (1,2,3))
 
         """
 
