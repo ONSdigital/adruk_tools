@@ -57,38 +57,36 @@ dataset_to_append = test_dataset_two
 
 # Update empty lookup with data from new dataset
 # Different column names taken care off
-empty_lookup.add_to_lookup(cluster = spark, 
-                           dataset = dataset_to_append, 
+empty_lookup.add_to_lookup(dataset = dataset_to_append, 
                            dataset_key = 'first_name',
                            dataset_value = 'nino')
 
 empty_lookup.source.show()
 
-#------------------------------------------------------------------------------------
-## Second example: No source lookup, updated (with creation of source in update)
-## create_lookup_source method takes place in update method as well incase user forgot
-## left method in as could be useful in other workflows involving lookups
+#------------------------------------------------------------------------
+## Second example: No source lookup, flagged when trying to add to lookup
 ## Small hard coded dataset used above
-#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------
 
 # Intialise lookup
 empty_lookup = adr.Lookup(key = 'name', 
                           value = 'id')
 
 
-# Create lookup source
-# Not needed as called in update
-#if empty_lookup.source is None:
-#  empty_lookup.create_lookup_source(spark)
-
-  
 # Get dataset to append
 dataset_to_append = test_dataset_two
 
 
 # Update empty lookup with data from new dataset
-empty_lookup.add_to_lookup(cluster = spark, 
-                           dataset = dataset_to_append, 
+empty_lookup.add_to_lookup(dataset = dataset_to_append, 
+                           dataset_key = 'first_name',
+                           dataset_value = 'nino')
+
+# Above fails as no source for lookup
+empty_lookup.create_lookup_source(spark)
+
+# Try again to update empty lookup with data from new dataset
+empty_lookup.add_to_lookup(dataset = dataset_to_append, 
                            dataset_key = 'first_name',
                            dataset_value = 'nino')
 
@@ -115,8 +113,7 @@ non_empty_lookup = adr.Lookup(key = 'name',
 dataset_to_append = test_dataset_two
 
 # Update empty lookup with data from dataset two, where value has been provided
-non_empty_lookup.add_to_lookup(cluster = spark,
-                               dataset = dataset_to_append,
+non_empty_lookup.add_to_lookup(dataset = dataset_to_append,
                                dataset_key = 'first_name',
                                dataset_value = 'nino')
 
@@ -144,8 +141,7 @@ non_empty_lookup = adr.Lookup(key = 'name',
 dataset_to_append = test_dataset_two
 
 # Update empty lookup with data from dataset two, where value has been provided
-non_empty_lookup.add_to_lookup(cluster = spark,
-                               dataset = dataset_to_append,
+non_empty_lookup.add_to_lookup(dataset = dataset_to_append,
                                dataset_key = 'first_name')
 
 non_empty_lookup.source.show()
@@ -171,8 +167,7 @@ new_data = data.sample(0.05)
 
 
 # create lookup to be appended using anonymise_ids
-source_data_anonymised = adr.anonymise_ids(spark, 
-                                           source_data, 
+source_data_anonymised = adr.anonymise_ids(source_data, 
                                            ['id'])
 
 
@@ -184,13 +179,11 @@ lookup = adr.Lookup(key = 'id',
 
 
 # Try to append with a key that is a different type e.g. BMI is double rather than int
-lookup.add_to_lookup(cluster = spark,
-                     dataset = new_data,
+lookup.add_to_lookup(dataset = new_data,
                      dataset_key = 'bmi')
 
 # Try again with matching key types
-lookup.add_to_lookup(cluster = spark,
-                     dataset = new_data,
+lookup.add_to_lookup(dataset = new_data,
                      dataset_key = 'id')
 
 lookup.source.show()
@@ -217,24 +210,24 @@ df1 = adr.make_test_df(spark)
 # create lookup by chaining
 disco = adr.Lookup(key = 'key', value = 'value')\
 .create_lookup_source(cluster = spark)\
-.add_to_lookup(cluster = spark, dataset = df1, dataset_key = 'strVar', dataset_value = None)
+.add_to_lookup(dataset = df1, dataset_key = 'strVar', dataset_value = None)
 
 
 # try to add key, fails due to different type
-disco.add_to_lookup(spark, df1, 'numVar')
+disco.add_to_lookup(df1, 'numVar')
 
 # try again with another key
 # we see two nulls here when using show(). This is because pysaprk classifies different
 # empty rows into null. If you use toPandas() and look at original data, you see that
 # these two rows actually empty different empty values
-disco.add_to_lookup(spark, df1, 'strNumVar')
+disco.add_to_lookup(df1, 'strNumVar')
 disco.source.show()
 disco.source.toPandas()
 
 # remove set of values
 keys_to_remove = (1,2,3)
 
-disco.remove_from_lookup(spark, keys_to_remove)
+disco.remove_from_lookup(keys_to_remove)
 
 disco.source.show()
 
