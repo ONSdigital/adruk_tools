@@ -1960,7 +1960,7 @@ class Lookup:
         # Returning self to allow chaining of methods
         return self
 
-    def remove_from_lookup(self, cluster, keys_to_remove):
+    def remove_from_lookup(self, keys_to_remove):
         """
         :WHAT IT IS: Class method (python function)
         :WHAT IT DOES: Removes rows from a lookup based on a tuple of keys
@@ -1969,13 +1969,11 @@ class Lookup:
         :DATE: March 2022
 
         :PARAMETERS:
-          :cluster = spark cluster
-            `(datatype = spark cluster, unquoted)`, e.g. spark
           :keys_to_remove = a tuple of the keys indicating which rows to remove
             `(datatype = tuple)`, e.g. (1,2,3)
 
         :EXAMPLE:
-        >>> lookup.remove_from_lookup(cluster = spark, keys_to_remove = (1,2,3))
+        >>> lookup.remove_from_lookup(keys_to_remove = (1,2,3))
 
         """
 
