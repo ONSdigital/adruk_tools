@@ -1838,7 +1838,7 @@ class Lookup:
         # Returning self to allow chaining of methods
         return self
 
-    def add_to_lookup(self, cluster, dataset, dataset_key, dataset_value=None):
+    def add_to_lookup(self, dataset, dataset_key, dataset_value=None):
         """
         :WHAT IT IS: Class method (python function)
         :WHAT IT DOES: Adds a dataset into a lookup.
@@ -1860,8 +1860,6 @@ class Lookup:
         in the dataset, in that case it will be called adr_id_new.
 
         :PARAMETERS:
-          :cluster = spark cluster
-            `(datatype = spark cluster, unquoted)`, e.g. spark
           :dataset = spark dataframe to append
             `(datatype = spark dataframe, unquoted)`, e.g. dataframe
           :dataset_key = key column name in the dataset
@@ -1870,8 +1868,7 @@ class Lookup:
             `(datatype = string)`, e.g. 'value'
 
         :EXAMPLE:
-        >>> lookup.add_to_lookup(cluster = spark,
-                                 dataset = input,
+        >>> lookup.add_to_lookup(dataset = input,
                                  dataset_key = 'ids',
                                  dataset_value = 'numVar')
 
@@ -1930,7 +1927,7 @@ class Lookup:
 
         # NOTE: assumes anonymise_ids created adr_id not adr_id_new
         if dataset_value is None:
-            dataset = anonymise_ids(cluster, dataset, [dataset_key])
+            dataset = anonymise_ids(dataset, [dataset_key])
             dataset_value = "adr_id"
 
         # Match columns between lookup and dataset
