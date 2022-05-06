@@ -5,25 +5,33 @@ import pyspark.sql.types as T
 import pandas as pd
 import numpy as np
 
+# Sample docstring from one function.
+# Keeping here for reference
+# Could be improved
+
+"""
+:WHAT IT IS: PYSPARK FUNCTION
+
+:WHAT IT DOES: This looks at the negative values in the dataset and counts
+them by column.
+:RETURNS: Pandas dataframe with a numerical sum showing negative.
+:OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset.
+:TESTED TO RUN ON: test data in adruk.test.QA
+
+:AUTHOR: David Cobbledick
+:DATE: 01/12/2020
+:VERSION: 0.0.1
+:KNOWN ISSUES: This will not work if there is a boolean datatype.
+
+:PARAMETERS:
+* df = the dataframe that you are calling this on.
+"""
+
+# not used in extended describe - do we keep?
+# -------------------------------------------
+
 
 def pandas_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This provides mean, stddev, min and max in a pandas
-    dataframe on any data.
-    :RETURNS: pandas dataframe with columns containing information on the dataset.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES:
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.describe()
     out = out.toPandas().transpose().reset_index()
@@ -32,49 +40,37 @@ def pandas_describe(df):
     return out
 
 
-def sum_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
+# These could be lumped together
+# ------------------------------
 
-    :WHAT IT DOES: This provides a count of the values in any numeric columns.
-    :RETURNS: Pandas dataframe with a numerical sum.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset.
-    :TESTED TO RUN ON: test data in adruk.test.QA
+# Alot of this code is the same and only changes in two places
+# 1 within F.when()
+# 2 column names in out.columns
+# Could have a function which allows the user to specifiy which describe they
+# would like. This is then used to create the condition in F.when() and
+# as the column name in out.columns.
 
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES:
+# e.g.
 
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
-
-    out = df.groupBy().sum()
-    out = out.toDF(*[x.replace("(", ")").split(")")[1] for x in out.columns])
-    out = out.toPandas().transpose().reset_index()
-    out.columns = ["variable", "sum"]
-    return out
+def describe(df, describe_type):
+    # 1 Make sure user can only enter valid describe type
+    # 2 Create spark statement
+    # if describe_type == "positive":
+    #    out = .....
+    #
+    # if describe_type == "negative":
+    #    out = ....
+    #
+    # Or even better, just create the part in F.when().
+    #
+    # 3 run rest of code
+    # out = out.toPandas()...
+    # out.columns = ["variable", describe_type]
+    # return out
+    pass
 
 
 def positive_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the positive values in the dataset and counts
-    them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing positive.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This will not work if there is a boolean datatype.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.select([F.count(F.when(df[c] > 0, True)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -83,23 +79,6 @@ def positive_describe(df):
 
 
 def negative_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the negative values in the dataset and counts
-    them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing negative.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This will not work if there is a boolean datatype.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.select([F.count(F.when(df[c] < 0, True)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -108,24 +87,6 @@ def negative_describe(df):
 
 
 def zero_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the false values in the dataset and counts
-    them by column.
-    :RETURNS: Pandas dataframe with a boolean false value showing false.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the
-    dataset as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES:
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.select([F.count(F.when(df[c] == 0, True)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -134,24 +95,6 @@ def zero_describe(df):
 
 
 def null_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the null values in the dataset and counts
-    them by column.
-    :RETURNS: Pandas dataframe with a null value showing null.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
-    as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES:
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.select(
         [F.count(F.when(F.col(c).isNull(), c)).alias(c) for c in df.columns]
@@ -162,24 +105,6 @@ def null_describe(df):
 
 
 def nan_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the nan values in the dataset and
-    counts them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing nan.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the
-    dataset as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This will not work if there is a boolean datatype.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.select([F.count(F.when(F.isnan(c), c)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -187,52 +112,7 @@ def nan_describe(df):
     return out
 
 
-def unique_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the unique values in the dataset and counts
-    them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing unique.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the
-    dataset as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES:
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
-
-    df = df.select([F.col(c).cast(T.StringType()).alias(c) for c in df.columns])
-    out = df.agg(*(F.countDistinct(F.col(c)).alias(c) for c in df.columns))
-    out = out.toPandas().transpose().reset_index()
-    out.columns = ["variable", "unique"]
-    return out
-
-
 def blank_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the blank values in the dataset and counts
-    them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing blank.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
-    as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This will not work if there is a boolean datatype.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.select([F.count(F.when(df[c] == "", True)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -241,24 +121,6 @@ def blank_describe(df):
 
 
 def mean_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the mean values in the dataset and counts
-    them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing mean.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
-    as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This will not work if there is a boolean datatype.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.groupBy().mean()
     out = out.toDF(*[x.replace("(", ")").split(")")[1] for x in out.columns])
@@ -267,52 +129,28 @@ def mean_describe(df):
     return out
 
 
+def sum_describe(df):
+
+    out = df.groupBy().sum()
+    out = out.toDF(*[x.replace("(", ")").split(")")[1] for x in out.columns])
+    out = out.toPandas().transpose().reset_index()
+    out.columns = ["variable", "sum"]
+    return out
+
+
+##################################
+# NOTE TO DELETE AS DUP OF MEAN
 def means_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the means values in the dataset and
-    counts them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing means.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the
-    dataset as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This will not work if there is a boolean datatype.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.groupBy().mean()
     out = out.toDF(*[x.replace("(", ")").split(")")[1] for x in out.columns])
     out = out.toPandas().transpose().reset_index()
     out.columns = ["variable", "mean"]
     return out
+##################################
 
 
 def stddev_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: Tihs looks at the std numerical value and provides this
-    in a pandas dataframe.
-    :RETURNS: Pandas dataframe with a std value.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
-    as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: Does not work on boolean data types.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.select([F.stddev(F.col(c)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -321,23 +159,6 @@ def stddev_describe(df):
 
 
 def min_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the minimum values in the dataset and
-    counts them by column.
-    :RETURNS: Pandas dataframe with all of the minimum values detailed under min.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES:
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.select([F.min(F.col(c)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -346,23 +167,6 @@ def min_describe(df):
 
 
 def max_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the max values in the dataset and counts
-    them by column.
-    :RETURNS: Pandas dataframe with a numerical sum showing max.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This will not work if there is a boolean datatype.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = df.select([F.max(F.col(c)).alias(c) for c in df.columns])
     out = out.toPandas().transpose().reset_index()
@@ -370,25 +174,12 @@ def max_describe(df):
     return out
 
 
+# Maybe on there own???
+# Need to think about these ones...
+# ---------------------------------
+
+
 def mode_describe(df):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the boolean values and provides information
-    on the positive boolean figure.
-    :RETURNS: Pandas dataframe with a boolean calculation.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
-    as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This only works on boolean data.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out = [
         (
@@ -409,23 +200,6 @@ def mode_describe(df):
 
 
 def special_describe(df, regex_dict):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES: This looks at the value of the regex matches in the data.
-    :RETURNS: Pandas dataframe with a regex match to count the values of the match.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
-    as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
-
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This requires a regex_dict to be set up.
-
-    :PARAMETERS:
-    * df = the dataframe that you are calling this on.
-    """
 
     out_dict = {}
     for k, v in regex_dict.items():
@@ -444,6 +218,23 @@ def special_describe(df, regex_dict):
             out = out.merge(out_dict.get(out_df), on="variable", how="inner")
 
     return out
+
+
+def unique_describe(df):
+
+    df = df.select([F.col(c).cast(T.StringType()).alias(c) for c in df.columns])
+    out = df.agg(*(F.countDistinct(F.col(c)).alias(c) for c in df.columns))
+    out = out.toPandas().transpose().reset_index()
+    out.columns = ["variable", "unique"]
+    return out
+
+
+###############################
+# update references to functions in here
+# eg
+
+# sum_df = sum_describe(df.select(numeric_columns)) becomes
+# sum_df = describe(df.select(numeric_columns), "sum")
 
 
 def extended_describe(
