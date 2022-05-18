@@ -8,6 +8,39 @@ from pyspark.context import SparkContext as sc
 import pyspark.sql.functions as F
 import pyspark.sql.types as T
 import pyspark.sql.window as W
+import de_utils.catalog_utils._catalog_utils as cu
+
+
+def write_hive_table(database, table_name, dataset, table_properties):
+    """
+    :WHAT IT IS: pyspark function
+    :WHAT IT DOES: writes a hive table that includes mandatory and arbitrary properties"
+    :RETURNS: a hive table in HUE
+    :PARAMETERS:
+      :database = hive database name (datatype = string)
+      :table_name = hive table name (datatype = string)
+      :dataset = dataset we want to write to hive (datatype = string)
+      :table_properties = a dictionary containing mandatory and arbitrary properties
+        :properties are set using key argument name-value pairs.
+        :note, property names are case sensitive.
+        :mandatory properties are 'project' and 'description'
+    :AUTHOR: Silvia Bardoni
+    :DATE: 18/05/2022
+    :VERSION: 0.0.1
+    """
+
+    expected_properties = ['project', 'description']
+
+    # check that all mandatory properties have been defined
+    if not all(item in table_properties.keys() for item in expected_properties):
+        raise ValueError('Check the mandatory properties')
+
+    # write dataframe to hive
+    table_path = f"{database}.{table_name}"
+    dataset.write.saveAsTable(table_path, mode='overwrite')
+
+    # add properties to hive table
+    cu.set_table_properties(database, table_name, **table_properties)
 
 
 def make_dummy_ninos(cluster):
