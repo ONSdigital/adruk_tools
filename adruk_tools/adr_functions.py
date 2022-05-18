@@ -13,27 +13,41 @@ import de_utils.catalog_utils._catalog_utils as cu
 
 def write_hive_table(database, table_name, dataset, table_properties):
     """
-    :WHAT IT IS: pyspark function
-    :WHAT IT DOES: writes a hive table that includes mandatory and arbitrary properties"
-    :RETURNS: a hive table in HUE
+    :LANGUAGE: pyspark
+    :WHAT IT DOES: writes a hive table that includes mandatory and optional properties"
+    :RETURNS: a hive table
     :PARAMETERS:
-      :database = hive database name (datatype = string)
-      :table_name = hive table name (datatype = string)
-      :dataset = dataset we want to write to hive (datatype = string)
-      :table_properties = a dictionary containing mandatory and arbitrary properties
-        :properties are set using key argument name-value pairs.
-        :note, property names are case sensitive.
-        :mandatory properties are 'project' and 'description'
+    * database = hive database name
+      `(datatype = string)`, e.g. 'adruk'
+    * table_name = hive table name
+      `(datatype = string)`, e.g. 'dwp_analysis'
+    * dataset = dataset we want to write to hive
+      `(datatype = spark dataframe)`, e.g. dwp_analysis
+    * table_properties = a dictionary containing mandatory and optional properties
+      - properties are set using key argument name-value pairs.
+      - property names are case sensitive
+      - mandatory properties: 'project', 'description', 'tags'
+      `(datatype = dictionary)`
+    
     :AUTHOR: Silvia Bardoni
     :DATE: 18/05/2022
     :VERSION: 0.0.1
+    
+    :EXAMPLE:
+    >>> write_hive_table(database = 'adruk, 
+                          table_name = 'my_analysis', 
+                          dataset = spark_dataframe, 
+                          table_properties = {'project' : 'dwp',
+                                              'description' : 'draft analysis, delete after project',
+                                              'tags' : 'dwp, tax, delete',
+                                              'retention' : 'delete by end 2022'})
     """
-
-    expected_properties = ['project', 'description']
+    # list of mandatory properties. if any are missing the function fails
+    expected_properties = ['project', 'description', 'tags']
 
     # check that all mandatory properties have been defined
     if not all(item in table_properties.keys() for item in expected_properties):
-        raise ValueError('Check the mandatory properties')
+        raise ValueError('Some mandatory properties are missing')
 
     # write dataframe to hive
     table_path = f"{database}.{table_name}"
