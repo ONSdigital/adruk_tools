@@ -27,7 +27,7 @@ them by column.
 * df = the dataframe that you are calling this on.
 """
 
-# not used in extended describe - do we keep? 
+# not used in extended describe - do we keep?
 # -------------------------------------------
 
 
@@ -40,16 +40,18 @@ def pandas_describe(df):
     return out
 
 ############################
-#add else if type_describe is wrong 
+# add else if type_describe is wrong
 
 def describe(df, describe_type):
+
   """
   :WHAT IT IS: PYSPARK FUNCTION
 
-  :WHAT IT DOES: This looks at the describe_type values in the dataset and counts them by column.
+  :WHAT IT DOES: This looks at the describe_type values in the dataset and counts them
+  :by column.
   :RETURNS: Pandas dataframe with a numerical sum showing negative.
   :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset.
-  :TESTED TO RUN ON:  see above df   ###CHANGE 
+  :TESTED TO RUN ON:  see above df   ###CHANGE
 
   :AUTHOR: Silvia Bardoni
   :DATE: 10/05/2022
@@ -60,107 +62,93 @@ def describe(df, describe_type):
   * df = the dataframe that you are calling this on.
   * describy_type : the statistic of interest (i.e. 'sum' or 'mean' or 'positive')
   """
-  
-  
-  if describe_type == "sum":
-      """
-      :WHAT IT DOES: This provides a count of the values in any numeric columns.
-      """
-      out = df.groupBy().sum()
-      out = out.toDF(*[x.replace("(", ")").split(")")[1] for x in out.columns])
 
+  if describe_type == "sum":
+        """
+        :WHAT IT DOES: This provides a count of the values in any numeric columns.
+        """
+        out = df.groupBy().sum()
+        out = out.toDF(*[x.replace("(", ")").split(")")[1] for x in out.columns])
 
   if describe_type == "positive":
-      """
-      :WHAT IT DOES: This looks at the positive values in the dataset and counts
-      """     
-      out = df.select([F.count(F.when(df[c] > 0, True)).alias(c) for c in df.columns])
-            
-    
+        """
+        :WHAT IT DOES: This looks at the positive values in the dataset and counts
+        """  
+        out = df.select([F.count(F.when(df[c] > 0, True)).alias(c) for c in df.columns])
+           
   if describe_type == "negative":
-      """
-      :WHAT IT DOES: This looks at the negative values in the dataset and counts
-      """      
-      out = df.select([F.count(F.when(df[c] < 0, True)).alias(c) for c in df.columns])
+        """
+        :WHAT IT DOES: This looks at the negative values in the dataset and counts
+        """   
+        out = df.select([F.count(F.when(df[c] < 0, True)).alias(c) for c in df.columns])
         
-    
   if describe_type =='zero':
-      """
-       :WHAT IT DOES: This looks at the false values in the dataset and counts
-       them by column.
-      """      
-      out = df.select([F.count(F.when(df[c] == 0, True)).alias(c) for c in df.columns])
-      
-  
+        """
+         :WHAT IT DOES: This looks at the false values in the dataset and counts
+         them by column.
+        """
+        out = df.select([F.count(F.when(df[c] == 0, True)).alias(c) for c in df.columns])
+
   if describe_type =='null':
-      """
-       :WHAT IT DOES: This looks at the null values in the dataset and counts
-        them by column.
-      """     
-      out = df.select([F.count(F.when(F.col(c).isNull(), c)).alias(c) for c in df.columns])
-      
+        """
+         :WHAT IT DOES: This looks at the null values in the dataset and counts
+          them by column.
+        """
+        out = df.select([F.count(F.when(F.col(c).isNull(), c)).alias(c) for c in df.columns])
 
   if describe_type =='nan':
-      """
-       :WHAT IT DOES: This looks at the NaN values in the dataset and counts
-        them by column.
-      """     
-      out = df.select([F.count(F.when(F.isnan(c), c)).alias(c) for c in df.columns])
-      
-  
+        """
+         :WHAT IT DOES: This looks at the NaN values in the dataset and counts
+          them by column.
+        """    
+        out = df.select([F.count(F.when(F.isnan(c), c)).alias(c) for c in df.columns])
+
   if describe_type =='unique':
-      """
-       :WHAT IT DOES: This looks at the unique values in the dataset and counts
-        them by column.
-      """     
-      out = df.select([F.col(c).cast(T.StringType()).alias(c) for c in df.columns])
-      out = out.agg(*(F.countDistinct(F.col(c)).alias(c) for c in out.columns))
-                
+        """
+         :WHAT IT DOES: This looks at the unique values in the dataset and counts
+          them by column.
+        """
+        out = df.select([F.col(c).cast(T.StringType()).alias(c) for c in df.columns])
+        out = out.agg(*(F.countDistinct(F.col(c)).alias(c) for c in out.columns))
 
   if describe_type == "blank":
-      """
-      :WHAT IT DOES: This looks at the blank values in the dataset and counts
-      """      
-      out = df.select([F.count(F.when(df[c] == "", True)).alias(c) for c in df.columns])
-                   
+        """
+        :WHAT IT DOES: This looks at the blank values in the dataset and counts
+        """  
+        out = df.select([F.count(F.when(df[c] == "", True)).alias(c) for c in df.columns])
 
   if describe_type == "mean":
-      """
-      :WHAT IT DOES: This looks at the mean values in the dataset and counts
-      """      
-      out = df.groupBy().mean()
-      out = out.toDF(*[x.replace("(", ")").split(")")[1] for x in out.columns])
-      
-      
+        """
+        :WHAT IT DOES: This looks at the mean values in the dataset and counts
+        """   
+        out = df.groupBy().mean()
+        out = out.toDF(*[x.replace("(", ")").split(")")[1] for x in out.columns])
+     
   if describe_type == "stddev":
-      """
-      :WHAT IT DOES: This looks at the stddev values in the dataset and counts
-      """      
-      out = df.select([F.stddev(F.col(c)).alias(c) for c in df.columns])
-      
-      
+        """
+        :WHAT IT DOES: This looks at the stddev values in the dataset and counts
+        """  
+        out = df.select([F.stddev(F.col(c)).alias(c) for c in df.columns])
+
   if describe_type == "min":
-      """
-      :WHAT IT DOES: This looks at the minimum values in the dataset and counts
-      """      
-      
-      out = df.select([F.min(F.col(c)).alias(c) for c in df.columns])
-      
-      
+        """
+        :WHAT IT DOES: This looks at the minimum values in the dataset and counts
+        """
+
+        out = df.select([F.min(F.col(c)).alias(c) for c in df.columns])
+          
   if describe_type == "max":
-      """
-      :WHAT IT DOES: This looks at the maximum values in the dataset and counts
-      """      
-      out = df.select([F.max(F.col(c)).alias(c) for c in df.columns])
-      
-                   
-                
+        """
+        :WHAT IT DOES: This looks at the maximum values in the dataset and counts
+        """
+        out = df.select([F.max(F.col(c)).alias(c) for c in df.columns])
+            
   out = out.toPandas().transpose().reset_index()
   out.columns = ["variable", describe_type]
   return out
 
 ########################
-#Testing section  with ad-hoc dataframe for 
+# TESTING SECTION  with ad-hoc dataframe
 
 import adruk_tools.adr_functions as adr
 spark = adr.session_small()
@@ -168,13 +156,13 @@ spark = adr.session_small()
 df = pd.DataFrame({
     "col1": ['A', 'A', None, 'C', ''],
     "col2": [1, 2, 2, None, -2],
-    "col3": [15, 0, -6, -5, 10], 
+    "col3": [15, 0, -6, -5, 10],
 })
 df = spark.createDataFrame(df)
-df.show() 
+df.show()
 
 
-result_sum= describe(df, 'sum') 
+result_sum = describe(df, 'sum')
 result_sum
 result_positive = describe(df, 'positive')
 result_positive
@@ -186,19 +174,104 @@ result_null = describe(df, 'null')
 result_null
 result_nan = describe(df, 'nan')
 result_nan
-result_unique = describe(df,'unique')
+result_unique = describe(df, 'unique')
 result_unique
-result_blank = describe(df,'blank')
+result_blank = describe(df, 'blank')
 result_blank
-result_mean = describe(df,'mean')
+result_mean = describe(df, 'mean')
 result_mean
-result_stddev = describe(df,'stddev')
+result_stddev = describe(df, 'stddev')
 result_stddev
-result_max = describe(df,'max')
+result_max = describe(df, 'max')
 result_max
-result_min = describe(df,'min')
+result_min = describe(df, 'min')
 result_min
 
+
+#####################
+
+def mode_describe(df):
+    """
+    :WHAT IT IS: PYSPARK FUNCTION
+
+    :WHAT IT DOES: This looks at the boolean values and provides information
+    on the positive boolean figure.
+    :RETURNS: Pandas dataframe with a boolean calculation.
+    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
+    as a pandas dataframe.
+    :TESTED TO RUN ON: test data in adruk.test.QA
+
+    :AUTHOR: David Cobbledick
+    :DATE: 01/12/2020
+    :VERSION: 0.0.1
+    :KNOWN ISSUES: This only works on boolean data.
+
+    :PARAMETERS:
+    * df = the dataframe that you are calling this on.
+    """
+
+    out = [
+        (
+            df.groupBy(column)
+            .count()
+            .sort(F.col("count"), ascending=False)
+            .withColumn("variable", F.lit(column))
+            .limit(1)
+            .drop("count")
+            .withColumnRenamed(column, "mode")
+        )
+        for column in df.columns
+    ]
+
+    out = reduce(F.DataFrame.unionAll, out)
+    out = out.toPandas()
+    return out
+
+
+def special_describe(df, regex_dict):
+    """
+    :WHAT IT IS: PYSPARK FUNCTION
+
+    :WHAT IT DOES: This looks at the value of the regex matches in the data.
+    :RETURNS: Pandas dataframe with a regex match to count the values of the match.
+    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
+    as a pandas dataframe.
+    :TESTED TO RUN ON: test data in adruk.test.QA
+
+    :AUTHOR: David Cobbledick
+    :DATE: 01/12/2020
+    :VERSION: 0.0.1
+    :KNOWN ISSUES: This requires a regex_dict to be set up.
+
+    :PARAMETERS:
+    * df = the dataframe that you are calling this on.
+    """
+
+    out_dict = {}
+    for k, v in regex_dict.items():
+        out = df.select(
+            [F.count(F.when(df[c].rlike(v), True)).alias(c) for c in df.columns]
+        )
+        out = out.toPandas().transpose().reset_index()
+        out.columns = ["variable", k]
+        out_dict[k] = out
+
+    out_dfs = list(out_dict)
+    out = out_dict.get(out_dfs[0])
+
+    if len(out_dfs) > 1:
+        for out_df in out_dfs[1:]:
+            out = out.merge(out_dict.get(out_df), on="variable", how="inner")
+
+    return out
+
+###############################
+
+result_mode = mode_describe(df)
+result_mode
+
+result_special = special_describe(df, {'regex1': '[A]', 'regex2': '[C]'})
+result_special
 
 
 ###############################
