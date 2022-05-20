@@ -11,29 +11,55 @@ import pyspark.sql.window as W
 import de_utils.catalog_utils._catalog_utils as cu
 
 
-def write_hive_table(database, table_name, dataset, table_properties):
+def write_hive_table(database, table_name:str, dataset, table_properties:dict):
     """
-    :LANGUAGE: pyspark
-    :WHAT IT DOES: writes a hive table that includes mandatory and optional properties"
-    :RETURNS: a hive table
-    :PARAMETERS:
-    * database = hive database name
-      `(datatype = string)`, e.g. 'adruk'
-    * table_name = hive table name
-      `(datatype = string)`, e.g. 'dwp_analysis'
-    * dataset = dataset we want to write to hive
-      `(datatype = spark dataframe)`, e.g. dwp_analysis
-    * table_properties = a dictionary containing mandatory and optional properties
-      - properties are set using key argument name-value pairs.
-      - property names are case sensitive
-      - mandatory properties: 'project', 'description', 'tags'
-      `(datatype = dictionary)`
+    Language
+    ----------
+    pyspark
     
-    :AUTHOR: Silvia Bardoni
-    :DATE: 18/05/2022
-    :VERSION: 0.0.1
     
-    :EXAMPLE:
+    What it does
+    ----------    
+    writes a hive table that includes mandatory and optional properties"
+    
+    
+    Return
+    ----------
+    hive table
+
+
+    Parameters
+    ----------
+    database : str
+      hive database name, e.g. 'adruk'
+    table_name: str
+      hive table name, e.g. 'dwp_analysis'
+    dataset : spark dataframe
+       dataset we want to write to hive, e.g. dwp_analysis
+    table_properties : dict
+      a dictionary with mandatory and optional properties
+      * properties are set using key argument name-value pairs.
+      * property names are case sensitive
+      * mandatory properties: 'project', 'description', 'tags'
+    
+    
+    Author
+    ----------
+    Silvia Bardoni
+    
+    
+    Date
+    ----------
+    18/05/2022
+    
+    
+    Version
+    ----------
+    0.0.1
+    
+    
+    Example
+    ----------    
     >>> write_hive_table(database = 'adruk, 
                           table_name = 'my_analysis', 
                           dataset = spark_dataframe, 
