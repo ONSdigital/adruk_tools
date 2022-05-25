@@ -308,7 +308,7 @@ def extended_describe(
         if len(numeric_columns) == 0:
             out["sum"] = None
         else:
-            sum_df = sum_describe(df.select(numeric_columns))
+            sum_df = describe(df.select(numeric_columns), 'sum')
             out = out.merge(sum_df, on="variable", how="left")
         out_columns.append("sum")
 
@@ -316,25 +316,25 @@ def extended_describe(
         if len(numeric_columns) == 0:
             out["positive"] = None
         else:
-            positive_df = positive_describe(df.select(numeric_columns))
+            positive_df = describe(df.select(numeric_columns), 'positive')
             out = out.merge(positive_df, on="variable", how="left")
 
     if negative_ is True or all_ is True:
         if len(numeric_columns) == 0:
             out["negative"] = None
         else:
-            negative_df = negative_describe(df.select(numeric_columns))
+            negative_df = describe(df.select(numeric_columns), 'negative')
             out = out.merge(negative_df, on="variable", how="left")
 
     if zero_ is True or all_ is True:
         if len(numeric_columns) == 0:
             out["zero"] = None
         else:
-            zero_df = zero_describe(df.select(numeric_columns))
+            zero_df = describe(df.select(numeric_columns), 'zero')
             out = out.merge(zero_df, on="variable", how="left")
 
     if null_ is True or active_columns_ is True or count_ is True or all_ is True:
-        null_df = null_describe(df)
+        null_df = describe(df, 'null')
         out = out.merge(null_df, on="variable", how="left")
 
     if active_columns_ is True or all_ is True:
@@ -356,11 +356,11 @@ def extended_describe(
         if len(numeric_columns) == 0:
             out["NaN"] = None
         else:
-            nan_df = nan_describe(df.select(numeric_columns))
+            nan_df = describe(df.select(numeric_columns), 'nan')
             out = out.merge(nan_df, on="variable", how="left")
 
     if unique_ is True or all_ is True:
-        unique_df = unique_describe(df)
+        unique_df = describe(df, 'unique')
         out = out.merge(unique_df, on="variable", how="left")
         out_columns.append("unique")
 
@@ -369,14 +369,14 @@ def extended_describe(
         out = out.merge(special_df, on="variable", how="left")
 
     if blank_ is True or all_ is True:
-        blank_df = blank_describe(df)
+        blank_df = describe(df, 'blank')
         out = out.merge(blank_df, on="variable", how="left")
 
     if mean_ is True or all_ is True:
         if len(numeric_columns) == 0:
             out["mean"] = None
         else:
-            mean_df = mean_describe(df.select(numeric_columns))
+            mean_df = describe(df.select(numeric_columns), 'mean')
             out = out.merge(mean_df, on="variable", how="left")
         out_columns.append("mean")
 
@@ -384,18 +384,18 @@ def extended_describe(
         if len(numeric_columns) == 0:
             out["stddev"] = None
         else:
-            stddev_df = stddev_describe(df.select(numeric_columns))
+            stddev_df = describe(df.select(numeric_columns), 'stddev')
             out = out.merge(stddev_df, on="variable", how="left")
         out_columns.append("stddev")
 
     if min_ is True or range_ is True or all_ is True:
-        min_df = min_describe(df)
+        min_df = describe(df, 'min')
         out = out.merge(min_df, on="variable", how="left")
         if min_ is True or all_ is True:
             out_columns.append("min")
 
     if max_ is True or range_ is True or all_ is True:
-        max_df = max_describe(df)
+        max_df = describe(df, 'max')
         out = out.merge(max_df, on="variable", how="left")
         if max_ is True or all_ is True:
             out_columns.append("max")
@@ -437,26 +437,26 @@ def extended_describe(
         length_df = length_df.toDF(*[x[:-2] for x in length_df.columns])
 
     if length_mean_ is True or all_ is True:
-        mean_length_df = mean_describe(length_df)
+        mean_length_df = describe(length_df, 'mean')
         mean_length_df.columns = ["variable", "length_mean"]
         out = out.merge(mean_length_df, on="variable", how="left")
         out_columns.append("length_mean")
 
     if length_stddev_ is True or all_ is True:
-        stddev_length_df = max_describe(length_df)
+        stddev_length_df = describe(length_df, 'max')
         stddev_length_df.columns = ["variable", "length_stddev"]
         out = out.merge(stddev_length_df, on="variable", how="left")
         out_columns.append("length_stddev")
 
     if length_min_ is True or length_range_ is True or all_ is True:
-        min_length_df = min_describe(length_df)
+        min_length_df = describe(length_df, 'min')
         min_length_df.columns = ["variable", "length_min"]
         out = out.merge(min_length_df, on="variable", how="left")
         if length_min_ is True or all_ is True:
             out_columns.append("length_min")
 
     if length_max_ is True or length_range_ is True or all_ is True:
-        max_length_df = max_describe(length_df)
+        max_length_df = describe(length_df, 'max')
         max_length_df.columns = ["variable", "length_max"]
         out = out.merge(max_length_df, on="variable", how="left")
         if length_max_ is True or all_ is True:
