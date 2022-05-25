@@ -9,14 +9,56 @@ import numpy as np
 def describe(df, describe_type):
     """Provides summary statistics for a spark data frame.
 
-    Creates a pandas data frame of summary statistics based on the describe type
-    provided - FOR EACH COLUMN??? Describe types are as follows:
+    Creates a pandas data frame of summary statistics for each column
+    based on the describe type provided. Certain describe types have restricted
+    behaviours and are explained below: Valid describe types are as follows:
 
     **sum**
 
-    | Provides a count of the values in any numeric columns.
+    Provides a count of the values for numeric columns only. Other column types
+    will not be presented in the pandas data frame.
 
     **positive**
+
+    Will fail if the spark dataframe contains boolean column type. Will mark as zero
+    for string column type.
+
+    **negative**
+
+    Will fail if the spark dataframe contains boolean column type. Will mark as zero
+    for string column type.
+
+    **zero**
+
+    Will count False as zero in boolean column type.
+
+    **null**
+
+    Will mark as zero for numeric column types.
+
+    **nan**
+
+    Will fail if the spark dataframe contains booleon column type.
+    Only marks on numeric types. Others types will be zero.
+
+    **unique**
+
+    **blank**
+
+    Only counts for string column types. Others will be zero.
+
+    **mean**
+
+    Only counts for numeric column types.
+
+    **stddev**
+
+    Will fail if the spark dataframe contains boolean column type. Only counts for
+    numeric column types.
+
+    **max**
+
+    **min**
 
     Parameters
     ----------
@@ -39,9 +81,7 @@ def describe(df, describe_type):
     Notes
     -----
     Built by Silvia Bardoni and Nathan Shaw and based on previous code by David
-    Cobbledick
-
-    :KNOWN ISSUES: This will not work if there is a boolean datatype.    #TO CHECK!!
+    Cobbledick.
     """
 
     # Valid describe types
