@@ -11,22 +11,19 @@ import pyspark.sql.window as W
 import de_utils.catalog_utils._catalog_utils as cu
 
 
-def write_hive_table(database, table_name:str, dataset, table_properties:dict):
+def write_hive_table(database: str, table_name: str, dataset, table_properties: dict):
     """
     Language
     ----------
     pyspark
-    
-    
+
     What it does
-    ----------    
+    ----------
     writes a hive table that includes mandatory and optional properties"
-    
-    
+
     Return
     ----------
     hive table
-
 
     Parameters
     ----------
@@ -41,32 +38,30 @@ def write_hive_table(database, table_name:str, dataset, table_properties:dict):
       * properties are set using key argument name-value pairs.
       * property names are case sensitive
       * mandatory properties: 'project', 'description', 'tags'
-    
-    
+
+
     Author
     ----------
     Silvia Bardoni
-    
-    
+
     Date
     ----------
     18/05/2022
-    
-    
+
     Version
     ----------
     0.0.1
-    
-    
+
     Example
-    ----------    
-    >>> write_hive_table(database = 'adruk, 
-                          table_name = 'my_analysis', 
-                          dataset = spark_dataframe, 
-                          table_properties = {'project' : 'dwp',
-                                              'description' : 'draft analysis, delete after project',
-                                              'tags' : 'dwp, tax, delete',
-                                              'retention' : 'delete by end 2022'})
+    ----------
+    >>> write_hive_table(database = 'adruk,
+                         table_name = 'my_analysis',
+                         dataset = spark_dataframe,
+                         table_properties = {
+                            'project' : 'dwp',
+                            'description' : 'draft analysis, delete after project',
+                            'tags' : 'dwp, tax, delete',
+                            'retention' : 'delete by end 2022'})
     """
     # list of mandatory properties. if any are missing the function fails
     expected_properties = ['project', 'description', 'tags']
