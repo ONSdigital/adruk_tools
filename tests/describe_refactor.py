@@ -24,6 +24,7 @@ result = dsc.describe(df, 'random')
 # Test individual describe types
 # wont display columns for string or boolean columns
 result_sum = dsc.describe(df, 'sum')
+result_positive = dsc.describe(df['col1', 'col2', 'col3'], 'sum')
 result_sum
 
 # Fails on boolean column; marks zero for string column
@@ -72,7 +73,7 @@ result_min = dsc.describe(df, 'min')
 result_min
 
 
-# Test two leftover describe functions
+# Fails on Boolean. Only counts for numeric.
 result_mode = dsc.mode_describe(df['col1', 'col2', 'col3'])
 result_mode
 
@@ -83,6 +84,64 @@ result_special
 result_extended = dsc.extended_describe(
     df['col1', 'col2', 'col3'],
     all_=False,
+    active_columns_=False,
+    positive_=True,
+    sum_=True,
+    negative_=True,
+    zero_=True,
+    null_=True,
+    nan_=True,
+    count_=True,
+    unique_=True,
+    blank_=True,
+    mean_=True,
+    stddev_=True,
+    length_mean_=True,
+    min_=True,
+    max_=True,
+    range_=True,
+    mode_=True,
+    axis_=0
+)
+result_extended
+
+# Test extended describe with all_ activated
+result_extended = dsc.extended_describe(
+    df['col1', 'col2', 'col3'],
+    all_=True
+)
+result_extended
+
+
+# Test extended describe with special dictionary
+result_extended = dsc.extended_describe(
+    df['col1', 'col2', 'col3'],
+    all_=False,
+    active_columns_=True,
+    nan_=True,
+    count_=True,
+    percent_=True,
+    blank_=True,
+    mean_=True,
+    min_=True,
+    max_=True,
+    range_=True,
+    mode_=True,
+    axis_=0,
+    special_=True,
+    special_dict_={'regex1': '[A]', 'regex2': '[C]'}   
+)
+result_extended
+
+
+# Test extended describe with fillna
+# !! Not what I expected. The fillna is done on the out: why? !!
+
+result_extended = dsc.extended_describe(
+    df['col1', 'col2', 'col3'],
+    all_=False,
+    fillna_= 7,
+    active_columns_=False,
     positive_=True,
     sum_=True,
     negative_=True,
@@ -95,9 +154,11 @@ result_extended = dsc.extended_describe(
     blank_=True,
     mean_=True,
     stddev_=True,
+    length_mean_=True,
     min_=True,
     max_=True,
     range_=True,
-    mode_=True
+    mode_=True,
+    axis_=0
 )
 result_extended

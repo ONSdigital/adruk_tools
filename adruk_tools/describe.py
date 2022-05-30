@@ -11,48 +11,39 @@ def describe(df, describe_type):
 
     Creates a pandas data frame of summary statistics for each column
     based on the describe type provided. Certain describe types have restricted
-    behaviours and are explained below: Valid describe types are as follows:
+    behaviours and are explained below. Valid describe types are as follows:
 
     **sum**
-
     Provides a count of the values for numeric columns only. Other column types
     will not be presented in the pandas data frame.
 
     **positive**
-
     Will fail if the spark dataframe contains boolean column type. Will mark as zero
     for string column type.
 
     **negative**
-
     Will fail if the spark dataframe contains boolean column type. Will mark as zero
     for string column type.
 
     **zero**
-
     Will count False as zero in boolean column type.
 
     **null**
-
     Will mark as zero for numeric column types.
 
     **nan**
-
     Will fail if the spark dataframe contains booleon column type.
     Only marks on numeric types. Others types will be zero.
 
     **unique**
 
     **blank**
-
     Only counts for string column types. Others will be zero.
 
     **mean**
-
     Only counts for numeric column types.
 
     **stddev**
-
     Will fail if the spark dataframe contains boolean column type. Only counts for
     numeric column types.
 
@@ -146,17 +137,15 @@ def mode_describe(df):
     """
     :WHAT IT IS: PYSPARK FUNCTION
 
-    :WHAT IT DOES: This looks at the boolean values and provides information
-    on the positive boolean figure.
-    :RETURNS: Pandas dataframe with a boolean calculation.
+    :WHAT IT DOES: This looks at the value that appears most often in a column
+    :RETURNS: Pandas dataframe with the mode of each column
     :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
     as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
 
     :AUTHOR: David Cobbledick
     :DATE: 01/12/2020
     :VERSION: 0.0.1
-    :KNOWN ISSUES: This only works on boolean data.
+    :KNOWN ISSUES: This does not work on boolean data.
 
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
@@ -165,7 +154,7 @@ def mode_describe(df):
     out = [
         (
             df.groupBy(column)
-            .count()
+            .count().filter("count > 1")
             .sort(F.col("count"), ascending=False)
             .withColumn("variable", F.lit(column))
             .limit(1)
@@ -257,7 +246,6 @@ def extended_describe(
     :RETURNS: Pandas dataframe with information on the data in the specified dataframe.
     :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset as
     a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.describe
 
     :AUTHOR: David Cobbledick
     :DATE: 01/12/2020
@@ -267,36 +255,37 @@ def extended_describe(
 
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
-    * all = chooses that all are true and overwrites calling subfunctions.
-    * trim = this imports the trim function to be used a sub functon.
-    * Active_columns =
-    * Sum = The function sum_describe gets called in here.
-    * Positive = The function posiitve_describe gets called in here.
-    * Negative = The function negative_decribe gets called in here.
-    * Zero = The function zero_describe gets called in here.
-    * Null = The function null_describe gets called in here.
-    * Nan = The function nan_describe gets called in here.
-    * count = The function count gets called in here.
-    * Unique = The function unique_descrbie gets called in here.
-    * Special = The function special_describe gets called in here.
-    * Blank = The function blank_describe gets called in here.
-    * Mean = The function mean_describe gets called in here.
-    * Stddev = The function stddev_describe gets called in here.
-    * Min = The function min_descrie gets called in here.
-    * Max = The function max_describe gets called in here.
-    * Range =
-    * Mode = The function mode_descrie gets called in here.
-    * Length-mean = The length of the mean in mean_describe is set here.
-    * Length-stddev = This sets the default ofr the length of Stddev.
-    * Length-min = The function here describes the lenght of the min_describe function.
-    * Length-max = The funciton defines the length of the max-describe function.
-    * Length-range =
-    * Length-mode = The length of the mode_describe function is set here.
-    * Special-dict =
-    * Percent =
-    * Pandas =
-    * Axis =
-    * Fillna =
+    * axis = orientates output depending on user argument
+    * fillna = null values are replaced with a chosen value 
+    *
+    * If the following parameteres are TRUE:
+    * all = overwrites calling subfunctions and sets all the stats on
+    * trim =  imports the trim function to be used a sub function.
+    * active_columns = the output will include count of active and null columns.
+    * sum = the function sum_describe gets called.
+    * positive = the function positve_describe gets called.
+    * negative = the function negative_decribe gets called.
+    * zero = the function zero_describe gets called.
+    * null = the function null_describe gets called.
+    * Nan = the function nan_describe gets called.
+    * count = the function count gets called.
+    * unique = the function unique_descrbie gets called.
+    * special = the function special_describe gets called.
+    * blank = the function blank_describe gets called.
+    * mean = the function mean_describe gets called.
+    * stddev = the function stddev_describe gets called.
+    * min = the function min_descrie gets called.
+    * max = the function max_describe gets called.
+    * range = the range is calculated.
+    * mode = the function mode_describe gets called.
+    * length_mean = the length mean for each column.
+    * length_stddev = the length standard deviation for each column is calculated.
+    * length_min = the length minimum for each column is calculated.
+    * length_max = the length maximum for each column is calculated.
+    * length_range = the length range for each column is calculated.
+    * length_mode = the length mode for each column is calculated.
+    * special_dict = the funtion special_describe gets called on the dictionary
+    * percent = adds a function count is in percentage
 
     :EXAMPLE:
     raw_describe = extended_describe(raw_df,
