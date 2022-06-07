@@ -12,48 +12,31 @@ import de_utils.catalog_utils._catalog_utils as cu
 
 
 def write_hive_table(database: str, table_name: str, dataset, table_properties: dict):
-    """
-    Language
-    ----------
-    pyspark
+    """Write hive table with properties.
 
-    What it does
-    ----------
-    writes a hive table that includes mandatory and optional properties"
+    Write hive table with three mandatory table properties
+    ('project', 'description' and 'tags') and any number of arbitrary
+    properties, set using key argument name-value pairs.
 
-    Return
-    ----------
-    hive table
+    Written by Silvia Bardoni.
+
+    Notes
+    -----
+    Property names are case-sensitive.
 
     Parameters
     ----------
     database : str
-      hive database name, e.g. 'adruk'
-    table_name: str
-      hive table name, e.g. 'dwp_analysis'
+        Database location for table.
+    table_name : str
+        Name for table.
     dataset : spark dataframe
-       dataset we want to write to hive, e.g. dwp_analysis
+        Dataset to write to Hive.
     table_properties : dict
-      a dictionary with mandatory and optional properties
-      * properties are set using key argument name-value pairs.
-      * property names are case sensitive
-      * mandatory properties: 'project', 'description', 'tags'
+        Key-value pairs for table properties to set.
 
-
-    Author
-    ----------
-    Silvia Bardoni
-
-    Date
-    ----------
-    18/05/2022
-
-    Version
-    ----------
-    0.0.1
-
-    Example
-    ----------
+    Examples
+    --------
     >>> write_hive_table(database = 'adruk,
                          table_name = 'my_analysis',
                          dataset = spark_dataframe,
