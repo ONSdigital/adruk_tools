@@ -12,40 +12,40 @@ import de_utils.catalog_utils._catalog_utils as cu
 
 
 def write_hive_table(database: str, table_name: str, dataset, table_properties: dict):
-    """Write hive table with properties.
-
-    Write hive table with three mandatory table properties
-    ('project', 'description' and 'tags') and any number of arbitrary
-    properties, set using key argument name-value pairs.
-
-    Written by Silvia Bardoni.
-
-    Notes
-    -----
-    Property names are case-sensitive.
-
-    Parameters
-    ----------
-    database : str
-        Database location for table.
-    table_name : str
-        Name for table.
-    dataset : spark dataframe
-        Dataset to write to Hive.
-    table_properties : dict
-        Key-value pairs for table properties to set.
-
-    Examples
-    --------
-    >>> write_hive_table(database = 'adruk,
-                         table_name = 'my_analysis',
-                         dataset = spark_dataframe,
-                         table_properties = {
-                            'project' : 'dwp',
-                            'description' : 'draft analysis, delete after project',
-                            'tags' : 'dwp, tax, delete',
-                            'retention' : 'delete by end 2022'})
     """
+    :LANGUAGE: pyspark
+
+    :WHAT IT DOES: writes a hive table that includes mandatory and optional properties
+
+    :RETURNS: a hive table
+
+    :PARAMETERS:
+    * database = hive database name
+      `(datatype = string)`, e.g. 'adruk'
+    * table_name = hive table name
+      `(datatype = string)`, e.g. 'dwp_analysis'
+    * dataset = dataset we want to write to hive
+      `(datatype = spark dataframe)`, e.g. dwp_analysis
+    * table_properties = a dictionary containing mandatory and optional properties
+      - properties are set using key argument name-value pairs.
+      - property names are case sensitive
+      - mandatory properties: 'project', 'description', 'tags'
+      `(datatype = dictionary)`
+
+    :AUTHOR: Silvia Bardoni
+    :DATE: 18/05/2022
+    :VERSION: 0.0.1
+
+    :EXAMPLE:
+    >>> write_hive_table(database = 'adruk,
+                          table_name = 'my_analysis',
+                          dataset = spark_dataframe,
+                          table_properties = {'project' : 'dwp',
+                                              'description' : 'text',
+                                              'tags' : 'dwp, tax, delete',
+                                              'retention' : 'delete by end 2022'})
+    """
+
     # list of mandatory properties. if any are missing the function fails
     expected_properties = ['project', 'description', 'tags']
 
