@@ -30,7 +30,7 @@ result = dsc.describe(df, 'random')
 # Test individual describe types
 # wont display columns for string or boolean columns
 result_sum = dsc.describe(df, 'sum')
-result_positive = dsc.describe(df['col1', 'col2', 'col3'], 'sum')
+result_sum = dsc.describe(df['col1', 'col2', 'col3'], 'sum')
 result_sum
 
 # Fails on boolean column; marks zero for string column
