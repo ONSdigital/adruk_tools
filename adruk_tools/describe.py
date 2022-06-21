@@ -171,21 +171,21 @@ def mode_describe(df):
 
 def special_describe(df, regex_dict):
     """
-    :WHAT IT IS: PYSPARK FUNCTION
+    :LANGUAGE: pyspark
 
-    :WHAT IT DOES: This looks at the value of the regex matches in the data.
+    :WHAT IT DOES: checks if columns of a spark dataframe confirm to regular expressions the user specifies.
     :RETURNS: Pandas dataframe with a regex match to count the values of the match.
-    :OUTPUT VARIABLE TYPE: Out 1: Information on the data you have in the dataset
-    as a pandas dataframe.
-    :TESTED TO RUN ON: test data in adruk.test.QA
+    :OUTPUT VARIABLE TYPE: pandas dataframe
 
-    :AUTHOR: David Cobbledick
-    :DATE: 01/12/2020
-    :VERSION: 0.0.1
-    :KNOWN ISSUES: This requires a regex_dict to be set up.
+    :AUTHOR: David Cobbledick, Johannes Hechler
+    :DATE: 21/06/2022
+    :VERSION: 0.0.2
+    :CHANGES FROM PREVIOUS VERSION: clarified docstring
+    :KNOWN ISSUES: expects a python dictionary with definitions
 
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
+    * regex_dict = Python dict with regular expressions for categories the user wants to define
     """
 
     out_dict = {}
@@ -285,24 +285,23 @@ def extended_describe(
     * length_max = the length maximum for each column is calculated.
     * length_range = the length range for each column is calculated.
     * length_mode = the length mode for each column is calculated.
-    * special_dict = the funtion special_describe gets called on the dictionary
+    * special_dict_ = the funtion special_describe gets called on the dictionary
     * percent = adds a function count is in percentage
 
     :EXAMPLE:
     raw_describe = extended_describe(raw_df,
-                                    all_=False,
-                                    trim_=True,
-                                    active_columns_=True,
-                                    null_=True,
-                                    nan_=True,
-                                    special_=True,
-                                    special_dict_=nulls_dict,
-                                    unique_=True,
-                                    length_max_=False,
-                                    percent_=False,
-                                    pandas_=True,
-                                    axis_=1,
-                                    fillna_=0)
+                                    all_ = False,
+                                    trim_ = True,
+                                    active_columns_ = True,
+                                    null_ = True,
+                                    nan_ = True,
+                                    special_ = True,
+                                    special_dict_ = {'key' : 'regex'},
+                                    unique_ = True,
+                                    length_max_ = False,
+                                    percent_ = False,
+                                    axis_ = 1,
+                                    fillna_ = 0)
     """
 
     # default output and determines numeric columns - so that numeric methodologies are
