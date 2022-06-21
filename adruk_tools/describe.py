@@ -256,10 +256,11 @@ def extended_describe(
     :PARAMETERS:
     * df = the dataframe that you are calling this on.
     * axis = orientates output depending on user argument
-    * fillna = null values are replaced with a chosen value 
+    * fillna = null values are replaced with a chosen value
     *
     * If the following parameteres are TRUE:
     * all = overwrites calling subfunctions and sets all the stats on
+      (apart from trim).
     * trim =  imports the trim function to be used a sub function.
     * active_columns = the output will include count of active and null columns.
     * sum = the function sum_describe gets called.
@@ -329,7 +330,13 @@ def extended_describe(
     # option to trim whitespace
 
     if trim_ is True:
-        df = df.select([F.trim(F.col(c)).alias(c) for c in df.columns])
+        # Must not trim numerical columns as it converts them to list
+        # and introduces erros further down the line.
+        cols_to_trim = list(set(df.columns) - set(numeric_columns))
+        df = df.select([F.trim(F.col(c)).alias(c)
+                        if c in cols_to_trim
+                        else F.col(c).alias(c)
+                        for c in df.columns])
 
     # application of measure sub functions depending on user arguments
 

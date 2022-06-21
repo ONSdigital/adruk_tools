@@ -88,7 +88,7 @@ result_special
 
 # Test extended describe
 result_extended = dsc.extended_describe(
-    df['col1', 'col2', 'col3'],
+    df,
     all_=False,
     active_columns_=False,
     positive_=True,
@@ -112,9 +112,12 @@ result_extended = dsc.extended_describe(
 result_extended
 
 # Test extended describe with all_ activated
+# NOTE - this (for some reason) doesnt activate trim_ argument, so doing so
+# manually below
 result_extended = dsc.extended_describe(
     df['col1', 'col2', 'col3'],
-    all_=True
+    all_=True,
+    trim_=True
 )
 result_extended
 
