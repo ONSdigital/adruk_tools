@@ -63,7 +63,7 @@ pipeline {
 //                unstash name: 'Checkout'
 //                
 //                sh 'pip3 install pypandoc==1.8.1'
-//                sh 'pip3 install pyspark==2.4.0'
+//                sh 'pip3 install pyspark==3.2.1'
 //                sh 'pip3 install -r requirements.txt'
 //                sh 'pip3 install -e .'
 //                // Running coverage first runs the tests
@@ -96,7 +96,7 @@ pipeline {
                 colourText('info', "Building Python package.")
                 unstash name: 'Checkout'
                 sh 'pip3 install pypandoc==1.8.1'
-                sh 'pip3 install pyspark==2.4.0'
+                sh 'pip3 install pyspark==3.2.1'
                 sh 'pip3 install wheel==0.29.0'
                 sh 'python3 setup.py build bdist_wheel'
                 
