@@ -62,7 +62,7 @@ pipeline {
 //                colourText('info', "Running unit tests and code coverage.")
 //                unstash name: 'Checkout'
 //                
-//                sh 'pip3 install pypandoc'
+//                sh 'pip3 install pypandoc==1.8.0'
 //                sh 'pip3 install pyspark==2.4.0'
 //                sh 'pip3 install -r requirements.txt'
 //                sh 'pip3 install -e .'
