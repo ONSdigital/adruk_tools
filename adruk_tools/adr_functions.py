@@ -455,13 +455,12 @@ def update_file_later_with_template(
 
         # remove unneeded columns from template
         template = template.drop(drop_from_template, axis=1)
-        print(template)
+
         # read in the file to update and convert to pandas
         file_to_update = pd.read_csv(file_path)
 
         # Keep only columns of interest
         file_to_update = file_to_update[keep_before_join]
-        print(file_to_update)
 
         # join the file onto the template.
         # keeps only records with values that exist in the template's join variable.
