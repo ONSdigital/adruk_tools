@@ -374,6 +374,8 @@ def update_file_with_template(file_path,
         # remove unneeded columns from template
         if drop_from_template is not None:
             template = template.drop(drop_from_template, axis=1)
+        else:
+            template = template[join_variable]
 
         # read in the file to update and convert to pandas
         file_to_update = pd.read_csv(file_path)
