@@ -2,6 +2,7 @@ import os
 import random
 import pydoop.hdfs as pdh
 import pandas as pd
+import pathlib
 
 from pyspark.sql import SparkSession
 from pyspark.context import SparkContext as sc
@@ -314,95 +315,89 @@ def equalise_file_and_folder_name(path):
     pdh.rename(path, path_new)  # do the actual renaming
 
 
-def update_file(cluster, file_path, template, join_variable):
+def update_file_with_template(file_path, template, join_variable):
     """
-    :WHAT IT IS: pyspark function
+    :WHAT IT IS: python function
     :WHAT IT DOES:
     * tries to update a file, if it exists, with information from a template.
     Else it writes out the template in its place.
-    :RETURNS: updated input file, or template
-    :OUTPUT TYPE: .csv file on HDFS, on 1 partition
+    :RETURNS: updated input file, or template.
+    :OUTPUT TYPE: csv
 
     :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler
     :DATE: 15/10/2021
     :VERSION: 0.1
 
-    :CAVEATS:
-    * file_path: there must be no directory named like file_path + '_temp'
-    * file_path: only accepts csv
-    * assumes files have headers
-    * assumes both datasets have the join variable under the same name
-    * assumes template is already in memory
+    :ASSUMPTIONS:
+    * files have headers
+    * both datasets have the join variable under the same name
 
     :PARAMETERS:
-      :cluster = name of the spark cluster to use:
-        `(datatype = session name, unquoted)`, e.g. spark
       :file_path = full path to the file that you want to update:
-        `(datatype = string, without extension)`,
-        e.g. '/dapsen/workspace_zone/my_project/file'
-      :template = name of the spark dataframe that you want to update from:
+        `(datatype = string)`,
+        e.g. '/home/cdsw/test_file.csv'
+      :template = name of the pandas dataframe that you want to update from:
         `(datatype = dataframe name, unquoted)`, e.g. template_df
       :join_variable = name(s) of the variable to join input file and template on:
-        `(datatype = list of string)`, e.g. ['nino']
+        `(datatype = string)`, e.g. 'nino'
 
     :EXAMPLE:
-    >>> update_file( cluster = spark,
-                      file_path = '/dap/project/02_specified_metadata/old_data',
-                      template = good_order,
-                      join_variable = ['nhs_number']
-                      )
+    >>> update_file(file_path = '/home/cdsw/test_file.csv',
+                    template = good_order,
+                    join_variable = 'nhs_number'
+                    )
     """
+    # Check file is a csv
+    if pathlib.Path(file_path).suffix != ".csv":
+        raise ValueError('Function can only be used with CSV file.')
 
-    # check if the file actually exists, and if it does then...
-    if pdh.path.exists(file_path):
+    # Check if the file actually exists, and if it does then...
+    if os.path.exists(file_path):
 
         # subset the template to only the join variable.
         # NB the template controls the number of rows left, it doesn't add columns
-        template = template.select(join_variable)
+        template = template[join_variable]
 
-        # read in the file to update from HDFS
-        file_to_update = (
-            cluster.read.format("csv")
-            .option("header", "true")
-            .option("inferSchema", "True")
-            .load(file_path)
-        )
+        # read in the file to update and convert to pandas
+        file_to_update = pd.read_csv(file_path)
 
         # join the file onto the template.
-        updated_file = template.join(
-            file_to_update, on=join_variable, how="left"
-        )  # keeps only records with values that exist in the template's join variable.
+        # keeps only records with values that exist in the template's join variable.
         # NB can lead to duplication if the join column isn't unique in either dataset.
 
-        # write the updated file back to HDFS, but for now into a temporary directory
-        (
-            updated_file.coalesce(1).write.csv(
-                file_path + "_temp", sep=",", header="true", mode="overwrite"
-            )
-        )
+        # NB both datasets have to be a dataframe (i.e. have more than 1 column)
+        # Check first and turn into data frame if needed.
+        if not isinstance(template, pd.DataFrame):
+            template = template.to_frame()
 
-        # tidy up directories
-        pdh.rm(file_path)  # delete the original file
-        pdh.rename(
-            file_path + "_temp",  # rename the newly saved file to the old filepath
-            file_path,
-        )
+        if not isinstance(file_to_update, pd.DataFrame):
+            file_to_update = file_to_update.to_frame()
 
-        print("file updated")
+        updated_file = pd.merge(template,
+                                file_to_update,
+                                on=join_variable,
+                                how='left'
+                                )
+
+        # write the updated file back to CDSW
+        updated_file.to_csv(file_path, index=False)
+
+        print("File updated")
 
     # ... and if there is no such file yet then save the template in its place
     else:
-        (
-            template.coalesce(1).write.csv(
-                file_path, sep=",", header="true", mode="overwrite"
-            )
-        )
+        # Need to add _template into the filepath to differentiate
+        directory, filename = os.path.split(file_path)
+        new_filename = filename.replace('.csv', '_template.csv')
+        new_file_path = os.path.join(directory, new_filename)
 
-        print("template written to HDFS")
+        # Write to CDSW
+        template.to_csv(new_file_path, index=False)
+
+        print("Template written")
 
 
-def update_file_later(
-    cluster,
+def update_file_later_with_template(
     file_path,
     template,
     join_variable,
@@ -411,101 +406,99 @@ def update_file_later(
     keep_after_join,
 ):
     """
-    :WHAT IT IS: pyspark function
+    :WHAT IT IS: python function
     :WHAT IT DOES:
     * tries to update a file, if it exists, with information from a template.
     Else it writes out the template in its place.
-    * difference from update_file: used later in ASHE pipeline, slightly difference logic;
-    too much hassle to combine the functions
-    :RETURNS: updated input file, or template
-    :OUTPUT TYPE: .csv file on HDFS, on 1 partition
+    :RETURNS: updated input file, or template.
+    :OUTPUT TYPE: csv
 
     :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler
     :DATE: 15/10/2021
     :VERSION: 0.1
 
-    :CAVEATS:
-    * file_path: there must be no directory named like file_path + '_temp'
-    * file_path: only accepts csv
-    * assumes files have headers
-    * assumes both datasets have the join variable under the same name
-    * assumes template is already in memory
+    :ASSUMPTIONS:
+    * files have headers
+    * both datasets have the join variable under the same name
 
     :PARAMETERS:
-      :cluster = name of the spark cluster to use:
-        `(datatype = session name, unquoted)`, e.g. spark
       :file_path = full path to the file that you want to update:
-        `(datatype = string, without extension)`,
-        e.g. '/dapsen/workspace_zone/my_project/file'
-      :template = name of the spark dataframe that you want to update from:
+        `(datatype = string)`,
+        e.g. '/home/cdsw/test_file.csv'
+      :template = name of the pandas dataframe that you want to update from:
         `(datatype = dataframe name, unquoted)`, e.g. template_df
       :join_variable = name(s) of the variable to join input file and template on:
+        `(datatype = string)`, e.g. 'nino'
+      :drop_from_template = name(s) of the variable to drop from the template upon load:
         `(datatype = list of string)`, e.g. ['nino']
-      :drop_from_template = name(s) of the variable to join input file and template on:
+      :keep_before_join = name(s) of the variable to keep in input file:
         `(datatype = list of string)`, e.g. ['nino']
-      :keep_before_join = name(s) of the variable to join input file and template on:
-        `(datatype = list of string)`, e.g. ['nino']
-      :keep_after_join = name(s) of the variable to join input file and template on:
+      :keep_after_join = name(s) of the variable to keep after update has taken place:
         `(datatype = list of string)`, e.g. ['nino']
 
     :EXAMPLE:
-    >>> update_file( cluster = spark,
-                      file_path = '/dap/project/02_specified_metadata/old_data',
-                      template = good_order,
-                      join_variable = ['nhs_number']
-                      )
+    >>> update_file(file_path = '/home/cdsw/test_file.csv',
+                    template = good_order,
+                    join_variable = 'nhs_number',
+                    drop_from_template = ['Name'],
+                    keep_in_data = ['Age'],
+                    keep_after_update = ['Sex', 'Surname', 'Nino']
+                    )
     """
 
-    # check if the file actually exists, and if it does then...
-    if pdh.path.exists(file_path):
+    # Check file is a csv
+    if pathlib.Path(file_path).suffix != ".csv":
+        raise ValueError('Function can only be used with CSV file.')
 
-        # subset the template to only the join variable.
-        # NB the template controls the number of rows left, it doesn't add columns
-        template = template.drop(*drop_from_template)
+    # Check if the file actually exists, and if it does then...
+    if os.path.exists(file_path):
 
-        # read in the file to update from HDFS
-        file_to_update = (
-            cluster.read.format("csv")
-            .option("header", "true")
-            .option("inferSchema", "True")
-            .load(file_path)
-            .select(*keep_before_join)
-        )
+        # remove unneeded columns from template
+        template = template.drop(drop_from_template, axis=1)
+
+        # read in the file to update and convert to pandas
+        file_to_update = pd.read_csv(file_path)
+
+        # Keep only columns of interest
+        file_to_update = file_to_update[keep_before_join]
 
         # join the file onto the template.
-        updated_file = template.join(
-            file_to_update, on=join_variable, how="left"
-        )  # keeps only records with values that exist in the template's join variable.
+        # keeps only records with values that exist in the template's join variable.
         # NB can lead to duplication if the join column isn't unique in either dataset.
 
-        # keep only required variables
-        updated_file = updated_file.keep(*keep_after_join)
+        # NB both datasets have to be a dataframe (i.e. have more than 1 column)
+        # Check first and turn into data frame if needed.
+        if not isinstance(template, pd.DataFrame):
+            template = template.to_frame()
 
-        # write the updated file back to HDFS, but for now into a temporary directory
-        (
-            updated_file.coalesce(1).write.csv(
-                file_path + "_temp", sep=",", header="true", mode="overwrite"
-            )
-        )
+        if not isinstance(file_to_update, pd.DataFrame):
+            file_to_update = file_to_update.to_frame()
 
-        # tidy up directories
-        pdh.rm(file_path)  # delete the original file
-        pdh.rename(
-            file_path + "_temp",  # rename the newly saved file to the old filepath
-            file_path,
-        )
+        updated_file = pd.merge(template,
+                                file_to_update,
+                                on=join_variable,
+                                how='left'
+                                )
 
-        print("file updated")
+        # Once input file updated, keep only required variables
+        updated_file = updated_file[keep_after_join]
+
+        # write the updated file back to CDSW
+        updated_file.to_csv(file_path, index=False)
+
+        print("File updated")
 
     # ... and if there is no such file yet then save the template in its place
     else:
-        (
-            template.coalesce(1).write.csv(
-                file_path, sep=",", header="true", mode="overwrite"
-            )
-        )
+        # Need to add _template into the filepath to differentiate
+        directory, filename = os.path.split(file_path)
+        new_filename = filename.replace('.csv', '_template.csv')
+        new_file_path = os.path.join(directory, new_filename)
 
-        print("template written to HDFS")
+        # Write to CDSW
+        template.to_csv(new_file_path, index=False)
+
+        print("Template written")
 
 
 def session_small():
