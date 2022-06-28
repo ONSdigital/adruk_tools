@@ -349,20 +349,19 @@ def update_file_with_template(file_path,
         `(datatype = list of string)`, e.g. ['nino']
         Optional. Defaults to None.
       :keep_before_join = name(s) of the variable to keep in input file:
-        `(datatype = list of string)`, e.g. ['nino']
+        `(datatype = list of string)`, e.g. ['sex']
         Optional. Defaults to None.
       :keep_after_join = name(s) of the variable to keep after update has taken place:
-        `(datatype = list of string)`, e.g. ['nino']
+        `(datatype = list of string)`, e.g. ['Age', 'Occupation']
         Optional. Defaults to None.
 
     :EXAMPLE:
-    >>> update_file(file_path = '/home/cdsw/test_file.csv',
-                    template = good_order,
-                    join_variable = 'nhs_number',
-                    drop_from_template = ['Name'],
-                    keep_before_join = ['Age'],
-                    keep_after_join = ['Sex', 'Surname', 'Nino']
-                    )
+    >>> update_file_with_template(file_path = '/home/cdsw/test_file.csv',
+                                  template = good_order,
+                                  join_variable = 'nhs_number',
+                                  drop_from_template = ['Name'],
+                                  keep_before_join = ['Age'],
+                                  keep_after_join = ['Sex', 'Surname', 'Nino'])
     """
     # Check file is a csv
     if pathlib.Path(file_path).suffix != ".csv":
