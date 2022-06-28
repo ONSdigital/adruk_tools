@@ -315,7 +315,12 @@ def equalise_file_and_folder_name(path):
     pdh.rename(path, path_new)  # do the actual renaming
 
 
-def update_file_with_template(file_path, template, join_variable):
+def update_file_with_template(file_path,
+                              template,
+                              join_variable,
+                              drop_from_template=None,
+                              keep_before_join=None,
+                              keep_after_join=None):
     """
     :WHAT IT IS: python function
     :WHAT IT DOES:
@@ -326,96 +331,7 @@ def update_file_with_template(file_path, template, join_variable):
 
     :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler
     :DATE: 15/10/2021
-    :VERSION: 0.1
-
-    :ASSUMPTIONS:
-    * files have headers
-    * both datasets have the join variable under the same name
-
-    :PARAMETERS:
-      :file_path = full path to the file that you want to update:
-        `(datatype = string)`,
-        e.g. '/home/cdsw/test_file.csv'
-      :template = name of the pandas dataframe that you want to update from:
-        `(datatype = dataframe name, unquoted)`, e.g. template_df
-      :join_variable = name(s) of the variable to join input file and template on:
-        `(datatype = string)`, e.g. 'nino'
-
-    :EXAMPLE:
-    >>> update_file(file_path = '/home/cdsw/test_file.csv',
-                    template = good_order,
-                    join_variable = 'nhs_number'
-                    )
-    """
-    # Check file is a csv
-    if pathlib.Path(file_path).suffix != ".csv":
-        raise ValueError('Function can only be used with CSV file.')
-
-    # Check if the file actually exists, and if it does then...
-    if os.path.exists(file_path):
-
-        # subset the template to only the join variable.
-        # NB the template controls the number of rows left, it doesn't add columns
-        template = template[join_variable]
-
-        # read in the file to update and convert to pandas
-        file_to_update = pd.read_csv(file_path)
-
-        # join the file onto the template.
-        # keeps only records with values that exist in the template's join variable.
-        # NB can lead to duplication if the join column isn't unique in either dataset.
-
-        # NB both datasets have to be a dataframe (i.e. have more than 1 column)
-        # Check first and turn into data frame if needed.
-        if not isinstance(template, pd.DataFrame):
-            template = template.to_frame()
-
-        if not isinstance(file_to_update, pd.DataFrame):
-            file_to_update = file_to_update.to_frame()
-
-        updated_file = pd.merge(template,
-                                file_to_update,
-                                on=join_variable,
-                                how='left'
-                                )
-
-        # write the updated file back to CDSW
-        updated_file.to_csv(file_path, index=False)
-
-        print("File updated")
-
-    # ... and if there is no such file yet then save the template in its place
-    else:
-        # Need to add _template into the filepath to differentiate
-        directory, filename = os.path.split(file_path)
-        new_filename = filename.replace('.csv', '_template.csv')
-        new_file_path = os.path.join(directory, new_filename)
-
-        # Write to CDSW
-        template.to_csv(new_file_path, index=False)
-
-        print("Template written")
-
-
-def update_file_later_with_template(
-    file_path,
-    template,
-    join_variable,
-    drop_from_template,
-    keep_before_join,
-    keep_after_join,
-):
-    """
-    :WHAT IT IS: python function
-    :WHAT IT DOES:
-    * tries to update a file, if it exists, with information from a template.
-    Else it writes out the template in its place.
-    :RETURNS: updated input file, or template.
-    :OUTPUT TYPE: csv
-
-    :AUTHOR: hard-coded by David Cobbledick, function by Johannes Hechler
-    :DATE: 15/10/2021
-    :VERSION: 0.1
+    :UPDATED June 2022 Nathan Shaw
 
     :ASSUMPTIONS:
     * files have headers
@@ -431,21 +347,22 @@ def update_file_later_with_template(
         `(datatype = string)`, e.g. 'nino'
       :drop_from_template = name(s) of the variable to drop from the template upon load:
         `(datatype = list of string)`, e.g. ['nino']
+        Optional. Defaults to None.
       :keep_before_join = name(s) of the variable to keep in input file:
-        `(datatype = list of string)`, e.g. ['nino']
+        `(datatype = list of string)`, e.g. ['sex']
+        Optional. Defaults to None.
       :keep_after_join = name(s) of the variable to keep after update has taken place:
-        `(datatype = list of string)`, e.g. ['nino']
+        `(datatype = list of string)`, e.g. ['Age', 'Occupation']
+        Optional. Defaults to None.
 
     :EXAMPLE:
-    >>> update_file(file_path = '/home/cdsw/test_file.csv',
-                    template = good_order,
-                    join_variable = 'nhs_number',
-                    drop_from_template = ['Name'],
-                    keep_in_data = ['Age'],
-                    keep_after_update = ['Sex', 'Surname', 'Nino']
-                    )
+    >>> update_file_with_template(file_path = '/home/cdsw/test_file.csv',
+                                  template = good_order,
+                                  join_variable = 'nhs_number',
+                                  drop_from_template = ['Name'],
+                                  keep_before_join = ['Age'],
+                                  keep_after_join = ['Sex', 'Surname', 'Nino'])
     """
-
     # Check file is a csv
     if pathlib.Path(file_path).suffix != ".csv":
         raise ValueError('Function can only be used with CSV file.')
@@ -454,13 +371,17 @@ def update_file_later_with_template(
     if os.path.exists(file_path):
 
         # remove unneeded columns from template
-        template = template.drop(drop_from_template, axis=1)
+        if drop_from_template is not None:
+            template = template.drop(drop_from_template, axis=1)
+        else:
+            template = template[join_variable]
 
         # read in the file to update and convert to pandas
         file_to_update = pd.read_csv(file_path)
 
         # Keep only columns of interest
-        file_to_update = file_to_update[keep_before_join]
+        if keep_before_join is not None:
+            file_to_update = file_to_update[keep_before_join]
 
         # join the file onto the template.
         # keeps only records with values that exist in the template's join variable.
@@ -481,7 +402,8 @@ def update_file_later_with_template(
                                 )
 
         # Once input file updated, keep only required variables
-        updated_file = updated_file[keep_after_join]
+        if keep_after_join is not None:
+            updated_file = updated_file[keep_after_join]
 
         # write the updated file back to CDSW
         updated_file.to_csv(file_path, index=False)
