@@ -370,6 +370,9 @@ def update_file_with_template(file_path,
     # Check if the file actually exists, and if it does then...
     if os.path.exists(file_path):
 
+        # read in the file to update and convert to pandas
+        file_to_update = pd.read_csv(file_path)
+
         # NB both datasets have to be a dataframe (i.e. have more than 1 column)
         # Check first and turn into data frame if needed.
         if not isinstance(template, pd.DataFrame):
@@ -383,9 +386,6 @@ def update_file_with_template(file_path,
             template = template.drop(drop_from_template, axis=1)
         else:
             template = template[join_variable]
-
-        # read in the file to update and convert to pandas
-        file_to_update = pd.read_csv(file_path)
 
         # Keep only columns of interest
         if keep_before_join is not None:
