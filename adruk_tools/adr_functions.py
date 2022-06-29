@@ -394,6 +394,12 @@ def update_file_with_template(file_path,
         # join the file onto the template.
         # keeps only records with values that exist in the template's join variable.
         # NB can lead to duplication if the join column isn't unique in either dataset.
+        # Double check again that both datasets are still dataframes.
+        if not isinstance(template, pd.DataFrame):
+            template = template.to_frame()
+
+        if not isinstance(file_to_update, pd.DataFrame):
+            file_to_update = file_to_update.to_frame()
 
         updated_file = pd.merge(template,
                                 file_to_update,
