@@ -370,6 +370,14 @@ def update_file_with_template(file_path,
     # Check if the file actually exists, and if it does then...
     if os.path.exists(file_path):
 
+        # NB both datasets have to be a dataframe (i.e. have more than 1 column)
+        # Check first and turn into data frame if needed.
+        if not isinstance(template, pd.DataFrame):
+            template = template.to_frame()
+
+        if not isinstance(file_to_update, pd.DataFrame):
+            file_to_update = file_to_update.to_frame()
+
         # remove unneeded columns from template
         if drop_from_template is not None:
             template = template.drop(drop_from_template, axis=1)
@@ -386,14 +394,6 @@ def update_file_with_template(file_path,
         # join the file onto the template.
         # keeps only records with values that exist in the template's join variable.
         # NB can lead to duplication if the join column isn't unique in either dataset.
-
-        # NB both datasets have to be a dataframe (i.e. have more than 1 column)
-        # Check first and turn into data frame if needed.
-        if not isinstance(template, pd.DataFrame):
-            template = template.to_frame()
-
-        if not isinstance(file_to_update, pd.DataFrame):
-            file_to_update = file_to_update.to_frame()
 
         updated_file = pd.merge(template,
                                 file_to_update,
