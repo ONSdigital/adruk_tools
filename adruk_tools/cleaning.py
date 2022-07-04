@@ -48,7 +48,7 @@ def clean_nino(column):
         `(datatype = string)`, e.g. 'messy_nino_column'
 
     :EXAMPLE:
-    >>> remove_whitespace('messy_nino_column')
+    >>> clean_nino('messy_nino_column')
     """
 
     return F.upper(remove_whitespace(column))
