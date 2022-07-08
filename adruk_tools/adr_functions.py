@@ -16,7 +16,8 @@ def write_hive_table(database: str, table_name: str, dataset, table_properties: 
     """
     :LANGUAGE: pyspark
 
-    :WHAT IT DOES: writes a hive table that includes mandatory and optional properties
+    :WHAT IT DOES: writes a hive table in orc format that includes mandatory
+    and optional properties
 
     :RETURNS: a hive table
 
@@ -56,7 +57,7 @@ def write_hive_table(database: str, table_name: str, dataset, table_properties: 
 
     # write dataframe to hive
     table_path = f"{database}.{table_name}"
-    dataset.write.saveAsTable(table_path, mode='overwrite')
+    dataset.write.format('orc').saveAsTable(table_path, mode='overwrite')
 
     # add properties to hive table
     cu.set_table_properties(database, table_name, **table_properties)
