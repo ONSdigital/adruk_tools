@@ -1,0 +1,20 @@
+# Specifies flake8 components for pre-commit hooks to ensure
+# code adheres to PEP8 standard.
+# Includes list of files to exclude from the pre-commit hooks
+# and hooks to ignore per file
+# Max line length set to 90.
+
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    .ipynb_checkpoints,
+    .pytest_cache
+    
+max-line-length = 90
+ignore = 
+    # Line break occurred before a binary operator
+    W503
+per-file-ignores =
+    # Imported but not used - this is okay within the init file
+    adruk_tools/__init__.py:F401

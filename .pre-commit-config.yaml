@@ -1,0 +1,26 @@
+# Pre commit hooks (see Readme for how to install)
+# Config file for pre-commit hooks using flake 8 and
+# darglint. Hooks for doc string style have been
+# ommitted for timebeing as package currently uses
+# own docstring style.
+# see .flake8 and .darglint for specific pre-commit
+# hook details
+
+repos:
+-   repo: local
+    hooks:
+    -   id: flake8
+        name: flake8
+        entry: flake8
+        stages: [commit]
+        language: system
+        types: [python]
+
+#-   repo: local
+#    hooks:
+#    -   id: pydocstyle
+#        name: pydocstyle
+#        entry: pydocstyle
+#        stages: [commit]
+#        language: system
+#        types: [python]
