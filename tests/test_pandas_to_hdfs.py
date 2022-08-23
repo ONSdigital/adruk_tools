@@ -9,7 +9,7 @@ import adruk_tools.adr_functions as adr
 
 def test_pandas_to_hdfs():
   """
-  test for funciton pandas_to_hdfs
+  test for function pandas_to_hdfs
   writes a dummy dataset to HDFS, 
   then checks if it arrived, 
   then deletes it
