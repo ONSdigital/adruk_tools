@@ -10,6 +10,7 @@ from importlib.machinery import SourceFileLoader
 import pandas as pd
 from pandas.testing import assert_frame_equal
 import conftest as ct
+import pytest as pt
 
 
 # Provide explicit file path to updated function, otherwise the old version in the package is referenced
