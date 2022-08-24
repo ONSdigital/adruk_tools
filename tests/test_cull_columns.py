@@ -11,6 +11,7 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 import conftest as ct
 import pytest as pt
+import os
 
 
 # Provide explicit file path to updated function, otherwise the old version in the package is referenced
@@ -34,6 +35,9 @@ test_rows = [('Nathan', 'A', 23, 45.679, '2008'),
      ('Nathan', 'C', 23, 45.679, None),
      (None, 'F', 89, 99.056, '2008')]
 
+# paths in HUE, note that the culled dataframe needs to go into a different directory and will have the same name
+write_path = '/dapsen/de_testing/test_dataframe.csv'
+write_path_cull = '/dapsen/de_testing/cull/'
 
 # Note that all functions start with test_ and call in the spark_context created
 # in conftest.py. Required for the tests to be run.
@@ -49,10 +53,10 @@ def test_cull_columns(spark_context):
   """
 
   input_dataset = spark_context.createDataFrame(test_rows, test_columns)
-  
+
   # save into HUE
   input_dataset.coalesce(1).write.csv(
-    '/user/bardos/test_dataframe.csv',
+    f'{write_path}',
     sep=",",  # set the seperator
     header="true",  # Set a header
     mode="overwrite",
@@ -60,12 +64,12 @@ def test_cull_columns(spark_context):
 
   # cull_columns
   adr.cull_columns(cluster=spark_context,
-                   old_files=['/user/bardos/test_dataframe.csv'],
+                   old_files=[f'{write_path}'],
                    reference_columns=['NAME', 'YEAR'],
-                   directory_out='/user/bardos/cull/')
+                   directory_out=f'{write_path_cull}')
   
   # read the culled csv
-  expected_output = spark_context.read.csv('/user/bardos/cull/test_dataframe.csv', header=True)
+  expected_output = spark_context.read.csv(f'{write_path_cull}test_dataframe.csv', header=True)
   # sort and to Pandas
   expected_output = ct.get_sorted_data_frame(expected_output.toPandas(), ['NAME', 'YEAR'])
 
@@ -84,9 +88,13 @@ def test_cull_columns(spark_context):
  
   # sort and to Pandas
   real_output = ct.get_sorted_data_frame(real_output, ['NAME', 'YEAR'])
-  
+
   # Test equality between expected and generated outcomes
   
   print("columns culled")
   assert_frame_equal(expected_output, real_output, check_like=True)
+
+# delete dataframes from HDFS
+os.system(f'hdfs dfs -rm -r {write_path}')
+os.system(f'hdfs dfs -rm -r {write_path_cull}')
   
