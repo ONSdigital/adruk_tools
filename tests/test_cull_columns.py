@@ -94,7 +94,7 @@ def test_cull_columns(spark_context):
   print("columns culled")
   assert_frame_equal(expected_output, real_output, check_like=True)
 
-# delete dataframes from HDFS
-os.system(f'hdfs dfs -rm -r {write_path}')
-os.system(f'hdfs dfs -rm -r {write_path_cull}')
+  # delete dataframes from HDFS
+  os.system(f'hdfs dfs -rm -r {write_path}')
+  os.system(f'hdfs dfs -rm -r {write_path_cull}')
   
