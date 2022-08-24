@@ -1108,10 +1108,8 @@ def space_to_underscore(df):
 
     :WHAT IT DOES: replaces spaces with underscores
     :RETURNS: spark dataframe with no column names containing spaces
-    :AUTHOR: Sophie-Louise Courtney
-    :DATE: 02/03/2021
-    :VERSION: 0.0.1
-
+    :AUTHOR: Nathan Shaw
+    :DATE: August 2022
 
     :PARAMETERS:
     * df = spark dataframe
