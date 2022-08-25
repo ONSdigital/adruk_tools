@@ -244,12 +244,12 @@ def pandas_to_hdfs(dataframe, write_path):
     :PARAMETERS:
     * dataframe = pandas dataframe you want to write to HDFS
         `(datatype = dataframe, no string)`, e.g. my_data
-    * file_path = full destination file path including extension
+    * write_path = full destination file path including extension
         `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
 
     :EXAMPLE:
     >>> pandas_to_hdfs( dataframe = my_data,
-                        file_path = '/dapsen/workspace_zone/my_project/sample.csv')
+                        write_path = '/dapsen/workspace_zone/my_project/sample.csv')
     """
 
     # write file from HDFS
