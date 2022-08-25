@@ -164,8 +164,10 @@ def cull_columns(cluster, old_files, reference_columns, directory_out):
     * write table back out
 
     :AUTHOR: Johannes Hechler
-    :DATE: 04/10/2021
-    :VERSION: 0.0.1
+    :DATE: 25/08/2022
+    :VERSION: 0.0.2
+    :CHANGE FROM PREVIOUS VERSION: makes sure reference_columns provided in 
+    lower case get made upper case
     :WARNING: can destroy source data! If directory_out is the same as the source
     directory, and any reference_columns are misspelled, then that column will not
     be lost along with all those meant to be deleted.
@@ -187,7 +189,10 @@ def cull_columns(cluster, old_files, reference_columns, directory_out):
                     reference_columns = ['AGE', 'SEX'], 
                     directory_out = '/dapsen/folder/subfolder/)
     """
-
+    
+    # ensure reference_columns are upper case to match when all columns get made upper case
+    reference_columns = [column.upper() for column in reference_columns]
+    
     for wrong_dataset in old_files:
         print(directory_out + wrong_dataset.split("/")[-1])
         # read in dataset
@@ -210,9 +215,9 @@ def cull_columns(cluster, old_files, reference_columns, directory_out):
         # keep only agreed variables, write back out to HDFS
         dataset.select(*columns_allowed).coalesce(1).write.csv(
             directory_out + wrong_dataset.split("/")[-1],
-            sep=",",  # set the seperator
-            header="true",  # Set a header
-            mode="overwrite",
+            sep = ",",  # set the seperator
+            header = "true",  # Set a header
+            mode = "overwrite",
         )  # overwrite is on
 
 
