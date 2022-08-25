@@ -8,6 +8,8 @@ NINO rules sourced from https://en.wikipedia.org/wiki/National_Insurance_number
 https://www.gov.uk/hmrc-internal-manuals/national-insurance-manual/nim39110
 """
 
+import pyspark.sql.types as T
+
 #---------- REGEX DEFINITIONS ------------------ "
 # Valid NINO. First two letters can't be D,F,I,Q,U or V. Second letter can't be O.
 # NOTE: Unallocated NINOs are still permitted i.e. prefixes BG, GB, NK, KN,TN,NT and ZZ
