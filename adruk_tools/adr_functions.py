@@ -156,14 +156,36 @@ def pandas_to_hdfs(dataframe, write_path):
 
 def cull_columns(cluster, old_files, reference_columns, directory_out):
     """
-    :WHAT IT IS: pyspark function
+    :LANGUAGE: pyspark
     :WHAT IT DOES:
     * reads in one or more HDFS csv files in turn
+    * makes all columns names upper case
     * removes any columns not listed in a reference
     * write table back out
 
     :AUTHOR: Johannes Hechler
     :DATE: 04/10/2021
+    :VERSION: 0.0.1
+    :WARNING: can destroy source data! If directory_out is the same as the source
+    directory, and any reference_columns are misspelled, then that column will not
+    be lost along with all those meant to be deleted.
+
+    :PARAMETERS:
+    * cluster = active spark cluster
+        `(datatype = clsuter name, no string)`, e.g. spark
+    * old_files = full destination file path including extension for each file to clean
+        `(datatype = list of strings)`, e.g. ['/dapsen/folder/file1.csv', '/dapsen/folder/file1.csv']
+    * reference_columns = names of columns to remove
+        `(datatype = list of strings)`, e.g. ['AGE', 'SEX']
+    * directory_out = name of HDFS folder to write cleaned files out to, ending in /
+        `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/'
+
+    :EXAMPLE:
+    >>> cull_columns(cluster = cluster, 
+                    old_files = ['/dapsen/folder/file1.csv', 
+                                 '/dapsen/folder/file1.csv'],
+                    reference_columns = ['AGE', 'SEX'], 
+                    directory_out = '/dapsen/folder/subfolder/)
     """
 
     for wrong_dataset in old_files:
