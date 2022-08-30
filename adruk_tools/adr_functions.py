@@ -156,15 +156,44 @@ def pandas_to_hdfs(dataframe, write_path):
 
 def cull_columns(cluster, old_files, reference_columns, directory_out):
     """
-    :WHAT IT IS: pyspark function
+    :LANGUAGE: pyspark
     :WHAT IT DOES:
     * reads in one or more HDFS csv files in turn
+    * makes all columns names upper case
     * removes any columns not listed in a reference
-    * write table back out
+    * writes data back to HDFS
 
     :AUTHOR: Johannes Hechler
-    :DATE: 04/10/2021
+    :DATE: 25/08/2022
+    :VERSION: 0.0.2
+    :CHANGE FROM PREVIOUS VERSION: makes sure reference_columns provided in
+    lower case get made upper case
+    :WARNING: can destroy source data! If directory_out is the same as the source
+    directory, and any reference_columns are misspelled, then that column will not
+    be lost along with all those meant to be deleted.
+
+    :PARAMETERS:
+    * cluster = active spark cluster
+        `(datatype = clsuter name, no string)`, e.g. spark
+    * old_files = full destination file path including extension
+        for each file to clean
+        `(datatype = list of strings)`, e.g. ['/dapsen/folder/file1.csv',
+                                              '/dapsen/folder/file1.csv']
+    * reference_columns = names of columns to keep
+        `(datatype = list of strings)`, e.g. ['AGE', 'SEX']
+    * directory_out = name of HDFS folder to write cleaned files out to, ending in /
+        `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/'
+
+    :EXAMPLE:
+    >>> cull_columns(cluster = cluster,
+                    old_files = ['/dapsen/folder/file1.csv',
+                                 '/dapsen/folder/file1.csv'],
+                    reference_columns = ['AGE', 'SEX'],
+                    directory_out = '/dapsen/folder/subfolder/)
     """
+    # ensure reference_columns are upper case to match when all
+    # columns get made upper case
+    reference_columns = [column.upper() for column in reference_columns]
 
     for wrong_dataset in old_files:
         print(directory_out + wrong_dataset.split("/")[-1])
