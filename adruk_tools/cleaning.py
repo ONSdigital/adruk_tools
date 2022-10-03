@@ -1,5 +1,5 @@
 import pyspark.sql.functions as F
-#import cleaning_postcode_prep
+# import cleaning_postcode_prep
 
 
 def remove_whitespace(column):
@@ -1108,17 +1108,17 @@ def space_to_underscore(df):
 
     :WHAT IT DOES: replaces spaces with underscores
     :RETURNS: spark dataframe with no column names containing spaces
-    :AUTHOR: Sophie-Louise Courtney
-    :DATE: 02/03/2021
-    :VERSION: 0.0.1
-
+    :AUTHOR: Nathan Shaw
+    :DATE: August 2022
 
     :PARAMETERS:
     * df = spark dataframe
         `(datatype = dataframe name, not string)`, e.g. ESC
     """
 
-    return df.replace(" ", "_")
+    df = df.select([F.col(col).alias(col.replace(' ', '_')) for col in df.columns])
+
+    return df
 
 
 def title_remove(dataset, variables):
