@@ -227,7 +227,7 @@ def column_recode(dataframe, column_to_recode, recode_dict, non_matching_value):
     :LANGUAGE: pyspark
     :WHAT IT DOES:
     * Recodes values in a column based on user defined dictionary
-    * Any columns value taht dont match keys in the recode_dict are given
+    * Any columns value that dont match keys in the recode_dict are given
     * the non_matching_value
 
     :AUTHOR: Johannes Hechler, Silvia Bardoni
@@ -239,12 +239,15 @@ def column_recode(dataframe, column_to_recode, recode_dict, non_matching_value):
     * column_to_recode (str)  = name of column to recode
     * recode_dict (dict) = dictionary containing values to be replaced
           and their replacement value
-    * non_matching_value (string) =value given to any column calues that are
+    * non_matching_value (string) = value given to any column values that are
         not found in the recode_dict
+
+    :RETURNS:
+    * dataframe
 
     :EXAMPLE:
 
-    :SAMPLE INPUT 1: General examples
+    :SAMPLE INPUT
 
     +-----+
     | name|
@@ -256,7 +259,7 @@ def column_recode(dataframe, column_to_recode, recode_dict, non_matching_value):
     |    9|
     |  Tom|
     +-----+
-    >>> recode_df = column_recode(dataframe, 'name', {'Nat' : N', 'Tom' :'T'}, 'None')
+    >>> recode_df = column_recode(dataframe, 'name', {'Nat' : 'N', 'Tom' :'T'}, 'None')
 
     :SAMPLE OUTPUT:
 
@@ -272,7 +275,7 @@ def column_recode(dataframe, column_to_recode, recode_dict, non_matching_value):
     +-----+
     """
     # Start constructing SQL query
-    sql_string = f'{"CASE"}'
+    sql_string = f'{"CASE "}'
 
     # For each kew value pair in the recode_dictionary, add a separate CASE clause
     for key, value in recode_dict.items():
