@@ -5,7 +5,6 @@ import pandas as pd
 import pathlib
 
 from pyspark.sql import SparkSession
-from pyspark.context import SparkContext as sc
 import pyspark.sql.functions as F
 import pyspark.sql.types as T
 import pyspark.sql.window as W
@@ -221,6 +220,70 @@ def cull_columns(cluster, old_files, reference_columns, directory_out):
             header="true",  # Set a header
             mode="overwrite",
         )  # overwrite is on
+
+
+def column_recode(dataframe, column_to_recode, recode_dict, non_matching_value):
+    """
+    :LANGUAGE: pyspark
+    :WHAT IT DOES:
+    * Recodes values in a column based on user defined dictionary
+    * Any columns value taht dont match keys in the recode_dict are given
+    * the non_matching_value
+
+    :AUTHOR: Johannes Hechler, Silvia Bardoni
+    :DATE: 26/10/2022
+    :VERSION: 0.0.1
+
+    :PARAMETERS:
+    * dataframe = spark dataframe
+    * column_to_recode (str)  = name of column to recode
+    * recode_dict (dict) = dictionary containing values to be replaced
+          and their replacement value
+    * non_matching_value (string) =value given to any column calues that are
+        not found in the recode_dict
+
+    :EXAMPLE:
+
+    :SAMPLE INPUT 1: General examples
+
+    +-----+
+    | name|
+    +-----+
+    |  Nat|
+    |  Tom|
+    |  Nat|
+    |    5|
+    |    9|
+    |  Tom|
+    +-----+
+    >>> recode_df = column_recode(dataframe, 'name', {'Nat' : N', 'Tom' :'T'}, 'None')
+
+    :SAMPLE OUTPUT:
+
+    +-----+
+    | name|
+    +-----+
+    |    N|
+    |    T|
+    |    N|
+    | None|
+    | None|
+    |    T|
+    +-----+
+    """
+    # Start constructing SQL query
+    sql_string = f'{"CASE"}'
+
+    # For each kew value pair in the recode_dictionary, add a separate CASE clause
+    for key, value in recode_dict.items():
+        sql_string += f"WHEN {column_to_recode} = '{key}' THEN '{value}' "
+
+    # Finish by add the ELSE clause
+    sql_string += f"ELSE '{non_matching_value}' END"
+
+    dataframe = dataframe.withColumn(column_to_recode, F.expr(sql_string))
+
+    return dataframe
 
 
 def equalise_file_and_folder_name(path):
@@ -1541,7 +1604,6 @@ def complex_standardisation(df, gender):
     # ===================================================================
 
     return df
-
 
 
 class Lookup:
