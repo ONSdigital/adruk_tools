@@ -5,7 +5,6 @@ import pandas as pd
 import pathlib
 
 from pyspark.sql import SparkSession
-from pyspark.context import SparkContext as sc
 import pyspark.sql.functions as F
 import pyspark.sql.types as T
 import pyspark.sql.window as W
@@ -1543,7 +1542,6 @@ def complex_standardisation(df, gender):
     return df
 
 
-
 class Lookup:
     """
     :WHAT IT IS: python class
@@ -1657,9 +1655,10 @@ class Lookup:
         :WHAT IT IS: Class method (python function)
         :WHAT IT DOES: Adds a dataset into a lookup.
         * Dataset key must be specified, and will be renamed to the lookup key column name
-        * If dataset value is not given, one is created using anonymis_ids function.
+        * If dataset value is not given, one is created using anonymise_ids function.
         This will be renamed to the lookup value column name
-        * Schemas must match before data can be appended
+        * Data types match before data can be appended although the name of the columns
+        can differ between lookup and dataframe
         * Only new keys from dataset are added to the lookup
 
 
