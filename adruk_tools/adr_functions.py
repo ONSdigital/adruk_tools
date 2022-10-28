@@ -5,6 +5,7 @@ import pandas as pd
 import pathlib
 
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StringType
 import pyspark.sql.functions as F
 import pyspark.sql.types as T
 import pyspark.sql.window as W
@@ -274,6 +275,10 @@ def column_recode(dataframe, column_to_recode, recode_dict, non_matching_value):
     |    T|
     +-----+
     """
+
+    if not isinstance(dataframe.schema[column_to_recode].dataType, StringType):
+        raise TypeError("Column nust be a string")
+
     # Start constructing SQL query
     sql_string = f'{"CASE "}'
 
