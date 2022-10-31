@@ -1727,9 +1727,10 @@ class Lookup:
         :WHAT IT IS: Class method (python function)
         :WHAT IT DOES: Adds a dataset into a lookup.
         * Dataset key must be specified, and will be renamed to the lookup key column name
-        * If dataset value is not given, one is created using anonymis_ids function.
+        * If dataset value is not given, one is created using anonymise_ids function.
         This will be renamed to the lookup value column name
-        * Schemas must match before data can be appended
+        * Data types must match before data can be appended although the name of the columns
+        can differ between lookup and dataframe
         * Only new keys from dataset are added to the lookup
 
 
