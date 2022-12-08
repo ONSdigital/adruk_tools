@@ -709,55 +709,6 @@ def unzip_to_csv(file_path, file_name, destination_path):
     )
 
 
-def save_sample(dataframe, sample_size, filepath, na_variables=[]):
-    """
-    :WHAT IT IS: PYSPARK FUNCTION
-
-    :WHAT IT DOES:
-    * draws as user-specified number of records from the top of a spark dataframe
-    * saves them to a selected HDFS location in csv format
-
-    :RETURNS: nothing in memory; writes out a comma-separated file
-    :OUTPUT VARIABLE TYPE: not applicable
-
-    :TESTED TO RUN ON: spark dataframe from covid test and trace dataset
-
-    :AUTHOR: Johannes Hechler
-    :DATE: 17/12/2021
-    :VERSION: 0.0.2
-    :CHANGE FROM PREVIOUS VERSION: uses pydoop for writing out sample
-    instead of spark cluster
-    :KNOWN ISSUES: requires package pydoop
-
-    :PARAMETERS:
-    * dataframe = spark dataframe
-        `(datatype = dataframe name, no string)`, e.g. ctas_data
-    * sample_size = how many rows to take from dataset. Default values = 20.
-        `(datatype = numeric)`, e.g. 20
-    * filepath = the directory and filename for the file to be written to.
-        `(datatype = string)`, e.g. "/dapsen/workspace_zone/adruk/sample.csv"
-          * na_variables = if you want to exclude records with missing data
-          from the sample, you can specify the names of columns to check for missingness.
-          Records are removed if ANY of the selected variables is missing.
-          Optional. Default value = []
-        `(datatype = list of strings)`, e.g. ['age', 'sex]
-
-    :EXAMPLE:
-    >>> save_sample( dataframe = pii_data,
-                     sample_size = 20,
-                     filepath = '/dapsen/workspace_zone/my_project/sample.csv)))
-    """
-
-    # removes records with missing values in the chosen columns, if any were chosen
-    dataframe = dataframe.na.drop(subset=na_variables, how="any")
-
-    # draws the sample and converts it to a pandas dataframe
-    results = dataframe.limit(sample_size).toPandas()
-
-    # write sample to the chosen HDFS file_path in comma-separate format.
-    pandas_to_hdfs(dataframe=results, write_path=filepath)
-
-
 def make_test_df(session_name):
     """
     :WHAT IT IS: Function
