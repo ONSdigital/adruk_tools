@@ -1,5 +1,8 @@
 import pyspark.sql.functions as F
 import pandas as pd
+import collections as co
+import adruk_tools.adr_functions as adr
+
 
 
 def list_columns_by_file(cluster, paths):
@@ -95,7 +98,7 @@ def save_random_samples(dataframe, with_replacement, fraction, write_path, sampl
   data_samples = dataframe.sample(withReplacement=with_replacement, fraction=fraction).limit(sample_size).toPandas()
 
   # write sample to the chosen HDFS file_path in comma-separate format.
-  adr_func.pandas_to_hdfs(dataframe = data_samples, write_path = write_path)
+  adr.pandas_to_hdfs(dataframe = data_samples, write_path = write_path)
 
 
 
