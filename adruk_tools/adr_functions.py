@@ -3,6 +3,7 @@ import random
 import pydoop.hdfs as pdh
 import pandas as pd
 import pathlib
+import yaml as Y
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType
@@ -1842,3 +1843,31 @@ class Lookup:
 
         # Returning self to allow chaining of methods
         return self
+
+def open_yaml_config(file_path):
+    """
+    :WHAT IT IS: Python function
+    :WHAT IT DOES: Reads in a .yaml config file from CDSW
+    :RETURNS: Dictionary
+
+    :AUTHOR: Jonathan Lewis
+    :DATE: 13/01/2023
+    :VERSION: 0.0.1
+    :KNOWN ISSUES: N/A
+
+    :PARAMETERS:
+    * file_path = full path to file to import
+        `(datatype = string)`, e.g. '/home/cdsw/your_repo/your_yaml_config.yaml'
+
+    :EXAMPLE:
+    >>> settings = open_yaml_config(file_path = '/home/cdsw/your_repo/your_yaml_config.yaml')
+    """
+
+    # Read YAML file from CDSW
+    with open(file_path, "r") as f:
+      try:
+        config = Y.safe_load(f)
+      except Y.YAMLError as error:
+          raise error
+        
+    return config
