@@ -839,7 +839,7 @@ def make_test_df(session_name):
     )  # create pyspark dataframe with variables/value from above
 
 
-def anonymise_ids(df, id_cols, prefix=None):
+def anonymise_ids(df, id_cols, prefix = None):
     """
     :WHAT IT IS: pyspark function
     :WHAT IT DOES: hashs a column, or unique combination (permutations) of columns.
@@ -1013,7 +1013,10 @@ def anonymise_ids(df, id_cols, prefix=None):
     # which in turn allows a unique hased value to be created
     # NB concat_ws doesnt ignore NULL values compared to concat
     if len(id_cols) > 1:
-        df = df.withColumn("id_cols_concat", F.concat_ws("_", *id_cols))
+        df = df.withColumn("id_cols_concat", 
+                           F.concat_ws("_", 
+                                       *id_cols)
+                          )
     else:
         df = df.withColumn("id_cols_concat", F.col(*id_cols))
 
@@ -1027,7 +1030,10 @@ def anonymise_ids(df, id_cols, prefix=None):
     if prefix is not None:
 
         df = df.withColumn(adr_id_column,
-                           F.concat(F.lit(prefix), F.col(adr_id_column)))
+                           F.concat(F.lit(prefix), 
+                                    F.col(adr_id_column)
+                                   )
+                          )
 
     # Tidy up
     df = df.drop(F.col("id_cols_concat"))
@@ -1262,7 +1268,7 @@ def generate_ids(session, df, id_cols, start_year, id_len=None):
     # keeps only records whose cum_sum value exists in both dataframes
     # NB this by definition never creates duplicate records because the
     # linkage variable 'cum_sum' is unique in the adr_id dataframe
-    df = df.join(list_df, on="cum_sum", how="inner")
+    df = df.join(list_df, on = "cum_sum", how = "inner")
 
     # remove auxiliary 'cum_sum' column
     df = df.drop("cum_sum")
@@ -1674,7 +1680,11 @@ class Lookup:
         # Returning self to allow chaining of methods
         return self
 
-    def add_to_lookup(self, dataset, dataset_key, dataset_value=None):
+    def add_to_lookup(self, 
+                      dataset, 
+                      dataset_key, 
+                      dataset_value = None,
+                     new_value_prefix = None):
         """
         :WHAT IT IS: Class method (python function)
         :WHAT IT DOES: Adds a dataset into a lookup.
@@ -1701,6 +1711,8 @@ class Lookup:
           :dataset_key = key column name in the dataset
             `(datatype = string)`, e.g. 'key'
           :dataset_value (default None) = value column name in the dataset, if one exists
+            `(datatype = string)`, e.g. 'value'
+          :new_value_prefix (default None) = string to place before each newly created value. Only relevant if dataset_value = None
             `(datatype = string)`, e.g. 'value'
 
         :EXAMPLE:
@@ -1760,8 +1772,8 @@ class Lookup:
 
         dataset = dataset.join(
             self.source,
-            on=self.source[self.key].eqNullSafe(dataset[dataset_key]),
-            how="leftanti",
+            on = self.source[self.key].eqNullSafe(dataset[dataset_key]),
+            how = "leftanti",
         )
 
         # Create value column for these keys if none provided
@@ -1769,7 +1781,9 @@ class Lookup:
 
         # NOTE: assumes anonymise_ids created adr_id not adr_id_new
         if dataset_value is None:
-            dataset = anonymise_ids(dataset, [dataset_key])
+            dataset = anonymise_ids(dataset, 
+                                    [dataset_key],
+                                   prefix = new_value_prefix)
             dataset_value = "adr_id"
 
         # Match columns between lookup and dataset
