@@ -46,7 +46,3 @@ def get_sorted_data_frame(data_frame, columns_list):
   :WHAT IT DOES: sorts a pandas dataframe and resets indexes
   """
   return data_frame.sort_values(columns_list).reset_index(drop=True)
-
-
-  
-  
