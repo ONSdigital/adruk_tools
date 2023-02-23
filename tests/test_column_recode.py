@@ -4,6 +4,11 @@ WHAT IT DOES: Runs a set of unit tests on functions in rename_column.py
 AUTHOR: Silvia Bardoni
 CREATED: 26/10/2022
 """
+
+"""LEFTOVER:
+* make this a class with the inputs at the top in the __init__ method
+* then integrate into adr_functions module
+"""
 from importlib.machinery import SourceFileLoader
 import pandas as pd
 import conftest as ct
