@@ -1,7 +1,10 @@
 """
-Script to test cleaning functions after being linted.
-
-Will be removed once all functions in package have been linted
+LANGUAGE: pyspark
+WHAT IT DOES:
+* tests functions from cleaning module after being linted
+* will be removed once all functions in package have been linted
+AUTHOR: Nathan Shaw
+DATE: 2022
 """
 
 from importlib.machinery import SourceFileLoader

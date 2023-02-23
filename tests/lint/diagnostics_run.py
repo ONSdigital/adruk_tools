@@ -1,7 +1,10 @@
 """
-Script to test diagnostics functions after being linted.
-
-Will be removed once all functions in package have been linted
+LANGUAGE: pyspark
+WHAT IT DOES:
+* tests functions from diagnostics module after being linted
+* will be removed once all functions in package have been linted
+AUTHOR: Nathan Shaw
+DATE: 2022
 """
 
 from importlib.machinery import SourceFileLoader
