@@ -7,15 +7,26 @@ CREATED: 22/08/2022
 """
 from importlib.machinery import SourceFileLoader
 
+# import standard packages
 import pandas as pd
 from pandas.testing import assert_frame_equal
 import conftest as ct
 import pytest as pt
 import os
+import pydoop.hdfs as pdh
+
+# import package to test function from
+import adruk_tools.adr_functions as adr
+
+# Import testing packages
+import pytest
+from unittest import mock
 
 
+#---------------------LEFTOVER: parameters belong to test_cull_columns(), tidy this up ---------------
 # Provide explicit file path to updated function, otherwise the old version in the package is referenced
-adr = SourceFileLoader("adr_functions", "/home/cdsw/adruk_tools/adruk_tools/adr_functions.py").load_module()
+adr = SourceFileLoader("adr_functions", 
+                       "/home/cdsw/adruk_tools/adruk_tools/adr_functions.py").load_module()
 
 
 # Create a test dataset to be used throughout the tests. This is intially created in Spark
@@ -98,3 +109,92 @@ def test_cull_columns(spark_context):
   os.system(f'hdfs dfs -rm -r {write_path}')
   os.system(f'hdfs dfs -rm -r {write_path_cull}')
   
+
+def test_hdfs_to_pandas():
+    """Tests for read_csv_from_hdfs function."""
+    
+    # Use a patch to mock the result of spark.read
+    # Note the order of the parameters here: self, mock_read, spark
+    # The fixtures are listed at the end, and any mocks before this
+    # Note that multiple mock decorators work in reverse order - the one at the top
+    #   is the last listed in the function and vice versa
+    
+    @mock.patch("pyspark.sql.SparkSession.read")
+    def test_hdfs_to_pandas(self, mock_read, spark):
+        """Test the expected functionality."""
+        
+        # Arrange and Act
+        sdf = adr.hdfs_to_pandas(spark, "filepath")
+        
+        # Assert
+        mock_read.csv.assert_called_with("filepath",
+                                         header=True,
+                                         inferSchema=True)
+        
+        
+        
+def test_pandas_to_hdfs():
+  """
+  test for function pandas_to_hdfs
+  writes a dummy dataset to HDFS, 
+  then checks if it arrived, 
+  then deletes it
+  """
+  #-----------
+  # parameters
+  #-----------
+  
+  # unclear if this directory has read/write access for everyone
+  write_path = '/dapsen/de_testing/deleteme.csv'
+
+  # make pandas df; contents are irrelevant
+  dataframe = pd.DataFrame({'col1':[1,2,3],
+                           'col2' : ['dummy file made for unit test', 
+                                     'delete it on sight', 
+                                     'no really, delete it.']})
+
+  # write dataframe to HDFS
+  adr.pandas_to_hdfs(dataframe = dataframe, 
+                      write_path = f'{write_path}' )
+
+  # TEST: check it has been written
+  assert pdh.path.exists(write_path)
+
+  # delete dataframe from HDFS
+  os.system(f'hdfs dfs -rm -r {write_path}')
+
+  
+
+
+def test_pydoop_read():
+  """
+  test for function pandas_to_hdfs
+  writes a dummy dataset to HDFS,
+  then checks if it arrived,
+  then deletes it
+  """
+  # -----------
+  # parameters
+  # -----------
+
+  # unclear if this directory has read/write access for everyone
+  # LEFTOVER: use mocking instead
+  write_path = '/dapsen/de_testing/deleteme.csv'
+
+  # make pandas df; contents are irrelevant
+  dataframe = pd.DataFrame({'col1': [1, 2, 3],
+                            'col2': ['dummy file made for unit test',
+                                     'delete it on sight',
+                                     'no really, delete it.']})
+
+  # write dataframe to HDFS
+  adr.pandas_to_hdfs(dataframe=dataframe,
+                      write_path=f'{write_path}')
+
+  df = adr.pydoop_read(write_path)
+
+  # TEST: check if the data is in memory
+  assert df is not None
+
+  # delete dataframe from HDFS
+  os.system(f'hdfs dfs -rm -r {write_path}')
