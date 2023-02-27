@@ -1,7 +1,9 @@
 """
-Script to test cleaning functions after being linted.
-
-Will be removed once all functions in package have been linted
+LANGUAGE: pyspark
+* tests functions from describe module after being linted
+* will be removed once all functions in package have been linted
+AUTHOR: Nathan Shaw
+DATE: 2022
 """
 
 import adruk_tools.adr_functions as adr

@@ -1,3 +1,13 @@
+"""
+LANGUAGE: pyspark
+WHAT IT DOES:
+* tests functions from adr_functions module after being linted
+* will be removed once all functions in package have been linted
+AUTHOR: Nathan Shaw
+DATE: 2022
+"""
+
+
 from importlib.machinery import SourceFileLoader
 adr = SourceFileLoader("adr_functions",
                        "/home/cdsw/adruk_tools/adruk_tools/adr_functions.py"
@@ -52,16 +62,6 @@ anom = adr.anonymise_ids(dummy, ['nino'])
 
 # Generate ids
 gen = adr.generate_ids(spark, dummy, ['nino'], 'index')
-
-# Glob on directory
-adr.spark_glob(host='hechlj',
-               directory='/dapsen/landing_zone/hmrc/self_assessment/2017/v1'
-               )
-
-# Glob on directory
-adr.spark_glob_all(host='hechlj',
-                   directory='/dapsen/landing_zone/hmrc/self_assessment/2017/v1'
-                   )
 
 # Lookup class
 test = adr.Lookup('key', 'value')

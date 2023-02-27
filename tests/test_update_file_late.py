@@ -1,3 +1,5 @@
+"LEFTOVER: convert to proper unit test"
+
 import pandas as pd
 
 from importlib.machinery import SourceFileLoader
@@ -41,6 +43,12 @@ adr.update_file_with_template('/home/cdsw/adruk_tools/nino.py',
                               template,
                               'Name')
 
+adr.update_file_later_with_template('/home/cdsw/adruk_tools/nino.py',
+                                    template,
+                                    'Name',
+                                    ['Surname'],
+                                    ['Name', 'Age', 'Sex'],
+                                    ['Name', 'Age', 'Sex', 'Occ', 'Alive'])
 
 # 2 Check if file doesnt exist, it writes template
 # ------------
@@ -48,6 +56,13 @@ adr.update_file_with_template('/home/cdsw/adruk_tools/nino.py',
 adr.update_file_with_template('/home/cdsw/adruk_tools/test_temp.csv',
                               template,
                               'Name')
+
+adr.update_file_later_with_template('/home/cdsw/adruk_tools/test_temp.csv',
+                                    template,
+                                    'Name',
+                                    ['Surname'],
+                                    ['Name', 'Age', 'Sex'],
+                                    ['Name', 'Age', 'Sex', 'Occ', 'Alive'])
 
 
 # 3 If any input only has one column (i.e. a pandas series) it should be converted
@@ -72,10 +87,25 @@ adr.update_file_with_template('/home/cdsw/adruk_tools/test_data.csv',
                               template_one_column,
                               'Name')
 
+adr.update_file_later_with_template('/home/cdsw/adruk_tools/test_data.csv',
+                                    template_one_column,
+                                    'Name',
+                                    [],
+                                    ['Name', 'Age', 'Sex'],
+                                    ['Name', 'Age'])
+
+
 # Test one column input file
 adr.update_file_with_template('/home/cdsw/adruk_tools/test_data_one_col.csv',
                               template,
                               'Name')
+
+adr.update_file_later_with_template('/home/cdsw/adruk_tools/test_data_one_col.csv',
+                                    template,
+                                    'Name',
+                                    ['Surname'],
+                                    ['Name'],
+                                    ['Name', 'Occ', 'Alive'])
 
 # 4 General run - see github for comparision to datasets created
 # using old functions.
@@ -85,9 +115,9 @@ adr.update_file_with_template('/home/cdsw/adruk_tools/test_data.csv',
                               template,
                               'Name')
 
-adr.update_file_with_template('/home/cdsw/adruk_tools/test_data.csv',
-                              template,
-                              'Name',
-                              ['Surname'],
-                              ['Name', 'Age', 'Sex'],
-                              ['Name', 'Age', 'Sex', 'Occ', 'Alive'])
+adr.update_file_later_with_template('/home/cdsw/adruk_tools/test_data.csv',
+                                    template,
+                                    'Name',
+                                    ['Surname'],
+                                    ['Name', 'Age', 'Sex'],
+                                    ['Name', 'Age', 'Sex', 'Occ', 'Alive'])
