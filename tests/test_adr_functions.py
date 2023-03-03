@@ -10,7 +10,14 @@ from importlib.machinery import SourceFileLoader
 # import standard packages
 import pandas as pd
 from pandas.testing import assert_frame_equal
+
+#this is to be able to import conftest
+repo_path = '/home/cdsw/adruk_tools/tests'
+import sys
+# map local repo so we can import local libraries
+sys.path.append(repo_path)
 import conftest as ct
+
 import pytest as pt
 import os
 import pydoop.hdfs as pdh
@@ -198,3 +205,63 @@ def test_pydoop_read():
 
   # delete dataframe from HDFS
   os.system(f'hdfs dfs -rm -r {write_path}')
+
+  
+  
+def test_column_recode(spark_context):
+
+    """
+    :WHAT IT IS: Python function
+    :WHAT IT DOES: tests column_recode function in adr_functions.py
+    """
+    # create dataframe
+    input_dataset = spark_context.createDataFrame(test_rows, test_columns)
+
+    expected_output = adr.column_recode(
+        input_dataset,
+        'name', {'Nathan': 'Nat', 'Tom': 'Tomas', 'Joanna': 'Jo'}, 'Other')
+    
+    expected_output = expected_output.select(['name','year'])
+
+    expected_output = ct.get_sorted_data_frame(expected_output.toPandas(),
+                                               ['name', 'year'])
+
+    real_output = pd.DataFrame([
+                                ['Jo', '2008'],
+                                ['Nat', '2008'],
+                                ['Nat', '2008'],
+                                ['Nat', '2008'],
+                                ['Nat', '2009'],
+                                ['Nat', '2009'],
+                                ['Nat', None],
+                                ['Other', '2008'],
+                                ['Other', '2009'],
+                                ['Other', '2009'],
+                                ['Tomas', '2008']
+                                 ],
+                               columns=['name', 'year'])
+
+    real_output = ct.get_sorted_data_frame(real_output, ['name', 'year'])
+
+    # Test equality between expected and generated outcomes
+    pd.testing.assert_frame_equal(expected_output, real_output, check_like=True)
+
+
+def test_wrong_type(spark_context):
+    """
+    Test that the type of the recoded column is string
+    """
+
+    # Create dataframe with column type not a string
+    input_dataset = spark_context.createDataFrame(test_rows, test_columns)
+    
+    try:
+      with pytest.raises(TypeError) as context:
+          expected_output_df = adr.column_recode(
+              input_dataset,
+              'age', {'Nathan': 'Nat', 'Tomas': 'Tom', 'Joanna': 2}, 'Other')
+    #return expected_output_df
+    except:
+      assert isinstance(context.value, TypeError)
+      assert str(context.value) == 'Column must be a string'
+      
