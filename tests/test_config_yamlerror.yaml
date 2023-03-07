@@ -1,0 +1,8 @@
+    settings:
+   file: test/file/test.csv
+  columns:
+     - column_1
+     - column_2
+     - column_3
+   test_data: True
+    number_of_columns: 3
