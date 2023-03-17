@@ -1,6 +1,6 @@
 """
 WHAT IT IS: python script
-WHAT IT DOES: Runs a set of unit tests on the function open_taml_config
+WHAT IT DOES: Runs a set of unit tests on the function open_yaml_config
 AUTHOR: Veronica Ferreiros Lopez
 CREATED: 22/02/2023
 LAST UPDATE: 24/02/2023
