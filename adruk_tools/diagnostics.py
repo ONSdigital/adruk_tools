@@ -192,3 +192,62 @@ def make_lookup_metrics(dataframe,
   dataframe.unpersist()
 
   return metrics
+
+
+
+def columns_qa(dataframe_to_check,
+               required_columns:list,
+               output_prefix:str)->dict:
+  """
+  checks for missing and unexpected columns in a dataset
+  
+  author
+  --------
+  johannes hechler
+  
+  date
+  --------
+  08/12/2022
+  
+  version
+  -------
+  0.0.1
+  
+  returns
+  -------
+  dictionary with 2 keys, each prefixed with output_prefix
+  * columns_missing
+  * columns_unexpected
+  
+  parameters
+  ----------
+  dataframe_to_check = the dataset whose columns to check
+    data type = spark dataframe
+  
+  required_columns = the columns you expect in the dataframe
+    data type = list
+
+  output_prefix = a string to put in front of the output dictionary keys
+    data type = string
+
+  
+  example
+  -------
+  >>> columns_qa(dataframe_to_check = my_big_dataset,
+                 required_columns = ['age', 'sex'],
+                 output_prefix = 'my_big_dataset_')
+  """
+  # make empty dictionary to collect metrics in
+  metrics = co.OrderedDict()
+  
+  # are any required columns missing from the dataframe?
+  metrics[f"{output_prefix}columns_missing"] = np.setdiff1d(required_columns, 
+                                                            dataframe_to_check.columns)
+
+  # are there any additional columns?
+  metrics[f"{output_prefix}columns_unexpected"] = np.setdiff1d(dataframe_to_check.columns, 
+                                                               required_columns)
+
+  return metrics
+
+
