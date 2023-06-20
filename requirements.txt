@@ -1,4 +1,4 @@
 openpyxl>=3.0.9
 pydoop>=2.0.0
-yaml>=6.0
+pyyaml>=6.0
 de_utils>=0.9.3
