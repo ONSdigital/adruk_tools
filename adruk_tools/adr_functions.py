@@ -13,6 +13,71 @@ import pyspark.sql.window as W
 import de_utils.catalog_utils._catalog_utils as cu
 
 
+
+
+def extract_salt(project_name:str, instance_value:str):
+  """
+  reads in the team's master SALT function on HDFS and extracts 1 value
+  
+  language
+  --------
+  Python
+  
+  
+  returns
+  -------
+  salt value
+  
+  return type
+  -----------
+  string
+  
+  author
+  ------
+  Alex Anthony
+  
+  
+  date
+  ------
+  22/03/2023
+  
+  
+  version
+  -------
+  0.0.1
+  
+  
+  dependencies
+  ------------
+  hdfs_to_pandas()
+  
+  parameters
+  ----------
+  project_name = what value to filter the 'project' column on
+  `(datatype = string)`, e.g. 'NEED'
+   instance_value = what value to filter the 'instance' column on
+  `(datatype = string)`, e.g. 'wave1'
+
+  example
+  -------
+  >>> extract_salt( project_name = 'GUIE',
+                    instance_value = 'bjdbfs')
+
+  """
+
+  
+  salts = hdfs_to_pandas('/dapsen/workspace_zone/adruk/ons194.csv')
+
+
+  salt = (salts[(salts['project'] == project_name) &
+               (salts['instance'] == instance_value)]
+               ['salt'].values[0])
+  
+  return salt 
+
+
+
+
 def write_hive_table(database: str, table_name: str, dataset, table_properties: dict):
     """
     :LANGUAGE: pyspark
