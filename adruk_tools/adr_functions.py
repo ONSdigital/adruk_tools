@@ -66,7 +66,7 @@ def extract_salt(project_name:str, instance_value:str):
   """
 
   
-  salts = hdfs_to_pandas('/dapsen/landing_zone/ons_derived/adruk_salts')
+  salts = hdfs_to_pandas('/dapsen/landing_zone/ons_derived/adruk_salts/ADRUKSalts.csv')
 
 
   salt = (salts[(salts['project'] == project_name) &
