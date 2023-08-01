@@ -1,9 +1,61 @@
 import pyspark.sql.functions as F
+import pyspark.sql.window as W
 import pandas as pd
 import numpy as np
 import collections as co
 import adruk_tools.adr_functions as adr
 
+def duplicates_flag(columns_to_flag:list):
+  """
+  creates a boolean spark column object flagging duplicate values in some source columns
+  
+  language
+  --------
+  pyspark
+  
+  author
+  ------
+  johannes hechler; idea: elias kellow
+  
+  date
+  ----
+  31/07/2023
+  
+  version
+  -------
+  0.0.1
+  
+  return type
+  -----------
+  spark column object, boolean
+  
+  known issues
+  ------------
+  fails on NULL values. Always considers them unique.
+  Due to F.count() behaviour.
+  May be solved with higher versions of pyspark.
+    
+  parameters
+  ----------
+  * columns_to_flag: columns to check for duplication
+    * type = list of column objects 
+    * e.g. [F.col('column1'), F.trim('column2')]
+  
+  examples
+  -------
+  >>> duplicates_flag( columns_to_flag = [F.col('column1')] )
+                                          
+  >>> duplicates_flag( columns_to_flag = [F.col('column1'), 
+                                          F.trim(F.col('column2'))] )
+  """
+  
+  # specify how to group the dataframe
+  window_spec = W.Window.partitionBy(columns_to_flag)
+
+  # create flag
+  # F.count() only accepts 1 string, so must concatenate in case there 
+  # are several columns
+  return F.count(F.concat(*columns_to_flag)).over(window_spec) >1
 
 
 def list_columns_by_file(cluster, paths):
