@@ -1,5 +1,52 @@
 import pyspark.sql.functions as F
-# import cleaning_postcode_prep
+
+def clean_header(column):
+  """
+  Cleans column headers by trimming leading/trailing whitespace, replace spaces 
+  with underscores and makes everything lowercase. 
+  
+  language
+  --------
+  python
+    
+  returns
+  -------
+  cleaned column headers 
+  
+  return type
+  -----------
+  string
+  
+  author
+  ------
+  Alex Anthony
+    
+  date
+  ------
+  21/08/2023  
+  
+  version
+  -------
+  0.0.1
+    
+  dependencies
+  ------------
+  none
+  
+  parameters
+  ----------
+  columns = the name of the column header that are to be cleaned
+  `(datatype = string)`.
+
+  example
+  -------
+  >>> clean_header('column_name')
+  
+  """
+  return column.strip().replace(' ','_').lower()
+
+  
+
 
 
 def remove_whitespace(column):
