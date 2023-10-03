@@ -160,7 +160,8 @@ def pydoop_read(file_path):
     return data
 
 
-def hdfs_to_pandas(file_path):
+def hdfs_to_pandas(file_path: str,
+                   sep = ',') -> pd.DataFrame():
     """
     :WHAT IT IS: Python function
     :WHAT IT DOES: reads in small csv dataset from HDFS without the need for a
@@ -170,37 +171,47 @@ def hdfs_to_pandas(file_path):
 
 
     :AUTHOR: Johannes Hechler
-    :DATE: 19/11/2021
-    :VERSION: 0.0.1
+    :DATE: 02/10/2023
+    :VERSION: 0.0.2
+    :CHANGE FROM 0.0.1: introduced sep argument
     :KNOWN ISSUES: only works on .csv files
 
     :PARAMETERS:
     * file_path = full path to file to import
         `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
+    * sep = field delimiter used in the input file.
+            Any accepted by pandas.read_csv().
+            Default = ','.
+        `(datatype = string, length = 1)`, e.g. '/'
 
     :EXAMPLE:
-    >>> pydoop_read(file_path = '/dapsen/workspace_zone/my_project/sample.csv')
+    >>> hdfs_to_pandas(file_path = '/dapsen/workspace_zone/my_project/sample.csv',
+                        sep = '|')
     """
 
     # read in file from HDFS
     with pdh.open(file_path, "r") as f:
-        data = pd.read_csv(f)
+        data = pd.read_csv(f,
+                           sep = sep)
         f.close()
 
     return data
 
 
-def pandas_to_hdfs(dataframe, write_path):
+def pandas_to_hdfs(dataframe: pd.DataFrame(), 
+                   write_path: str,
+                   sep = ','):
     """
-    :WHAT IT IS: Python function
-    :WHAT IT DOES: write a pandas dataframe to HDFS as .csv without the need for
+    :LANGUAGE: Python
+    :WHAT IT DOES: write a pandas dataframe to HDFS without the need for
     a spark cluster
     :RETURNS: N/A
     :OUTPUT VARIABLE TYPE: N/A
 
     :AUTHOR: Johannes Hechler
-    :DATE: 09/11/2021
-    :VERSION: 0.0.1
+    :DATE: 02/10/2023
+    :VERSION: 0.0.2
+    :CHANGE FROM 0.0.1: introduced sep argument
     :KNOWN ISSUES: None
 
     :PARAMETERS:
@@ -208,15 +219,22 @@ def pandas_to_hdfs(dataframe, write_path):
         `(datatype = dataframe, no string)`, e.g. my_data
     * write_path = full destination file path including extension
         `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
+    * sep = field delimiter for the output file.
+            Any accepted by pandas.to_csv.
+            Default = ','.
+        `(datatype = string, length = 1)`, e.g. '|'
 
     :EXAMPLE:
     >>> pandas_to_hdfs( dataframe = my_data,
-                        write_path = '/dapsen/workspace_zone/my_project/sample.csv')
+                        write_path = '/dapsen/workspace_zone/my_project/sample.csv',
+                        sep = '|')
     """
 
     # write file from HDFS
     with pdh.open(write_path, "wt") as f:
-        dataframe.to_csv(f, index=False)
+        dataframe.to_csv(f, 
+                         sep = sep,
+                         index = False)
         f.close()
 
 
