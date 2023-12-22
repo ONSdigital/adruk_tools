@@ -161,81 +161,81 @@ def pydoop_read(file_path):
 
 
 def hdfs_to_pandas(file_path: str,
-                   sep = ',') -> pd.DataFrame():
-    """
-    :WHAT IT IS: Python function
-    :WHAT IT DOES: reads in small csv dataset from HDFS without the need for a
-    spark cluster
-    :RETURNS: dataframe
-    :OUTPUT VARIABLE TYPE: pandas
+                   **kwargs) -> pd.DataFrame():
+  """
+  :WHAT IT IS: Python function
+  :WHAT IT DOES: reads in small csv dataset from HDFS without the need for a
+  spark cluster
+  :RETURNS: dataframe
+  :OUTPUT VARIABLE TYPE: pandas
 
 
-    :AUTHOR: Johannes Hechler
-    :DATE: 02/10/2023
-    :VERSION: 0.0.2
-    :CHANGE FROM 0.0.1: introduced sep argument
-    :KNOWN ISSUES: only works on .csv files
+  :AUTHOR: Johannes Hechler
+  :DATE: 02/10/2023
+  :VERSION: 0.0.2
+  :CHANGE FROM 0.0.1: introduced sep argument
+  :KNOWN ISSUES: only works on .csv files
 
-    :PARAMETERS:
-    * file_path = full path to file to import
-        `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
-    * sep = field delimiter used in the input file.
-            Any accepted by pandas.read_csv().
-            Default = ','.
-        `(datatype = string, length = 1)`, e.g. '/'
+  :PARAMETERS:
+  * file_path = full path to file to import
+      `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
+  * kwargs = any further parameters you want to pass to pd.read_csv()
 
-    :EXAMPLE:
-    >>> hdfs_to_pandas(file_path = '/dapsen/workspace_zone/my_project/sample.csv',
-                        sep = '|')
-    """
+  :EXAMPLES:
+  >>> hdfs_to_pandas(file_path = '/dapsen/workspace_zone/my_project/sample.csv')
 
-    # read in file from HDFS
-    with pdh.open(file_path, "r") as f:
-        data = pd.read_csv(f,
-                           sep = sep)
-        f.close()
+  >>> hdfs_to_pandas(file_path = '/dapsen/workspace_zone/my_project/sample.csv',
+                      sep = '|')
+  """
 
-    return data
+  # read in file from HDFS
+  with pdh.open(file_path, "r") as f:
+    data = pd.read_csv(f, **kwargs)
+    f.close()
+
+  return data
 
 
 def pandas_to_hdfs(dataframe: pd.DataFrame(), 
                    write_path: str,
-                   sep = ','):
-    """
-    :LANGUAGE: Python
-    :WHAT IT DOES: write a pandas dataframe to HDFS without the need for
-    a spark cluster
-    :RETURNS: N/A
-    :OUTPUT VARIABLE TYPE: N/A
+                   **kwargs):
+  """
+  :LANGUAGE: Python
+  :WHAT IT DOES: write a pandas dataframe to HDFS without the need for
+  a spark cluster
+  :RETURNS: N/A
+  :OUTPUT VARIABLE TYPE: N/A
+  :NOTES: never writes out the dataframe index
 
-    :AUTHOR: Johannes Hechler
-    :DATE: 02/10/2023
-    :VERSION: 0.0.2
-    :CHANGE FROM 0.0.1: introduced sep argument
-    :KNOWN ISSUES: None
+  :AUTHOR: Johannes Hechler
+  :DATE: 02/10/2023
+  :VERSION: 0.0.2
+  :CHANGE FROM 0.0.1: introduced sep argument
+  :KNOWN ISSUES: None
 
-    :PARAMETERS:
-    * dataframe = pandas dataframe you want to write to HDFS
-        `(datatype = dataframe, no string)`, e.g. my_data
-    * write_path = full destination file path including extension
-        `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
-    * sep = field delimiter for the output file.
-            Any accepted by pandas.to_csv.
-            Default = ','.
-        `(datatype = string, length = 1)`, e.g. '|'
+  :PARAMETERS:
+  * dataframe = pandas dataframe you want to write to HDFS
+      `(datatype = dataframe, no string)`, e.g. my_data
+  * write_path = full destination file path including extension
+      `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/sample.csv'
+  * kwargs = any further parameters you want to pass to 
+    ... pd.DataFrame.to_csv()
 
-    :EXAMPLE:
-    >>> pandas_to_hdfs( dataframe = my_data,
+  :EXAMPLES:
+  >>> pandas_to_hdfs( dataframe = my_data,
+                      write_path = '/dapsen/workspace_zone/my_project/sample.csv')
+
+  >>> pandas_to_hdfs( dataframe = my_data,
                         write_path = '/dapsen/workspace_zone/my_project/sample.csv',
                         sep = '|')
     """
 
-    # write file from HDFS
-    with pdh.open(write_path, "wt") as f:
-        dataframe.to_csv(f, 
-                         sep = sep,
-                         index = False)
-        f.close()
+  # write file from HDFS
+  with pdh.open(write_path, "wt") as f:
+    dataframe.to_csv(f,
+                     index = False,
+                     **kwargs)
+    f.close()
 
 
 def cull_columns(cluster, old_files, reference_columns, directory_out):
