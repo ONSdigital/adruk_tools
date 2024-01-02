@@ -173,7 +173,7 @@ def hdfs_to_pandas(file_path: str,
   :AUTHOR: Johannes Hechler
   :DATE: 02/10/2023
   :VERSION: 0.0.2
-  :CHANGE FROM 0.0.1: introduced sep argument
+  :CHANGE FROM 0.0.1: accepts all pandas.read_csv() arguments
   :KNOWN ISSUES: only works on .csv files
 
   :PARAMETERS:
@@ -210,7 +210,7 @@ def pandas_to_hdfs(dataframe: pd.DataFrame(),
   :AUTHOR: Johannes Hechler
   :DATE: 02/10/2023
   :VERSION: 0.0.2
-  :CHANGE FROM 0.0.1: introduced sep argument
+  :CHANGE FROM 0.0.1: accepts all pandas.DataFrame.to_csv() arguments
   :KNOWN ISSUES: None
 
   :PARAMETERS:
