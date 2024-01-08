@@ -21,7 +21,6 @@ sys.path.append(repo_path)
 from importlib import reload
 import conftest as ct
 
-import pytest as pt
 import os
 import pydoop.hdfs as pdh
 
