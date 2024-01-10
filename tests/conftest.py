@@ -10,6 +10,7 @@ LAST UPDATE: 22/02/2022
 """
 
 from pyspark.sql import SparkSession
+import adruk_tools.adr_functions as adr
 import pytest
 import pandas as pd
 
@@ -37,6 +38,11 @@ def spark_context():
   yield spark
     
   spark.stop()
+
+
+@pytest.fixture(scope='session')
+def test_data(spark_context):
+  return adr.make_test_df(spark_context)
 
 # Additional functions used throughout testing scripts
 # ----------------------------------------------------
