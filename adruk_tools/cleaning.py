@@ -1,4 +1,76 @@
-import pyspark.sql.functions as F
+from pyspark.sql import (functions as F,
+                         types as T,
+                         window as W)
+
+def deduplicate_ordered(dataframe, 
+                        subset:list, 
+                        order:list):
+  """
+  language
+  --------
+  pyspark
+  
+  what it does
+  -------------
+  * drops duplicates from a spark dataframe, but doesn't incur the 
+  ... non-determinism of .dropDuplicates()
+  
+  returns
+  -------
+  deduplicated, ordered dataframe
+  
+  return type
+  -------------
+  spark dataframe
+
+  author
+  --------------
+  Johannes Hechler
+  
+  version
+  -------
+  0.0.1
+  
+  date
+  ----------------
+  10/01/2024
+
+  notes
+  -------------
+  * based on DAPCATS tip: 
+  ... https://gitlab-app-l-01/DAP_CATS/troubleshooting/python-troubleshooting/-/blob/master/window_drop_duplicates.ipynb
+
+
+  parameters
+  --------------
+  :dataframe = dataframe to deduplicate:
+    `(datatype = spark dataframe)`, e.g. my_duplicated_dataframe
+  :subset = names of columns to keep unique combinations of:
+    `(datatype = list of strings)`, e.g. ['age', 'sex']
+  :order = names of the variables to sort by, and their 
+  ...respective sort order as either F.desc() or F.asc():
+    `(datatype = list of column objects)`, e.g. [F.desc('income'), F.asc('date')]
+
+
+  example
+  ----------
+  >>> deduplicate_ordered(dataframe = my_duplicated_dataframe, 
+                          subset =  ['age', 'sex'], 
+                          order = [F.desc('income'), 
+                                      F.asc('date')])
+  """
+  # partition data by subset, 
+  # then number the records in each partition
+  # ... in the order of order_by
+  dataframe = dataframe.withColumn("row_number", 
+                                   F.row_number().\
+                                   over(W.Window.partitionBy(subset).\
+                                        orderBy(*order)
+                                       )
+                                  )
+
+  # filter by rank, then remove auxiliary ranking column
+  return dataframe.filter(F.col("row_number") == 1).drop('row_number')
 
 def clean_header(column):
   """
