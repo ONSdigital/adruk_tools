@@ -14,9 +14,10 @@ import adruk_tools.adr_functions as adr
 import pytest
 import pandas as pd
 
-# The pytest fixture prepares, and manages, the environment for testing - in this case create, yielding
-# and stopping a spark session.
-# To ensure the spark session is visible for all tests accross many modules, scope variable is set to session
+# The pytest fixture prepares, and manages, the environment for testing -
+# ...in this case create, yielding and stopping a spark session.
+# To ensure the spark session is visible for all tests accross many modules, 
+# scope variable is set to session
 # implying the spark session stays open for the entirity of the test.
 # See here for further info: https://docs.pytest.org/en/6.2.x/fixture.html#funcargs
 

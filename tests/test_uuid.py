@@ -38,3 +38,8 @@ class TestUuidPython(object):
   #3. are all elements unique?
   def test_all_unique(self):
     assert len(set(self.test_data)) == self.n_uuids
+
+  #4. are no elements NULL?
+  def test_no_null(self):
+    assert sum([element for element in self.test_data if element is None]) == 0
+    
