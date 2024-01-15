@@ -1,3 +1,14 @@
+# Provide explicit file path to updated function, otherwise the old version in the
+# package is referenced. At least was for me
+#this is to be able to import conftest
+repo_path = '/home/cdsw/adruk_tools/tests'
+import sys
+# map local repo so we can import local libraries
+sys.path.append(repo_path)
+
+import conftest as ct
+
+import pyspark.sql as ps
 import adruk_tools.uuid as u
 import pytest
 
@@ -43,3 +54,11 @@ class TestUuidPython(object):
   def test_no_null(self):
     assert sum([element for element in self.test_data if element is None]) == 0
     
+
+def test_uuid_pyspark(test_data):
+  """tests function make_pyspark_uuid()"""
+  # run the function and produce output to test 
+  actual = test_data.withColumn('uuid', 
+                                u.make_pyspark_uuids())
+  
+  assert actual.select('uuid').dropDuplicates().count() == test_data.count()
