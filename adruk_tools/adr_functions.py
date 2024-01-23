@@ -5,13 +5,14 @@ import pandas as pd
 import pathlib
 import yaml as Y
 
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StringType
-import pyspark.sql.functions as F
-import pyspark.sql.types as T
-import pyspark.sql.window as W
-import de_utils.catalog_utils._catalog_utils as cu
+from pyspark.sql import (SparkSession,
+                         types as T,
+                         functions as F,
+                         window as W)
 
+# ONS packages
+import de_utils.catalog_utils._catalog_utils as cu
+import adruk_tools.uuid as uuid
 
 
 
@@ -360,7 +361,7 @@ def column_recode(dataframe, column_to_recode, recode_dict, non_matching_value):
     +-----+
     """
 
-    if not isinstance(dataframe.schema[column_to_recode].dataType, StringType):
+    if not isinstance(dataframe.schema[column_to_recode].dataType, T.StringType):
         raise TypeError("Column nust be a string")
 
     # Start constructing SQL query
@@ -1103,10 +1104,10 @@ def anonymise_ids(df, id_cols, prefix = None):
     else:
         df = df.withColumn("id_cols_concat", F.col(*id_cols))
 
-    # Hash the data in the specified column using SHA256,
+    # create universally unique values
     # making sure column is of string type
-    df = df.withColumn(
-        adr_id_column, F.sha2(F.col("id_cols_concat").cast("string"), 256)
+    df = df.withColumn(adr_id_column, 
+                       uuid.make_pyspark_uuids()
     )
 
     # Prefix string if selected
