@@ -1969,3 +1969,70 @@ def open_yaml_config(file_path):
           raise error
         
     return config
+  
+def read_and_stack(cluster, files_to_stack, end_slice = False):
+  """
+  From a list of Tab delimited .txt files reads each of them into a dataframe and stacks them
+  independently of their schema
+    
+  Parameters
+  ----------
+  cluster: spark session
+  files_to_stack (lst): a list of files to stack
+  end_slice (Boolean): Default is False, this step was required for GUIE 3.1 and 3.2, but not 3.3
+       
+  Returns
+  -------  
+  Spark DataFrame containing the stacked files
+  
+  Author
+  ----------
+  Silvia Bardoni, Nathan Shaw
+
+  Notes
+  ----------
+  Uses a function backported from spark > 3 into de_utils that allows to
+  stack datasets with different schemas, and assign missing column values to None
+  
+  """
+  
+  # Storing loaded dataframes into a list so they can be merged.
+  dataframes = []
+  for file in files_to_stack:
+      # Mark what file is being processed
+      filename = os.path.basename(file)
+  
+      print(f'Reading {filename}')
+  
+      dataframe = cluster.read.option('header', 'true')\
+                  .option('inferSchema', 'true')\
+                  .option('delimiter', '\t')\
+                  .csv(file)
+
+      # Make all column names lower case so columns of the same
+      # name always get stacked
+
+      for column in dataframe.columns:
+        dataframe = dataframe.withColumnRenamed(column, column.lower())
+
+      # All column names need the final 6 characters to be removed which are
+      # always preceded by an underscore. Instead of using a slice,
+      # I have split the string based on the final _ incase
+      # in the future, the portion of string to be cut is not 6 characters.
+      # 05/10/23 - added setting to toggle this off, not required for wave 3.3 for example 
+      if end_slice == True:
+        dataframe = dataframe.toDF(*(c.rsplit('_', 1)[0] for c in dataframe.columns))
+
+      # Add column to record input file name
+      dataframe = dataframe.withColumn("raw_file", F.lit(filename))
+
+      dataframes.append(dataframe)
+      
+  # Stack dataset:
+  # Uses a function backported from spark > 3 into de_utils, we can easily
+  # stack datasets with different schemas, and assign missing column values to None
+  
+  stacked_datasets = su.union_by_name(dfs = dataframes,
+                                   allow_missing_cols = True,
+                                   fill = None)
+  return stacked_datasets
