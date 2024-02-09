@@ -304,3 +304,54 @@ def columns_qa(dataframe_to_check,
   return metrics
 
 
+
+def countby(dataframe : pd.DataFrame(),
+            grouping_column : list) -> pd.DataFrame():
+  """
+  count records in a dataframe, grouped by chosen column(s)
+  
+  returns
+  -------
+  count of records, grouped by chosen column(s)
+  
+  return type
+  -----------
+  pandas Dataframe
+  
+  author
+  ------
+  johannes hechler
+  
+  date
+  ----
+  09/02/2024
+  
+  version
+  -------
+  0.1
+  
+  parameters
+  -------
+  dataframe = the dataframe to count records in
+  `(datatype = pandas Dataframe)`, e.g. my_dataframe
+   grouping_column = name of column to group by
+  `(datatype = list of strings)`, e.g. ['sex', 'age']
+
+  example
+  -------
+  >>> countby(dataframe = my_dataframe,
+              grouping_column = ['sex', 'age'])
+  """
+  # count records. NB NULL values are included as a group
+  grouped_counts = pd.DataFrame(dataframe.
+                                groupby(grouping_column,
+                                        dropna = False).
+                                size(),
+                                columns = ['count'])
+  
+  sorted_counts = grouped_counts.sort_values(by = 'count',
+                                             ascending = False,
+                                             na_position = 'first') # shows NULL values on top
+
+  return sorted_counts
+
