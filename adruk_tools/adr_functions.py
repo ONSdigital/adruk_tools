@@ -11,8 +11,8 @@ from pyspark.sql import (SparkSession,
                          window as W)
 
 # ONS packages
-from de_utils.catalog_utils import (_catalog_utils as cu,
-                                    _spark_utils as su)
+import de_utils.catalog_utils._catalog_utils as cu
+import de_utils.spark_utils._spark_utils as su
 import adruk_tools.uuid as uuid
 
 
