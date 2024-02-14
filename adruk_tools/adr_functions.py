@@ -1971,7 +1971,7 @@ def open_yaml_config(file_path):
         
     return config
   
-def read_and_stack(cluster, files_to_stack, end_slice = False):
+def read_and_stack(cluster, files_to_stack, delim = ',', end_slice = False):
   """
   From a list of Tab delimited .txt files reads each of them into a dataframe and stacks them
   independently of their schema
@@ -1980,6 +1980,7 @@ def read_and_stack(cluster, files_to_stack, end_slice = False):
   ----------
   cluster: spark session
   files_to_stack (lst): a list of files to stack
+  delim (Str): specify the delimiter in the csv files you are reading, default comma
   end_slice (Boolean): Default is False, this step was required for GUIE 3.1 and 3.2, but not 3.3
        
   Returns
@@ -2007,7 +2008,7 @@ def read_and_stack(cluster, files_to_stack, end_slice = False):
   
       dataframe = cluster.read.option('header', 'true')\
                   .option('inferSchema', 'true')\
-                  .option('delimiter', '\t')\
+                  .option('delimiter', delim)\
                   .csv(file)
 
       # Make all column names lower case so columns of the same
@@ -2025,7 +2026,7 @@ def read_and_stack(cluster, files_to_stack, end_slice = False):
         dataframe = dataframe.toDF(*(c.rsplit('_', 1)[0] for c in dataframe.columns))
 
       # Add column to record input file name
-      dataframe = dataframe.withColumn("raw_file", F.lit(filename))
+      dataframe = dataframe.withColumn("source_file", F.lit(filename))
 
       dataframes.append(dataframe)
       
