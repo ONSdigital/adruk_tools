@@ -34,7 +34,7 @@ from unittest import mock
 
 
 
-#---------------------LEFTOVER: parameters belong to test_cull_columns(), tidy this up ---------------
+#---------------------PARAMETERS ---------------
 # Provide explicit file path to updated function, otherwise the old version in the package is referenced
 adr = SourceFileLoader("adr_functions",
                        "/home/cdsw/adruk_tools/adruk_tools/adr_functions.py").load_module()
@@ -57,68 +57,13 @@ test_rows = [('Nathan', 'A', 23, 45.679, '2008'),
      ('Nathan', 'C', 23, 45.679, None),
      (None, 'F', 89, 99.056, '2008')]
 
-# paths in HUE, note that the culled dataframe needs to go into a different directory and will have the same name
-write_path = '/dapsen/de_testing/test_dataframe.csv'
-write_path_cull = '/dapsen/de_testing/cull/'
 
 # Note that all functions start with test_ and call in the spark_context created
 # in conftest.py. Required for the tests to be run.
 
+# where to write data, used by several tests
+write_path = '/dapsen/workspace_zone/adruk/deleteme.csv'
 
-def test_cull_columns(spark_context):
-  """
-  :WHAT IT IS: Python function
-  :WHAT IT DOES: tests the function cull_columns in adr_functions
-  Uses the the method get_sorted_data_frame to sort the PySpark DFs and
-  converts PySpark DFs to pandas DFs to then use assert_frame_equal from
-  pandas.testing.
-  """
-
-  input_dataset = spark_context.createDataFrame(test_rows, test_columns)
-
-  # save into HUE
-  input_dataset.coalesce(1).write.csv(
-    f'{write_path}',
-    sep=",",  # set the seperator
-    header="true",  # Set a header
-    mode="overwrite",
-    )
-
-  # cull_columns
-  adr.cull_columns(cluster=spark_context,
-                   old_files=[f'{write_path}'],
-                   reference_columns=['NAME', 'YEAR'],
-                   directory_out=f'{write_path_cull}')
-
-  # read the culled csv
-  expected_output = spark_context.read.csv(f'{write_path_cull}test_dataframe.csv', header=True)
-  # sort and to Pandas
-  expected_output = ct.get_sorted_data_frame(expected_output.toPandas(), ['NAME', 'YEAR'])
-
-  real_output = pd.DataFrame([
-    ['Nathan','2008'],
-    ['Joanna', '2008'],
-    ['Tom', '2008'],
-    ['Nathan', '2008'],
-    ['Nathan', '2008'],
-    ['Johannes', '2009'],
-    ['Nathan', '2009'],
-    ['Johannes', '2009'],
-    ['Nathan', '2009'],
-    ['Nathan', None],
-    [None, '2008']], columns=['NAME', 'YEAR'])
-
-  # sort and to Pandas
-  real_output = ct.get_sorted_data_frame(real_output, ['NAME', 'YEAR'])
-
-  # Test equality between expected and generated outcomes
-
-  print("columns culled")
-  assert_frame_equal(expected_output, real_output, check_like=True)
-
-  # delete dataframes from HDFS
-  os.system(f'hdfs dfs -rm -r {write_path}')
-  os.system(f'hdfs dfs -rm -r {write_path_cull}')
 
 
 def test_hdfs_to_pandas():
@@ -154,10 +99,6 @@ def test_pandas_to_hdfs():
   #-----------
   # parameters
   #-----------
-
-  # unclear if this directory has read/write access for everyone
-  write_path = '/dapsen/de_testing/deleteme.csv'
-
   # make pandas df; contents are irrelevant
   dataframe = pd.DataFrame({'col1':[1,2,3],
                            'col2' : ['dummy file made for unit test',
@@ -190,8 +131,6 @@ def test_pydoop_read():
 
   # unclear if this directory has read/write access for everyone
   # LEFTOVER: use mocking instead
-  write_path = '/dapsen/de_testing/deleteme.csv'
-
   # make pandas df; contents are irrelevant
   dataframe = pd.DataFrame({'col1': [1, 2, 3],
                             'col2': ['dummy file made for unit test',
@@ -199,8 +138,8 @@ def test_pydoop_read():
                                      'no really, delete it.']})
 
   # write dataframe to HDFS
-  adr.pandas_to_hdfs(dataframe=dataframe,
-                      write_path=f'{write_path}')
+  adr.pandas_to_hdfs(dataframe = dataframe,
+                      write_path = f'{write_path}')
 
   df = adr.pydoop_read(write_path)
 

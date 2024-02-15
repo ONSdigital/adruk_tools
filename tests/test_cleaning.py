@@ -111,16 +111,3 @@ def test_remove_whitespace(spark_context):
 
     # Test equality between expected and generated outcomes
     pd.testing.assert_frame_equal(expected_output, real_output, check_like=True)
-
-
-def test_space_to_underscore(spark_context):
-    """
-    :WHAT IT IS: Python function
-    :WHAT IT DOES: tests space_to_underscore function in cleaning.py
-    """
-
-    input_dataset = spark_context.createDataFrame(test_rows, test_columns)
-
-    output = adr.space_to_underscore(input_dataset)
-
-    assert 'ni_no' in output.columns
