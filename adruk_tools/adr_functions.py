@@ -4,6 +4,7 @@ import pydoop.hdfs as pdh
 import pandas as pd
 import pathlib
 import yaml as Y
+import json
 
 from pyspark.sql import (SparkSession,
                          types as T,
@@ -245,6 +246,45 @@ def pandas_to_hdfs(dataframe: pd.DataFrame(),
     f.close()
 
 
+def hdfs_json_to_dict(file_path: str) -> dict:
+  """
+  reads in small .json files from HDFS without spark
+  
+  language
+  --------
+  python
+  
+  returns
+  -------
+  dictionary
+  
+  author
+  ------
+  johannes hechler
+  
+  date
+  ----
+  15/02/2024
+  
+  version
+  -------
+  0.0.1
+
+  parameters
+  ----------
+  * file_path = full path to file to import
+      `(datatype = string)`, e.g. '/dapsen/workspace_zone/my_project/delivery.mani'
+
+  :EXAMPLES:
+  >>> hdfs_json_to_dict(file_path = '/dapsen/workspace_zone/my_project/delivery.mani')
+
+  """
+
+  # read in file from HDFS
+  data = pydoop_read(file_path)
+  
+  # parse data to dict
+  return json.loads(data)
 
 
 def column_recode(dataframe, column_to_recode, recode_dict, non_matching_value):
