@@ -17,15 +17,16 @@ import adruk_tools.uuid as uuid
 
 
 
-def extract_salt(project_name:str, instance_value:str):
+def extract_salt(filepath:str,
+                 project_name:str, 
+                 instance_value:str):
   """
-  reads in the team's master SALT function on HDFS and extracts 1 value
+  reads in the master SALT file on HDFS and extracts 1 value
   
   language
   --------
   Python
-  
-  
+    
   returns
   -------
   salt value
@@ -36,18 +37,19 @@ def extract_salt(project_name:str, instance_value:str):
   
   author
   ------
-  Alex Anthony
-  
-  
+  Alex Anthony, johannes hechler
+    
   date
   ------
-  22/03/2023
-  
+  14/02/2024
   
   version
   -------
-  0.0.1
-  
+  0.0.2
+
+  change log
+  -------
+  0.0.1 > 0.0.2 : add parameter filepath to specify different file
   
   dependencies
   ------------
@@ -55,6 +57,8 @@ def extract_salt(project_name:str, instance_value:str):
   
   parameters
   ----------
+  filepath = full path to file holding salts
+  `(datatype = string)`, e.g. '/dapsen/landing_zone/adruksalts/salts.csv'
   project_name = what value to filter the 'project' column on
   `(datatype = string)`, e.g. 'NEED'
    instance_value = what value to filter the 'instance' column on
@@ -62,13 +66,14 @@ def extract_salt(project_name:str, instance_value:str):
 
   example
   -------
-  >>> extract_salt( project_name = 'GUIE',
+  >>> extract_salt( filepath = '/myfiles/myfile.csv',
+                    project_name = 'GUIE',
                     instance_value = 'bjdbfs')
 
   """
 
   
-  salts = hdfs_to_pandas('/dapsen/landing_zone/ons_derived/adruk_salts/ADRUKSalts.csv')
+  salts = hdfs_to_pandas(filepath)
 
 
   salt = (salts[(salts['project'] == project_name) &
