@@ -111,3 +111,23 @@ def test_remove_whitespace(spark_context):
 
     # Test equality between expected and generated outcomes
     pd.testing.assert_frame_equal(expected_output, real_output, check_like=True)
+
+class TestCleanHeader(object):
+  """
+  tests function clean_header()
+  
+  AUTHOR: johannes hechler
+  DATE: 23/02/2024
+  """
+  
+  # is upper case changed to lower?
+  def test_lower(self):
+    assert adr.clean_header('LOWER') == 'lower'
+
+  # is upper case changed to lower?  
+  def test_stripped(self):
+    assert adr.clean_header(' text ') == 'text'
+    
+    # is upper case changed to lower?  
+  def test_underscore(self):
+    assert adr.clean_header('under score') == 'under_score'
