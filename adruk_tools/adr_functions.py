@@ -5,6 +5,7 @@ import pandas as pd
 import pathlib
 import yaml as Y
 import json
+import re
 
 from pyspark.sql import (SparkSession,
                          types as T,
@@ -1480,7 +1481,7 @@ def open_yaml_config(file_path):
         
     return config
   
-def read_and_stack(cluster, files_to_stack, delim = ',', end_slice = False):
+def read_and_stack(cluster, files_to_stack, delim = ',', regex_to_remove = None, source_column_name = 'source_file'):
   """
   From a list of Tab delimited .txt files reads each of them into a dataframe and stacks them
   independently of their schema
@@ -1490,7 +1491,10 @@ def read_and_stack(cluster, files_to_stack, delim = ',', end_slice = False):
   cluster: spark session
   files_to_stack (lst): a list of files to stack
   delim (Str): specify the delimiter in the csv files you are reading, default comma
-  end_slice (Boolean): Default is False, this step was required for GUIE 3.1 and 3.2, but not 3.3
+  regex_to_remove (Str): Default is None, regex pattern to be removed from all column headers 
+  Set to None to toggle off
+  source_column_name (Str): Default is 'source_file', the name of the column created which states 
+  which file the original data came from
        
   Returns
   -------  
@@ -1520,22 +1524,20 @@ def read_and_stack(cluster, files_to_stack, delim = ',', end_slice = False):
                   .option('delimiter', delim)\
                   .csv(file)
 
-      # Make all column names lower case so columns of the same
-      # name always get stacked
+      # Make all column names lower case, remove leading and trailing whitespace 
+      # and replace spaces with underscores so columns of the same name always
+      # get stacked
 
       for column in dataframe.columns:
-        dataframe = dataframe.withColumnRenamed(column, column.lower())
+        dataframe = dataframe.withColumnRenamed(column, column.strip().replace(' ','_').lower())
 
-      # All column names need the final 6 characters to be removed which are
-      # always preceded by an underscore. Instead of using a slice,
-      # I have split the string based on the final _ incase
-      # in the future, the portion of string to be cut is not 6 characters.
-      # 05/10/23 - added setting to toggle this off, not required for wave 3.3 for example 
-      if end_slice == True:
-        dataframe = dataframe.toDF(*(c.rsplit('_', 1)[0] for c in dataframe.columns))
+      # If regex_to_remove is set, remove string pattern specified by regex_to_remove
+      # from all column headers before stacking
+      if regex_to_remove != None:
+        dataframe = dataframe.toDF(*[re.sub(regex_to_remove, '', c) for c in dataframe.columns])
 
       # Add column to record input file name
-      dataframe = dataframe.withColumn("source_file", F.lit(filename))
+      dataframe = dataframe.withColumn(source_column_name, F.lit(filename))
 
       dataframes.append(dataframe)
       
